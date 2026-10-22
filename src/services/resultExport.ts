@@ -12,7 +12,7 @@ export function gradebookCSV(data:Data,runs:Run[],wide=false){
  if(!wide)return exportCSV(data,runs);
  const groups=[...new Set(runs.map(routeKey))].map((key,i)=>{const group=runs.filter(r=>routeKey(r)===key);return {key,name:`${group[0].courseSnapshot.name} [${i+1}]`,best:rankRoute(group)};});
  const head=['ID élève','NOM','Prénom','Classe','Parcours effectués','Balises réussies','Balises attendues corrigées','Réussite','Repère parcours (1–4)','Repère fautes (1–4)',...groups.flatMap(g=>[`${g.name} · Balises`,`${g.name} · Temps`,`${g.name} · Niveau (1–4)`])];
- const rows=participationRanking(runs).map(t=>{const p=data.students.find(p=>p.id===t.studentId)!;return [p.id,p.lastName,p.firstName,p.className,t.passages,t.found,t.expected,successPercent(t.found,t.expected),courseCountLevel(t.passages),t.passages?falseControlsLevel(t.errors):'',...groups.flatMap(g=>{const best=g.best.find(b=>b.run.studentId===t.studentId);return best?[`${best.found}/${best.expected}`,formatTime(elapsed(best.run)),level(best.run)??'']:['','',''];})];});
+ const rows=participationRanking(runs).map(t=>{const p=data.students.find(p=>p.id===t.studentId)!;return [p.id,p.lastName,p.firstName,p.className,t.passages||'',t.passages?t.found:'',t.passages?t.expected:'',successPercent(t.found,t.expected),t.passages?courseCountLevel(t.passages):'',t.passages?falseControlsLevel(t.errors):'',...groups.flatMap(g=>{const best=g.best.find(b=>b.run.studentId===t.studentId);return best?[`${best.found}/${best.expected}`,formatTime(elapsed(best.run)),level(best.run)??'']:['','',''];})];});
  return '\uFEFF'+[head,...rows].map(r=>r.map(csvCell).join(';')).join('\r\n');
 }
 let fontCache:Promise<[string,string]>|null=null;

@@ -4,7 +4,7 @@ Exécution du 22 octobre 2026, uniquement avec des données fictives. Ces vérif
 
 ## Résultats automatisés
 
-`npm test` : **116 tests réussis, 0 échec**, dans onze fichiers.
+`npm test` : **117 tests réussis, 0 échec**, dans onze fichiers.
 
 | Ensemble | Tests | Périmètre |
 |---|---:|---|
@@ -63,7 +63,7 @@ Chrome, 1363 × 936 : dix fiches par élève tenaient dans la fenêtre de contr�
 
 ## Mise à jour : participation, tris, PDF et état local
 
-**116 tests réussis** dans onze fichiers. Les nouvelles vérifications couvrent les priorités parcours → bonnes balises → temps moyen, le classement balises, la déduplication d’une carte dans la même leçon, l’absence de zéros artificiels, les huit frontières de couleurs, le tri numérique avec valeurs manquantes et couleurs conservées, le refus d’une clé secrète dans le navigateur et la validation des références sur plusieurs leçons côté SQL.
+**117 tests réussis** dans onze fichiers. Les nouvelles vérifications couvrent les priorités parcours → bonnes balises → temps moyen, le classement balises, la déduplication d’une carte dans la même leçon, l’absence de zéros artificiels, les huit frontières de couleurs, le tri numérique avec valeurs manquantes et couleurs conservées, le refus d’une clé secrète dans le navigateur et la validation des références sur plusieurs leçons côté SQL.
 
 Chrome : nouvelle installation vide, libellé Local, navigation Correction → Classement → deux périmètres, quatre vues et tri de colonnes vérifiés. PDF témoin généré avec les vraies fontes et rendu en image : classe et dernière leçon visibles, décor d’orientation, couleurs présentes, aucun pied de page. La capture d’événement de téléchargement du navigateur distant expire ; la génération du fichier est testée séparément. Aucun nouvel essai physique sur iPad.
 
