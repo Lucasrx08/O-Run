@@ -43,7 +43,7 @@ Pour GitHub Pages, si votre formule et votre choix d’audience le permettent :
 2. Dans **Actions**, lancer manuellement **Vérifier et publier O’Run**.
 3. Utiliser l’adresse renvoyée par le déploiement réussi ; ne pas considérer une adresse supposée comme déjà en ligne.
 
-Le workflow calcule automatiquement le chemin de base à partir du nom du dépôt. Les tests et le build sont exécutés avant le déploiement. Les pushes lancent uniquement les vérifications ; la publication Pages reste manuelle. Pour un autre hébergeur statique, publier `dist/` avec HTTPS, après `npm run build` (chemin relatif par défaut).
+Le workflow calcule automatiquement le chemin de base à partir du nom du dépôt. Les tests et le build sont exécutés avant le déploiement. Les commits de main lancent les vérifications puis la publication Pages automatique. Pour un autre hébergeur statique, publier `dist/` avec HTTPS, après `npm run build` (chemin relatif par défaut).
 
 Documentation : https://vite.dev/guide/static-deploy.html et https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
 
@@ -55,15 +55,14 @@ Sur l’ancienne application : **Réglages → Sauvegardes → Sauvegarder**. Ga
 
 Le serveur Supabase optionnel conserve ses règles d’accès propres. Aucun serveur distant n’a été créé ni modifié pendant ce transfert. Voir les documents Supabase fournis avant une mise en service multi-appareils. Les variables `VITE_SUPABASE_URL` et `VITE_SUPABASE_PUBLISHABLE_KEY` sont publiques côté navigateur ; ne jamais utiliser une clé `service_role` dans une variable Vite.
 
-## Classements inclus
+## Classements (règles mises à jour)
 
-La leçon et le cumul utilisent les mêmes six vues : réussite globale, par parcours, détail par élève, temps moyen, balises fausses, combiné.
+La leçon et le cumul utilisent les mêmes quatre vues : général, par parcours, balises et par élève. Voir le README pour les règles de tri et les seuils exacts. Au général, la participation (cartes différentes corrigées) précède le total de bonnes balises puis le temps moyen. Une répétition garde le meilleur passage par leçon ; les absences ne créent pas de zéro.
 
-- Réussite : total des balises réussies / total des balises attendues sur les parcours terminés et corrigés.
-- Par parcours : meilleur passage de chaque élève, balises réussies puis temps brut. Une carte modifiée en distance ou nombre de balises forme un autre groupe. Les copies gardent leur filiation.
-- Par élève : détail des parcours effectués, avec le meilleur rang par parcours.
-- Temps moyen : temps brut moyen des passages corrigés. La longueur des parcours n’est pas normalisée.
-- Balises fausses : taux de balises fausses ou manquantes croissant ; le total et la moyenne par parcours sont affichés.
-- Combiné : réussite d’abord, temps brut moyen ensuite, sans pondération arbitraire.
+## Mise à jour de fonctionnement
 
-Les absences et parcours non tentés ne produisent pas de zéro. Les passages non corrigés sont signalés sans entrer dans les moyennes ni les classements. Les répétitions comptent dans les moyennes et les taux généraux. Les classements par parcours retiennent le meilleur passage.
+Le workflow Pages publie désormais automatiquement les commits de `main` ; il n’est plus nécessaire de relancer manuellement chaque mise à jour. Le lancement manuel reste possible.
+
+Les règles de classement les plus récentes sont celles du README : quatre vues, participation prioritaire au général et une carte par élève et par leçon. 
+
+Le serveur O’Run reste à activer : création refusée par le quota de deux projets Supabase gratuits. Quand le projet dédié sera disponible, la configuration peut être saisie dans Réglages → Appareils, sans publier une clé secrète ni reconstruire l’application. Le partage porte sur les classes et toutes les leçons de l’espace, pour permettre les cumuls.

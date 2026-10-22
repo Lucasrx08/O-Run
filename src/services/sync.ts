@@ -3,8 +3,10 @@ import type {Command,Data,Role} from '../domain/types';
 import {apply} from '../domain/engine';
 import {setServerOffset} from './clock';
 import {loadWorkspace,mutate,acceptServer} from './storage';
-const url=import.meta.env.VITE_SUPABASE_URL as string|undefined;
-const pub=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string|undefined;
+import {connectionConfig} from './connectionConfig';
+const saved=connectionConfig();
+const url=saved?.url||import.meta.env.VITE_SUPABASE_URL as string|undefined;
+const pub=saved?.publishableKey||import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string|undefined;
 export const configured=Boolean(url&&pub);
 export const supabase:SupabaseClient|null=configured?createClient(url!,pub!,{auth:{persistSession:false,autoRefreshToken:true,detectSessionInUrl:false}}):null;
 export interface RemoteSnapshot {document:Data;role:Role;server_time:number;version:number;}
@@ -12,7 +14,7 @@ let syncing=false;
 export async function signIn(email:string,password:string){if(!supabase)throw new Error('Supabase n’est pas configuré pour cette version.');const {error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;}
 export async function signOut(){await supabase?.auth.signOut({scope:'local'});}
 export async function snapshot(room:string):Promise<RemoteSnapshot>{const {data,error}=await supabase!.rpc('orun_snapshot',{room_id:room});if(error)throw error;return data;}
-export async function createRoom(source:Data,sessionId:string){const session=source.sessions.find(s=>s.id===sessionId);if(!session)throw new Error('Séance introuvable');const document:Data={...source,sessions:[session],sequences:source.sequences.filter(q=>q.id===session.sequenceId),students:source.students.filter(p=>session.studentIds.includes(p.id)),courses:source.courses.filter(c=>session.courseIds.includes(c.id)),runs:source.runs.filter(r=>r.sessionId===sessionId),audit:[],applied:[],version:0};const {data,error}=await supabase!.rpc('orun_create_room',{initial_document:document});if(error)throw error;return data as string;}
+export async function createRoom(source:Data,sessionId:string){const session=source.sessions.find(s=>s.id===sessionId);if(!session)throw new Error('Séance introuvable');const document:Data={...structuredClone(source),audit:[],applied:[],version:0};const {data,error}=await supabase!.rpc('orun_create_room',{initial_document:document});if(error)throw error;return data as string;}
 export async function joinRoom(room:string){const before=Date.now();const snap=await snapshot(room);const after=Date.now();if(after-before>3000)throw new Error('Réseau trop lent pour calibrer les horloges. Réessayez.');setServerOffset(snap.server_time-(before+after)/2);await mutate(w=>{if(w.pending.length)throw new Error('Des opérations attendent encore leur synchronisation.');return {data:snap.document,pending:[],room,role:snap.role};});return snap.role;}
 export async function pushPull(onStatus:(s:string)=>void):Promise<Role|undefined>{
  if(!supabase||syncing)return;syncing=true;

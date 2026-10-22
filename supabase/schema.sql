@@ -1,4 +1,4 @@
--- O'Run 1.0. Run on a dedicated EU Supabase project, never on an unrelated app.
+-- O'Run 2.1 — workspace with multiple lessons. Run on a dedicated EU Supabase project, never on an unrelated app.
 -- Source schema: generate a migration with `supabase migration new orun_initial`
 -- then copy this file into the CLI-generated migration and deploy with db push.
 begin;
@@ -49,9 +49,9 @@ create function orun_private.validate_document(d jsonb) returns void language pl
 declare c jsonb;ss jsonb;st jsonb;
 begin
  if (d->>'schema')::int is distinct from 1 or jsonb_typeof(d->'students') is distinct from 'array' or jsonb_typeof(d->'courses') is distinct from 'array' or jsonb_typeof(d->'sessions') is distinct from 'array' or jsonb_typeof(d->'runs') is distinct from 'array' or jsonb_typeof(d->'sequences') is distinct from 'array' then raise exception 'Document invalide'; end if;
- if jsonb_array_length(d->'sessions')<>1 then raise exception 'Un espace partagé contient une seule séance'; end if;
+ if jsonb_array_length(d->'sessions')>1000 then raise exception 'Trop de leçons dans cet espace partagé'; end if;
  if octet_length(d::text)>20000000 then raise exception 'Espace trop volumineux'; end if;
- if (select count(*)<>count(distinct x->>'id') from jsonb_array_elements(d->'students') x) or (select count(*)<>count(distinct x->>'id') from jsonb_array_elements(d->'courses') x) then raise exception 'Identifiants en doublon'; end if;
+ if (select count(*)<>count(distinct x->>'id') from jsonb_array_elements(d->'students') x) or (select count(*)<>count(distinct x->>'id') from jsonb_array_elements(d->'courses') x) or (select count(*)<>count(distinct x->>'id') from jsonb_array_elements(d->'sessions') x) then raise exception 'Identifiants en doublon'; end if;
  for st in select value from jsonb_array_elements(d->'students') loop
   if coalesce(length(trim(st->>'firstName')),0)=0 or coalesce(length(trim(st->>'lastName')),0)=0 or coalesce(length(trim(st->>'className')),0)=0 then raise exception 'Élève incomplet'; end if;
  end loop;
@@ -59,8 +59,9 @@ begin
   if not coalesce((c->>'distance')::numeric>0 and (c->>'controls')::int>0 and (c->>'penalty')::numeric>=0 and length(trim(c->>'name'))>0,false) then raise exception 'Parcours invalide'; end if;
   if jsonb_array_length(c->'rubric'->'thresholds')<>3 or jsonb_array_length(c->'rubric'->'maxErrors')<>3 or not coalesce((c->'rubric'->'thresholds'->>0)::numeric>0 and (c->'rubric'->'thresholds'->>1)::numeric>=(c->'rubric'->'thresholds'->>0)::numeric and (c->'rubric'->'thresholds'->>2)::numeric>=(c->'rubric'->'thresholds'->>1)::numeric,false) then raise exception 'Barème invalide'; end if;
  end loop;
- ss=d->'sessions'->0;
+ for ss in select value from jsonb_array_elements(d->'sessions') loop
  if exists(select 1 from jsonb_array_elements_text(ss->'studentIds') x where not exists(select 1 from jsonb_array_elements(d->'students') stu_item where stu_item->>'id'=x)) or exists(select 1 from jsonb_array_elements_text(ss->'courseIds') x where not exists(select 1 from jsonb_array_elements(d->'courses') course_item where course_item->>'id'=x)) then raise exception 'Référence de séance invalide'; end if;
+ end loop;
 end $$;
 
 create function orun_private.snapshot(rid uuid) returns jsonb language plpgsql security definer set search_path='' as $$

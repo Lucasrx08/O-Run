@@ -1,0 +1,15 @@
+import {expect,it} from 'vitest';
+import {demo} from '../src/domain/demo';
+import type {Run} from '../src/domain/types';
+import {participationRanking,courseCountLevel,falseControlsLevel} from '../src/domain/rankingViews';
+import {sortedSection} from '../src/services/resultExport';
+import {validateConnection} from '../src/services/connectionConfig';
+function run(studentId:string,courseId:string,errors:number|null,seconds=100,sessionId='l1'):Run{const r=structuredClone(demo().runs[0]);return {...r,id:crypto.randomUUID(),studentId,courseId,sessionId,start:1000,end:1000+seconds*1000,errors,pauses:[],courseSnapshot:{...r.courseSnapshot,id:courseId,controls:6}};}
+it('valorise le nombre de cartes avant les bonnes balises et le temps',()=>{const rows=participationRanking([run('a','1',2),run('a','2',2),run('b','1',0,1)]);expect(rows.map(t=>t.studentId)).toEqual(['a','b']);expect(rows[0]).toMatchObject({passages:2,found:8});});
+it('départage au total de bonnes balises puis au temps moyen',()=>{const rows=participationRanking([run('a','1',0,200),run('b','1',1,1),run('c','1',0,100)]);expect(rows.map(t=>[t.studentId,t.rank])).toEqual([['c',1],['a',2],['b',3]]);});
+it('classe les balises au total avant le temps moyen',()=>{const rows=participationRanking([run('a','1',0,200),run('b','1',1,1),run('b','2',1,1)],'beacons');expect(rows.map(t=>t.studentId)).toEqual(['b','a']);});
+it('ne compte une répétition qu’une fois et garde le meilleur passage de la leçon',()=>{const rows=participationRanking([run('a','1',2,1),run('a','1',0,200),run('a','1',1,20),run('a','1',0,100,'l2')]);expect(rows[0]).toMatchObject({passages:2,found:12,errors:0,averageTime:150000,lessons:2});});
+it('les absences et cartes non tentées ne produisent aucun zéro',()=>{const rows=participationRanking([run('a','1',null),{...run('b','1',0),end:undefined},run('c','1',0)]);expect(rows.find(t=>t.studentId==='a')).toMatchObject({rank:null,pending:1});expect(rows.some(t=>t.studentId==='b')).toBe(false);expect(rows.find(t=>t.studentId==='c')).toMatchObject({averageTime:100000,found:6,passages:1});});
+it('applique les quatre couleurs aux frontières demandées',()=>{expect([0,1,2,3,4,8].map(courseCountLevel)).toEqual([1,1,2,3,4,4]);expect([0,1,2,3,4,5,12].map(falseControlsLevel)).toEqual([4,3,3,2,2,1,1]);});
+it('trie numériquement et conserve les couleurs avec leur ligne, sans déplacer les résultats manquants en tête',()=>{const section={title:'Test',columns:['Temps'],rows:[['10:00'],['2:00'],['—']],sortValues:[[600000],[120000],[null]],tones:[[4],[1],[null]] as (1|4|null)[][]};expect(sortedSection(section,{column:0,direction:'asc'}).rows).toEqual([['2:00'],['10:00'],['—']]);expect(sortedSection(section,{column:0,direction:'desc'}).tones).toEqual([[4],[1],[null]]);});
+it('refuse une clé secrète dans la configuration du navigateur',()=>{expect(()=>validateConnection('https://example.supabase.co','sb_secret_test')).toThrow(/publishable/);expect(validateConnection('https://example.supabase.co','sb_publishable_test').url).toBe('https://example.supabase.co');expect(()=>validateConnection('http://example.supabase.co','sb_publishable_test')).toThrow(/HTTPS/);});

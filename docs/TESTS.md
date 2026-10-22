@@ -4,13 +4,13 @@ Exécution du 22 octobre 2026, uniquement avec des données fictives. Ces vérif
 
 ## Résultats automatisés
 
-`npm test` : **107 tests réussis, 0 échec**, dans dix fichiers.
+`npm test` : **116 tests réussis, 0 échec**, dans onze fichiers.
 
 | Ensemble | Tests | Périmètre |
 |---|---:|---|
 | Règles métier | 31 | Départ individuel et simultané, doublons, idempotence, pauses, STOP, réouverture motivée, correction et révision, pénalités, niveaux, classements, homonymes, CSV et caractères de formule |
 | Stockage | 7 | Rechargement, écritures concurrentes, chiffrement et mauvaise phrase secrète, restauration invalide, rôle conservé, reprise après conflit sans effacer une nouvelle opération |
-| Serveur SQL | 19 | PostgreSQL PGlite : rôles, refus anonyme et hors séance, accès direct interdit, noms réduits, notifications RLS, commandes séquentielles de plusieurs comptes, doublons, révisions, expiration et purge |
+| Serveur SQL | 20 | PostgreSQL PGlite : rôles, refus anonyme et hors séance, accès direct interdit, noms réduits, notifications RLS, commandes séquentielles de plusieurs comptes, doublons, révisions, expiration et purge |
 | Classes et leçons | 9 | Classes vides, défaut 6 × 6, copie indépendante dans la même classe ou une autre, fichiers et historique préservés, anciennes leçons, renommage, ajout aux bons groupes, instant commun, arrêt/redépart et garde des vagues |
 | Classements de réussite | 7 | Priorité aux balises puis au temps, meilleur passage, ex æquo, taux pondéré selon les balises attendues, répétitions, passages non corrigés/actifs, séparation des versions de parcours |
 | Barème et grille | 10 | Temps seul, balises seules, combinaison, anciennes données, pénalités, refus sans critère ; grilles 24–36 élèves sur quatre dimensions de zones, UUID en aperçu HTTP |
@@ -60,3 +60,11 @@ Les classements cumulés ont été contrôlés dans Chrome. Un PDF témoin a ét
 Cinq tests métier vérifient les moyennes, les taux de balises fausses, le combiné, les ex æquo et la priorité de correction. Un test UI vérifie le retrait immédiat des résultats corrigés, le maintien de la file par élève et les six vues sur la leçon comme sur le cumul.
 
 Chrome, 1363 × 936 : dix fiches par élève tenaient dans la fenêtre de contrôle (4 colonnes, 3 lignes ; dernière ligne à 832 px). Sur les tuiles terrain contrôlées, noms de 38 px et chronos de 24 px. Tableaux par parcours et podiums compacts contrôlés visuellement. Aucun nouvel essai sur iPad physique. Les workflows GitHub ont été préparés, sans exécution distante ni nouveau site GitHub Pages : le dépôt cible a ensuite été créé et les sources y sont transférées ; le déploiement Pages reste à activer.
+
+## Mise à jour : participation, tris, PDF et état local
+
+**116 tests réussis** dans onze fichiers. Les nouvelles vérifications couvrent les priorités parcours → bonnes balises → temps moyen, le classement balises, la déduplication d’une carte dans la même leçon, l’absence de zéros artificiels, les huit frontières de couleurs, le tri numérique avec valeurs manquantes et couleurs conservées, le refus d’une clé secrète dans le navigateur et la validation des références sur plusieurs leçons côté SQL.
+
+Chrome : nouvelle installation vide, libellé Local, navigation Correction → Classement → deux périmètres, quatre vues et tri de colonnes vérifiés. PDF témoin généré avec les vraies fontes et rendu en image : classe et dernière leçon visibles, décor d’orientation, couleurs présentes, aucun pied de page. La capture d’événement de téléchargement du navigateur distant expire ; la génération du fichier est testée séparément. Aucun nouvel essai physique sur iPad.
+
+Supabase : authentification du connecteur et découverte des projets réussies. Le coût de création annoncé était nul mais la création de O’Run a été refusée (limite de deux projets gratuits actifs déjà atteinte). Aucune base distante modifiée. Aucun test entre deux appareils réels annoncé comme effectué. La synchronisation reste conditionnée à un projet dédié disponible.

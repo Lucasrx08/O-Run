@@ -1,22 +1,52 @@
 # O’Run — Course d’orientation · EPS
 
-Application React / TypeScript / Vite, orange et blanc, développée pour L. RIGAUX.
+Application autonome React / TypeScript / Vite, développée pour L. RIGAUX. Site : **https://lucasrx08.github.io/O-Run/**. Sources : **https://github.com/Lucasrx08/O-Run**.
 
-**Version 2.0 de démonstration : données fictives uniquement.** Le mode mono-appareil est opérationnel. Le mode Supabase est fourni avec son schéma et ses tests SQL ; son activation et sa recette sur un vrai réseau restent nécessaires.
+## Utiliser
 
-## Essayer
+L’accueil présente les classes. Créer une classe, choisir sa couleur, ajouter les élèves un par un ou importer un CSV/XLS/XLSX, puis préparer une leçon. Chaque nouvelle leçon contient six cartes de six balises, modifiables, avec carte jointe et barème facultatif. Les préparations peuvent être copiées entre classes.
 
-L’accueil présente uniquement les classes. Ouvrez une classe, ajoutez ses élèves puis créez une leçon. Une nouvelle leçon contient **6 cartes de 6 balises**, entièrement modifiables. Les anciennes préparations et les résultats déjà enregistrés sont conservés.
+Les départs simultanés ou par vagues utilisent de grandes tuiles. Toucher un prénom arrête le chrono ; toucher la tuile arrivée puis une carte restante relance un passage. Le poste départ n’affiche que les élèves disponibles, l’arrivée les chronos actifs, le pilotage les corrections, et le mode complet toutes les fonctions. Affichage terrain : prénom et initiale du nom.
 
-Dans la leçon, choisissez **Départs**, puis un départ simultané ou par vagues. Chaque élève a une grande tuile : un appui arrête son chrono ; un nouvel appui ouvre les cartes ; choisir une carte lance immédiatement un nouveau passage. Les passages précédents restent disponibles dans **Résultats**.
+**Mode local opérationnel.** Le bandeau indique « Local » tant qu’aucun espace partagé n’est rejoint. Une nouvelle installation démarre vide. Les données déjà présentes ne sont pas effacées ; les exemples peuvent être chargés explicitement dans les réglages.
 
-Pour réutiliser une préparation : **Copier la leçon**, ouvrir la classe souhaitée, puis **Coller la leçon**. La copie utilise les élèves de la destination et des cartes indépendantes, sans reprendre les résultats.
+## Correction et classement
 
-La première ouverture ajoute deux classes fictives, des cartes et des exemples de résultats pour essayer l’application. Aucune course ne part automatiquement.
+Deux onglets distincts : **Correction** et **Classement**. La correction affiche d’abord les arrivées en attente et retire immédiatement un résultat validé. Les résultats corrigés restent accessibles.
 
-## Développer
+Dans Classement, choisir **cette leçon** ou **toutes les leçons**, puis l’une des quatre vues :
 
-Node 22.12+ recommandé, npm et navigateur récent.
+- **Général** : nombre de cartes effectuées et corrigées décroissant, total de bonnes balises décroissant, puis temps moyen croissant.
+- **Par parcours** : bonnes balises décroissantes, puis temps brut croissant ; meilleur passage par élève.
+- **Balises** : total de bonnes balises décroissant, puis temps moyen croissant.
+- **Par élève** : détail de ses parcours, bonnes balises, balises fausses ou manquantes et temps.
+
+Pour valoriser les cartes différentes, une carte ne compte qu’une fois par élève et par leçon ; une répétition retient le meilleur passage corrigé. Les absences et cartes non tentées ne produisent aucun zéro. Les résultats non corrigés ne reçoivent ni rang ni couleur de zéro.
+
+Toutes les colonnes sont triables ; les rangs officiels restent ceux du classement choisi. Le PDF conserve l’ordre de tri affiché.
+
+Couleurs iDoceo (reprises de la référence fournie) :
+
+| Niveau couleur | Cartes | Balises fausses / manquantes |
+|---|---|---|
+| Vert | 4 ou plus | 0 |
+| Jaune | 3 | 1–2 |
+| Orange | 2 | 3–4 |
+| Rouge | moins de 2 | plus de 4 |
+
+Ces repères de participation et de précision sont distincts des niveaux d’évaluation d’un barème. Le CSV iDoceo contient les deux repères séparés, sans inventer une note globale. Le PDF comporte le nom de classe en grand, la leçon ou la dernière leçon comptabilisée, le décor d’orientation et les couleurs ; aucun en-tête générique ni pied de page de navigateur n’y est ajouté. Le bouton d’impression prépare ce PDF à imprimer.
+
+## Connecter plusieurs appareils
+
+Un serveur Supabase dédié est nécessaire. **Il n’a pas pu être créé lors de cette mise à jour : le compte a déjà ses deux projets gratuits actifs (AS Bon Sauveur et Gestion Cross).** Aucun de ces projets n’a été modifié, arrêté ou supprimé.
+
+Quand un emplacement de projet est disponible : installer le schéma `supabase/schema.sql` sur un projet dédié en région UE, créer les comptes autorisés, puis renseigner l’URL et la clé **publishable** dans **Réglages → Appareils** de chaque appareil. Les variables Vite équivalentes sont aussi supportées. Ne jamais renseigner une clé secrète ou service_role dans le client.
+
+L’enseignant doit chiffrer le stockage local avant sa connexion, partager les classes et leçons, puis autoriser les comptes départs/arrivées. Les comptes doivent rejoindre le même espace. L’interface seule et GitHub ne synchronisent pas les données. Les règles SQL contrôlent les droits et réduisent les noms transmis aux postes. Le serveur est préparé pour plusieurs leçons d’un même espace ; il reste à installer et à tester sur le projet réel.
+
+## Développer et publier
+
+Node.js 22.12+ et npm :
 
 ```sh
 npm ci
@@ -25,50 +55,6 @@ npm run build
 npm run dev
 ```
 
-Le build produit `dist/`, avec manifest et service worker. Les icônes PNG et SVG sont fournies ; aucune génération d’image ni police distante n’est nécessaire au build.
+`dist/` contient la PWA et les fontes locales. GitHub Actions vérifie les tests et publie automatiquement les mises à jour de `main` sur GitHub Pages ; le lancement manuel reste disponible. Pour un autre hébergeur, publier `dist/` en HTTPS. Le chemin relatif par défaut permet un déploiement portable ; le workflow Pages adapte le chemin au nom du dépôt.
 
-## Fonctionnalités
-
-- Tableau de bord épuré, navigation par classe puis leçon, mise en page adaptative orange et blanc. Identité nature avec cartes topographiques, tracés d’orientation, titres Outfit et textes Nunito Sans, fontes hébergées dans l’application.
-- Classes : création, couleur, renommage et suppression ; ajout, modification et import CSV/XLS/XLSX des élèves, même sans colonne Classe.
-- Leçons : création, modification et copier-coller dans la même classe ou une autre ; 6 cartes de 6 balises par défaut.
-- Cartes : ajout/retrait, couleur, nombre de balises, fichier PNG/JPEG/PDF ; distance, pénalité et barème facultatif dans les réglages avancés. Temps de barème en minutes et secondes ; critère temps et critère balises fausses indépendants. Paramètres figés dans chaque passage.
-- Terrain : grille calculée pour afficher toute la classe dans la fenêtre sans défilement, zoom gestuel désactivé ; grandes tuiles prénom + initiale, homonymes numérotés ; départ simultané avec un instant commun même sur plusieurs cartes ; départ par vagues avec taille et intervalle réglables.
-- Arrivée au toucher, puis choix d’une nouvelle carte pour repartir. Le choix de la nouvelle carte s’affiche en plein écran avec un marquage rouge des cartes déjà réalisées. Un élève ne peut avoir qu’un seul chrono actif. Les vagues se suspendent en arrière-plan, à la sortie de l’écran, en cas de retard ou de changement d’horloge ; reprise explicite.
-- Classements : par parcours, meilleur passage de chaque élève selon les balises réussies puis le temps brut ; au général, total des balises réussies divisé par les balises attendues sur tous les passages corrigés. Les répétitions comptent au général ; les passages non corrigés sont signalés et exclus du taux. Ex æquo conservés, exports CSV propres à chaque vue.
-- Résultats : grandes fiches par élève ou par parcours, correction des balises, annulation motivée d’une arrivée, historique des modifications, niveau selon le barème, PDF avec fontes intégrées, impression et export iDoceo avec noms complets et identifiants stables.
-- Réglages : rubriques visuelles, choix explicite du poste puis bouton d’activation ; sauvegardes, protection, appareils et entretien accessibles séparément.
-- Persistance IndexedDB, transactions avec contrôle de version, synchronisation entre onglets du même navigateur, chiffrement local optionnel AES-GCM, sauvegarde/restauration JSON.
-- PWA et cache limité aux fichiers statiques de l’application. Les API et données des élèves ne passent jamais dans le cache du service worker.
-- Synchronisation Supabase configurable : authentification, rôles par séance, commandes atomiques, reprise des envois, notifications Realtime et interrogation périodique de secours.
-
-## Architecture
-
-`src/domain` : règles de course, types, CSV et données fictives.
-`src/services` : stockage, chiffrement, horloge, téléchargement et adaptateur Supabase.
-`src/pages` : interfaces par usage.
-`supabase/schema.sql` : source SQL à placer dans une migration générée par la CLI.
-`tests` : règles métier, persistance, workflow utilisateur DOM, SQL et autorisations.
-`docs` : installation, sécurité, RGPD, limites et recette terrain.
-
-## Déploiement
-
-Démo privée : https://o-run-eps.lucasrigaux8.chatgpt.site
-
-Cible GitHub initialement demandée : `Lucasrx08/O-Run`, GitHub Pages à `https://lucasrx08.github.io/O-Run/`. Le workflow est prêt dans `.github/workflows/deploy.yml`. Cette URL est une **cible**, pas une preuve de publication.
-
-Voir [installation](docs/INSTALLATION.md), [sécurité](docs/SECURITE.md), [dossier RGPD](docs/RGPD.md) et [tests](docs/TESTS.md). Aucun élève réel, secret, mot de passe ou export nominatif n’est inclus dans ce dépôt.
-
-Après une mise à jour, fermer tous les onglets O’Run puis rouvrir l’application permet à la nouvelle version mise en cache de prendre la main. Ne pas effacer les données du navigateur.
-
-Les classements cumulés regroupent les leçons disponibles de la classe. Les absences et cartes non tentées n’ajoutent aucun zéro. Les postes départs affichent les élèves disponibles, les arrivées uniquement les chronos actifs, et le pilotage uniquement les corrections. Le choix suivant ne présente que les cartes restantes.
-
-## Projet autonome sur GitHub
-
-Dépôt : **https://github.com/Lucasrx08/O-Run**.
-
-Le guide [MIGRATION_GITHUB.md](docs/MIGRATION_GITHUB.md) explique l’import des sources, le développement avec VS Code et Node, les workflows et le transfert des données par sauvegarde. Le projet ne dépend pas de ChatGPT pour fonctionner. Les vérifications GitHub sont automatiques ; le déploiement Pages est manuel pour permettre de choisir l’audience avant publication.
-
-## Corrections et classements
-
-« À corriger » est la file initiale ; enregistrer un résultat le retire immédiatement. Les arrivées en attente sont traitées dans l’ordre, les corrigés restent accessibles dans leur onglet. Six vues sont disponibles sur la leçon comme sur le cumul : réussite globale, parcours, élève, temps moyen, balises fausses et combiné. Le combiné classe par réussite, puis temps moyen. Les fiches de correction sont compactes ; les classements utilisent des tableaux avec podium réduit.
+Voir [MIGRATION_GITHUB.md](docs/MIGRATION_GITHUB.md) pour reprendre le code et transférer les données via sauvegarde JSON, [TESTS.md](docs/TESTS.md) pour les vérifications, et les guides de sécurité et de protection des données pour la mise en service dans l’établissement.

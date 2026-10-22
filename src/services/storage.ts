@@ -1,5 +1,5 @@
 import {apply} from '../domain/engine';
-import {demo} from '../domain/demo';
+import {demo,emptyData} from '../domain/demo';
 import type {Command,Data,Role} from '../domain/types';
 export interface Workspace {data:Data;pending:Command[];room:string|null;role?:Role;}
 interface RecordValue {revision:number;payload?:Workspace;cipher?:ArrayBuffer;iv?:Uint8Array;salt?:Uint8Array;}
@@ -11,7 +11,7 @@ async function derive(password:string,salt:Uint8Array):Promise<CryptoKey>{const 
 async function decode(r:RecordValue):Promise<Workspace>{if(r.cipher){if(!key)throw new LockedError();try{return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:r.iv as BufferSource},key,r.cipher)));}catch{key=null;throw new LockedError();}}return r.payload!;}
 async function encode(w:Workspace,revision:number):Promise<RecordValue>{if(!key)return {revision,payload:w};const iv=crypto.getRandomValues(new Uint8Array(12));return {revision,salt:keySalt,iv,cipher:await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(JSON.stringify(w)))};}
 async function cas(expected:number,record:RecordValue){const d=await db();return new Promise<boolean>((resolve,reject)=>{const tx=d.transaction('workspace','readwrite');const s=tx.objectStore('workspace');const q=s.get('main');let saved=false;q.onsuccess=()=>{if((q.result?.revision??-1)===expected){s.put(record,'main');saved=true;}};tx.oncomplete=()=>resolve(saved);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error??new Error('Enregistrement interrompu.'));});}
-export async function mutate(fn:(w:Workspace)=>Workspace):Promise<Workspace>{for(let i=0;i<8;i++){const old=await readRecord();const w=old?await decode(old):{data:demo(),pending:[],room:null};const next=fn(w);const record=await encode(next,(old?.revision??-1)+1);if(await cas(old?.revision??-1,record))return next;}throw new Error('Le stockage est occupé par un autre onglet. Réessayez.');}
+export async function mutate(fn:(w:Workspace)=>Workspace):Promise<Workspace>{for(let i=0;i<8;i++){const old=await readRecord();const w=old?await decode(old):{data:emptyData(),pending:[],room:null};const next=fn(w);const record=await encode(next,(old?.revision??-1)+1);if(await cas(old?.revision??-1,record))return next;}throw new Error('Le stockage est occupé par un autre onglet. Réessayez.');}
 export async function loadWorkspace(){const r=await readRecord();return r?decode(r):mutate(w=>w);}
 export async function execute(command:Command,role:Role='teacher'){return mutate(w=>{const next=apply(w.data,command,w.room?(w.role??'arrival'):role);return {...w,data:next,pending:next===w.data?w.pending:w.room?[...w.pending,command]:[]};});}
 export async function acceptServer(room:string,data:Data,role:Role,exportedIds:string[]){return mutate(w=>{if(w.room!==room)throw new Error('L’espace partagé a changé.');if(w.pending.some(c=>!exportedIds.includes(c.id)))throw new Error('De nouvelles opérations ont été enregistrées. Exportez à nouveau avant de reprendre l’état serveur.');return {data,pending:[],room,role};});}
