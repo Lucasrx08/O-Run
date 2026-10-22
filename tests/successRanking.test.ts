@@ -1,0 +1,12 @@
+import {expect,it} from 'vitest';
+import {demo} from '../src/domain/demo';
+import type {Run} from '../src/domain/types';
+import {rankOverall,rankRoute,routeKey,successPercent} from '../src/domain/successRanking';
+function passage(studentId:string,controls:number,errors:number|null,seconds=100):Run{const r=structuredClone(demo().runs[0]);return {...r,id:crypto.randomUUID(),studentId,start:1000,end:1000+seconds*1000,errors,pauses:[],courseSnapshot:{...r.courseSnapshot,controls}};}
+it('place les balises avant la vitesse, puis départage au temps brut',()=>{const r=rankRoute([passage('rapide',6,2,10),passage('lent',6,0,200),passage('moyen',6,0,100)]);expect(r.map(t=>t.run.studentId)).toEqual(['moyen','lent','rapide']);expect(r.map(t=>t.rank)).toEqual([1,2,3]);});
+it('garde le meilleur passage de chaque élève et tous les ex æquo',()=>{const r=rankRoute([passage('a',6,1,60),passage('a',6,0,100),passage('b',6,0,100),passage('c',6,1,10)]);expect(r.map(t=>[t.run.studentId,t.rank,t.found])).toEqual([['a',1,6],['b',1,6],['c',3,5]]);});
+it('exclut les chronos actifs et les passages non corrigés',()=>{const a=passage('a',6,0);a.end=undefined;expect(rankRoute([a,passage('b',6,null)])).toEqual([]);expect(rankOverall([a,passage('b',6,null)])).toEqual([{studentId:'b',found:0,expected:0,passages:1,pending:1,rank:null}]);});
+it('calcule le taux sur les balises attendues de tous les passages corrigés',()=>{const r=rankOverall([passage('a',6,0),passage('a',12,3),passage('b',6,1)]);expect(r[0]).toMatchObject({studentId:'a',found:15,expected:18,passages:2,rank:1});expect(r[1]).toMatchObject({studentId:'b',rank:1});expect(successPercent(15,18)).toBe('83,3 %');});
+it('compte les répétitions et distingue les passages à corriger',()=>{const r=rankOverall([passage('a',6,0),passage('a',6,3),passage('a',10,null)]);expect(r[0]).toMatchObject({found:9,expected:12,passages:3,pending:1,rank:1});expect(successPercent(r[0].found,r[0].expected)).toBe('75 %');});
+it('classe au taux et garde les ex æquo indépendamment du nombre de parcours ou du temps',()=>{const r=rankOverall([passage('a',6,0,300),passage('b',12,0,10),passage('c',6,1,1),passage('d',6,3,1)]);expect(r.map(t=>[t.studentId,t.rank])).toEqual([['a',1],['b',1],['c',3],['d',4]]);});
+it('sépare les versions de cartes dont le nombre de balises ou la distance diffère',()=>{expect(routeKey(passage('a',6,0))).not.toBe(routeKey(passage('b',10,0)));});

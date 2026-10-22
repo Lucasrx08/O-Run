@@ -1,0 +1,10 @@
+import {expect,it} from 'vitest';
+import {demo} from '../src/domain/demo';
+import type {Run} from '../src/domain/types';
+import {rankPupils,correctionQueue} from '../src/domain/rankingViews';
+function run(studentId:string,controls:number,errors:number|null,seconds:number,lesson='l1'):Run{const r=structuredClone(demo().runs[0]);return {...r,id:crypto.randomUUID(),studentId,sessionId:lesson,start:1000,end:1000+seconds*1000,errors,pauses:[],courseSnapshot:{...r.courseSnapshot,controls}};}
+it('calcule les moyennes sur les seuls parcours corrigés et cumule les leçons réellement suivies',()=>{const rows=rankPupils([run('a',6,0,100),run('a',10,2,200,'l2'),run('a',6,null,300,'l3'),{...run('b',6,0,2),end:undefined}]);expect(rows).toHaveLength(1);expect(rows[0]).toMatchObject({found:14,expected:16,errors:2,averageErrors:1,averageTime:150000,passages:2,pending:1,lessons:2});});
+it('classe les temps moyens et laisse les résultats en attente sans rang',()=>{const rows=rankPupils([run('a',6,0,100),run('a',6,0,300),run('b',6,3,150),run('c',6,null,1)],'time');expect(rows.map(t=>[t.studentId,t.rank])).toEqual([['b',1],['a',2],['c',null]]);});
+it('classe les balises fausses par taux pour ne pas pénaliser le volume de parcours',()=>{const rows=rankPupils([run('a',6,1,100),run('a',6,1,100),run('b',6,1,10),run('c',6,2,1)],'errors');expect(rows.map(t=>[t.studentId,t.rank])).toEqual([['a',1],['b',1],['c',3]]);});
+it('combine la réussite en priorité puis le temps moyen avec ex æquo',()=>{const rows=rankPupils([run('a',6,0,100),run('b',6,0,50),run('c',6,1,1),run('d',12,0,50)],'combined');expect(rows.map(t=>[t.studentId,t.rank])).toEqual([['b',1],['d',1],['a',3],['c',4]]);});
+it('place les arrivées à corriger avant les corrigés, dans leur ordre d’arrivée',()=>{const first=run('a',6,null,1),second=run('b',6,null,2),done=run('c',6,0,.5);expect(correctionQueue([done,second,first]).map(r=>r.studentId)).toEqual(['a','b','c']);expect(correctionQueue([{...first,errors:0},second,done]).map(r=>r.studentId)).toEqual(['b','a','c']);});

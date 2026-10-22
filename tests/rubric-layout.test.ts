@@ -1,0 +1,13 @@
+import {it,expect,vi} from 'vitest';
+import {level,apply} from '../src/domain/engine';
+import {fitGrid} from '../src/domain/fitGrid';
+import {demo} from '../src/domain/demo';
+import {uid} from '../src/domain/types';
+const run=()=>{const r=structuredClone(demo().runs[0]);r.courseSnapshot.penalty=0;r.courseSnapshot.rubric={enabled:true,thresholds:[60,120,180],maxErrors:[0,1,2]};r.start=1000;r.end=1000000;r.errors=0;return r;};
+it('évalue uniquement les balises fausses sans tenir compte du temps',()=>{const r=run();r.courseSnapshot.rubric.useTime=false;expect(level(r)).toBe(4);r.errors=1;expect(level(r)).toBe(3);});
+it('évalue uniquement le temps sans imposer la correction des balises',()=>{const r=run();r.courseSnapshot.rubric.useControls=false;r.end=61000;r.errors=null;expect(level(r)).toBe(4);r.end=121000;expect(level(r)).toBe(3);});
+it('combine les deux critères lorsque tous deux sont actifs et préserve les anciens barèmes',()=>{const r=run();r.end=61000;r.errors=2;expect(level(r)).toBe(2);r.errors=null;expect(level(r)).toBeNull();});
+it('attend la correction pour un temps pénalisé et exclut les chronos actifs',()=>{const r=run();r.courseSnapshot.rubric.useControls=false;r.courseSnapshot.penalty=30;r.errors=null;expect(level(r)).toBeNull();r.errors=0;r.end=undefined;expect(level(r)).toBeNull();});
+it('refuse un barème activé sans aucun critère',()=>{const d=demo();d.courses[0].rubric={...d.courses[0].rubric,enabled:true,useTime:false,useControls:false};expect(()=>apply(d,{kind:'config',id:uid(),at:Date.now(),baseVersion:d.version,students:d.students,courses:d.courses,sequences:d.sequences,sessions:d.sessions,detail:'test'})).toThrow();});
+it.each([[1315,510],[976,505],[720,760],[1600,700]])('fait tenir 24 à 36 élèves dans une zone %i × %i', (w,h)=>{for(const n of [24,30,32,36]){const g=fitGrid(w,h,n);expect(g.columns*g.rows).toBeGreaterThanOrEqual(n);expect(g.rows).toBe(Math.ceil(n/g.columns));const tw=(w-8*(g.columns-1))/g.columns,th=(h-8*(g.rows-1))/g.rows;expect(tw).toBeGreaterThan(85);expect(th).toBeGreaterThan(70);expect(Number.isFinite(g.unit)).toBe(true);}});
+it('génère un UUID v4 même en aperçu HTTP sans randomUUID',()=>{const old=crypto.randomUUID;Object.defineProperty(crypto,'randomUUID',{configurable:true,value:undefined});try{expect(uid()).toMatch(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/);}finally{Object.defineProperty(crypto,'randomUUID',{configurable:true,value:old});}});
