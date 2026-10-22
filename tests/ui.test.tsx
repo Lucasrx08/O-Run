@@ -76,3 +76,19 @@ it('retire les corrections validées et propose les quatre classements pour la l
  await prepared();render(<Provider><App/></Provider>);await openBoard();expect(screen.getAllByRole('button',{name:'Mes classes'})).toHaveLength(1);fireEvent.click(screen.getByRole('button',{name:'Lancer 3 élèves'}));await screen.findByRole('button',{name:'Arrêter le chrono de Alice E.'});fireEvent.click(screen.getByRole('button',{name:'Arrêter le chrono de Alice E.'}));await screen.findByRole('button',{name:'Choisir une nouvelle carte pour Alice E.'});fireEvent.click(screen.getByRole('button',{name:'Arrêter le chrono de Basile E.'}));await screen.findByRole('button',{name:'Choisir une nouvelle carte pour Basile E.'});fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));expect(screen.getAllByRole('button',{name:/^Corriger/})[0].getAttribute('aria-label')).toBe('Corriger Alice E. · Carte 1');fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'}));fireEvent.click(screen.getByRole('button',{name:'Enregistrer le résultat'}));await waitFor(()=>expect(screen.queryByRole('button',{name:'Corriger Alice E. · Carte 1'})).toBeNull());fireEvent.click(screen.getByRole('tab',{name:'Par élève'}));expect(screen.queryByRole('button',{name:'Corriger Alice E. · Carte 1'})).toBeNull();expect(screen.getByRole('button',{name:'Corriger Basile E. · Carte 1'})).toBeTruthy();fireEvent.click(screen.getByRole('tab',{name:/^Corrigés/}));expect(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'})).toBeTruthy();fireEvent.click(screen.getByRole('tab',{name:/^Classement$/}));
  for(const name of ['Général','Par carte','Balises','Par élève'])expect(screen.getByRole('tab',{name})).toBeTruthy();fireEvent.click(screen.getByRole('tab',{name:'Par carte'}));expect(screen.getByRole('group',{name:'Cartes du classement'})).toBeTruthy();expect(screen.getByRole('table')).toBeTruthy();expect(screen.queryByRole('button',{name:/^Corriger/})).toBeNull();fireEvent.click(screen.getByRole('tab',{name:'Classement de toutes les leçons'}));for(const name of ['Général','Par carte','Balises','Par élève'])expect(screen.getByRole('tab',{name})).toBeTruthy();fireEvent.click(screen.getByRole('tab',{name:'Général'}));expect(screen.queryByText(/Nombre de parcours en priorité/)).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Trier par Élève'}));expect(screen.getByRole('columnheader',{name:/Élève/}).getAttribute('aria-sort')).toBe('ascending');
 });
+
+it('crée une nouvelle leçon avec le nombre de cartes et de balises choisi',async()=>{
+ await prepared();render(<Provider><App/></Provider>);
+ await screen.findByRole('heading',{name:/Mes classes/});
+ fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));
+ fireEvent.click(screen.getByRole('button',{name:'Nouvelle leçon'}));
+ expect((screen.getByLabelText('Nombre de cartes') as HTMLInputElement).value).toBe('6');
+ expect((screen.getByLabelText('Balises par carte') as HTMLInputElement).value).toBe('6');
+ fireEvent.change(screen.getByLabelText('Nombre de cartes'),{target:{value:'4'}});
+ fireEvent.change(screen.getByLabelText('Balises par carte'),{target:{value:'8'}});
+ expect(screen.getByText(/4 cartes de 8 balises seront créées/)).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Créer la leçon'}));
+ await screen.findByRole('button',{name:'Configurer Carte 4'});
+ expect(screen.queryByRole('button',{name:'Configurer Carte 5'})).toBeNull();
+ expect(screen.getAllByText('8 balises')).toHaveLength(4);
+});
