@@ -18,7 +18,7 @@ export function importStudents(text:string,existing:Student[],makeId:()=>string)
 }
 export function csvCell(value:unknown):string {let s=String(value??'');if(/^[\s]*[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';}
 export function exportCSV(data:Data,runs:Run[]):string {
- const rows:unknown[][]=[['ID élève','NOM','Prénom','Classe','Séquence','Séance','Date','Parcours','ID passage','Temps (s)','Temps','Balises fausses','Pénalité (s)','Temps pénalisé (s)','Niveau','Statut']];
+ const rows:unknown[][]=[['ID élève','NOM','Prénom','Classe','Séquence','Séance','Date','Carte','ID passage','Temps (s)','Temps','Balises fausses','Pénalité (s)','Temps pénalisé (s)','Niveau','Statut']];
  for(const r of runs){const s=data.students.find(s=>s.id===r.studentId),session=data.sessions.find(s=>s.id===r.sessionId);if(!s)continue;rows.push([s.id,s.lastName,s.firstName,s.className,data.sequences.find(q=>q.id===session?.sequenceId)?.name,session?.name,session?.date,r.courseSnapshot.name,r.id,r.end===undefined?'':(elapsed(r)/1000).toFixed(1),r.end===undefined?'':formatTime(elapsed(r)),r.errors,r.errors===null?'':r.errors*r.courseSnapshot.penalty,score(r)===null?'':(score(r)!/1000).toFixed(1),level(r),r.end===undefined?'En course':r.errors===null?'À corriger':'Corrigé']);}
  return '\uFEFF'+rows.map(row=>row.map(csvCell).join(';')).join('\r\n');
 }
