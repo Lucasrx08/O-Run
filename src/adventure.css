@@ -214,3 +214,100 @@
 @media print{
  .results-page .results-commandbar,.results-page .results-filterbar,.results-page .results-card-rail,.results-page .results-student-toolbar{display:none!important}
 }
+
+
+/* O'Run – Affichage iPad paysage, cartes et leçons (22/10/2026). */
+.lesson-card-illustrated{position:relative;isolation:isolate;overflow:hidden;background:#fff url('/contours.svg') center center/440px auto;box-shadow:0 4px 0 #e7eddf;transition:transform .18s,box-shadow .18s,border-color .18s}
+.lesson-card-illustrated:before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#ef702c 0%,#568d72 70%,#5d87b1 100%);z-index:1}
+.lesson-card-illustrated:hover{transform:translateY(-3px);box-shadow:0 8px 0 #e3eadd;border-color:#aac9af}
+.lesson-card-illustrated .lesson-card-decor{position:absolute;right:13px;top:22px;pointer-events:none;color:#e3eae0;opacity:.68;z-index:0;display:flex;align-items:center;justify-content:center}
+.lesson-card-illustrated .lesson-card-decor svg{position:absolute;right:7px;top:17px;color:#dae5d7;transform:rotate(-12deg)}
+.lesson-card-illustrated .lesson-card-decor span{position:relative;font-family:'Outfit Variable',sans-serif;font-size:96px;font-weight:800;letter-spacing:-6px;color:#eaf0e8;opacity:.9}
+.lesson-card-illustrated .lesson-card-top,.lesson-card-illustrated .lesson-card-link{position:relative;z-index:2}
+.lesson-card-illustrated .lesson-card-link{display:block}
+.lesson-card-illustrated .lesson-card-link:focus-visible{outline:3px solid #ef702c;outline-offset:5px}
+.lesson-card-illustrated .lesson-card-bottom{position:relative;border-top:1px solid #e6ede3;margin-top:30px}
+.lesson-card-illustrated .lesson-card-bottom .round-open{background:#e7f1e3;color:#4d805b}
+
+/* La création d'une leçon conserve les valeurs par défaut, mais elles sont ajustables. */
+.lesson-setup{margin:14px 0 4px}
+.lesson-setup-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lesson-step-field{min-width:0}
+.lesson-step-field>span{display:block;margin:0 0 9px;font-size:13px;font-weight:800;color:#587b55}
+.lesson-stepper{display:flex;align-items:center;justify-content:space-between;min-height:51px;padding:4px;background:#f6f9f2;border:1px solid #dce7d4;border-radius:13px}
+.lesson-stepper button{flex:0 0 39px;display:flex;align-items:center;justify-content:center;min-height:39px;border:0;border-radius:10px;background:#fff;color:#3d684b;cursor:pointer}
+.lesson-stepper button:disabled{opacity:.28;cursor:default}
+.lesson-stepper input[type=number]{width:60px;min-width:0;min-height:35px;border:0!important;background:transparent!important;box-shadow:none!important;text-align:center;font-variant-numeric:tabular-nums;font-size:23px;font-weight:900;color:#244f39;padding:0!important;-moz-appearance:textfield}
+.lesson-stepper input::-webkit-inner-spin-button,.lesson-stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.lesson-setup-preview{font-size:12px!important;font-weight:700;color:#778e70!important;line-height:1.5;margin:12px 0 3px!important}
+
+/* Afficher toutes les cartes disponibles dans la fenêtre : 6 cartes = 3 × 2 paysage,
+   2 × 3 sur écran étroit, sans scroller lorsque la hauteur le permet. */
+.dialog:has(.picker-map-card)[open]{display:flex;flex-direction:column;width:min(1170px,calc(100vw - 28px));height:min(90dvh,730px);max-height:calc(100dvh - 20px);min-height:0;overflow:hidden;padding:clamp(12px,2vw,23px);border-radius:24px}
+.dialog:has(.picker-map-card) .dialog-head{flex:0 0 auto;min-height:0;gap:12px;margin:0 0 7px;padding:0}
+.dialog:has(.picker-map-card) .dialog-head h2{font-size:clamp(19px,2.5vw,30px);line-height:1.14}
+.dialog:has(.picker-map-card) .dialog-head .icon-button{flex:0 0 42px;min-width:42px;width:42px;height:42px;border:1px solid #d6e5d4}
+.dialog:has(.picker-map-card) .picker-intro{flex:0 0 auto;font-size:12px;margin:0 0 11px;line-height:1.35}
+.dialog:has(.picker-map-card) .course-picker-grid{display:grid!important;flex:1 1 auto;min-height:0;grid-template-columns:repeat(var(--picker-cols,3),minmax(0,1fr))!important;grid-auto-rows:minmax(0,1fr);gap:clamp(7px,1.3vw,14px)!important;margin:0!important;overflow-y:auto;align-content:stretch}
+.dialog:has(.picker-map-card) .picker-map-card{min-width:0;min-height:0!important;height:100%;padding:clamp(9px,1.25vw,16px)!important;border-radius:16px;box-shadow:0 3px 0 #e7eedf}
+.dialog:has(.picker-map-card) .picker-map-card .map-card-top{margin:0}
+.dialog:has(.picker-map-card) .picker-map-card .map-symbol{width:clamp(28px,3.2vw,41px);height:clamp(28px,3.2vw,41px);border-radius:10px}
+.dialog:has(.picker-map-card) .picker-map-card .map-symbol svg{width:clamp(17px,2vw,24px);height:auto}
+.dialog:has(.picker-map-card) .picker-map-card .map-main{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:0;padding:0;position:relative}
+.dialog:has(.picker-map-card) .picker-map-card .map-number{font-size:clamp(40px,6.7vh,76px);top:0;right:4px;letter-spacing:-3px}
+.dialog:has(.picker-map-card) .picker-map-title{font-size:clamp(17px,2.1vw,26px);max-width:80%;line-height:1.12}
+.dialog:has(.picker-map-card) .picker-map-count{font-size:clamp(10px,1.1vw,13px);margin-top:5px}
+.dialog:has(.picker-map-card) .picker-map-action{flex:0 0 auto;min-height:25px;padding-top:7px;margin-top:7px;font-size:clamp(10px,1.1vw,13px)}
+.dialog:has(.picker-map-card) .picker-map-action svg{width:17px}
+.dialog:has(.picker-map-card):has(.picker-map-card:only-child){max-width:560px;height:min(61dvh,450px)}
+.dialog:has(.picker-map-card):not(:has(.picker-map-card:nth-child(5))){height:min(72dvh,520px)}
+.dialog:has(.picker-map-card):has(.picker-map-card:nth-child(5)){height:min(91dvh,710px)}
+
+/* Pas de zone de classement centrée à largeur intrinsèque : tout l'iPad est utilisé. */
+.main-content:has(.results-page){width:100%;max-width:none;padding-inline:clamp(16px,3vw,44px);padding-top:16px;padding-bottom:25px}
+.main-content:has(.results-page) .lesson-heading{margin-bottom:11px}
+.main-content:has(.results-page) .lesson-tabs{margin-bottom:11px}
+.results-page{width:100%;max-width:none;min-width:0}
+.results-page .route-ranking,.results-page .route-correction,.results-page .student-ranking{width:100%;min-width:0;max-width:none;margin-left:0;margin-right:0}
+.results-page .route-ranking .results-table,.results-page .student-ranking .results-table{display:block;width:100%;max-width:none}
+.results-page .route-ranking .table-scroll,.results-page .student-ranking .table-scroll{width:100%;overflow-x:auto}
+.results-page .route-ranking .results-table table,.results-page .student-ranking .results-table table{width:100%;table-layout:auto}
+.results-page .route-ranking .compact-podium{width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;justify-content:stretch}
+.results-page .route-ranking .compact-podium .podium-card{width:100%;min-width:0;padding:15px 20px}
+.results-page .route-ranking .compact-podium strong{font-size:clamp(20px,2vw,28px);line-height:1.15}
+.results-page .route-ranking .compact-podium p{font-size:clamp(12px,1vw,15px)}
+.results-page .route-ranking .route-title{width:100%;margin:4px 0 9px}
+.results-page .route-ranking .route-title h2{font-size:clamp(20px,2vw,27px)}
+.results-page .route-ranking .results-table th,.results-page .route-ranking .results-table td{font-size:clamp(12px,1.04vw,16px);padding:clamp(9px,1.1vw,15px)}
+.results-page .route-ranking .results-table th{font-size:clamp(11px,.88vw,13px)}
+.results-page .results-commandbar,.results-page .results-filterbar{margin-bottom:8px}
+.results-page .results-card-rail{margin-bottom:7px;padding-bottom:8px}
+.results-page .podium-grid.compact-podium{max-width:none}
+.results-page .correction-grid{display:grid;width:100%;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),310px));gap:14px;justify-content:center;align-content:start;margin-inline:auto}
+.results-page .correction-profile{width:100%;min-width:0;min-height:150px}
+.results-page .route-correction .route-title{justify-content:center;gap:9px 18px}
+.results-page .route-correction .route-title>span{font-size:12px}
+.results-page .pupil-correction-grid{justify-content:center;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))}
+@media (max-width:680px){
+ .lesson-setup-fields{gap:10px}
+ .lesson-step-field>span{font-size:12px}
+ .lesson-stepper button{flex-basis:33px;min-height:35px}
+ .dialog:has(.picker-map-card)[open]{width:calc(100vw - 14px);max-height:calc(100dvh - 14px);height:min(94dvh,650px);padding:12px}
+ .dialog:has(.picker-map-card) .course-picker-grid{grid-template-columns:repeat(min(2,var(--picker-cols,3)),minmax(0,1fr))!important;gap:8px!important}
+ .dialog:has(.picker-map-card) .picker-map-card{padding:10px!important}
+ .dialog:has(.picker-map-card) .picker-map-card .map-symbol{width:28px;height:28px}
+ .dialog:has(.picker-map-card) .picker-map-card .map-number{font-size:clamp(37px,7vh,64px)}
+ .dialog:has(.picker-map-card) .picker-map-action{font-size:10px}
+ .results-page .correction-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+ .results-page .route-ranking .compact-podium{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+}
+@media (max-height:700px) and (min-width:681px){
+ .dialog:has(.picker-map-card)[open]{height:calc(100dvh - 14px);padding:10px 16px}
+ .dialog:has(.picker-map-card) .picker-map-card .map-main{justify-content:center}
+ .dialog:has(.picker-map-card) .picker-map-card .map-symbol{width:28px;height:28px}
+ .dialog:has(.picker-map-card) .picker-map-card .map-number{font-size:45px}
+ .results-page .compact-podium .podium-card{min-height:0}
+}
+@media print{
+ .results-page .route-ranking,.results-page .route-correction,.results-page .student-ranking{width:100%}
+}

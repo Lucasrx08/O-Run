@@ -7,10 +7,12 @@ export function createClass(d:Data,name:string,makeId=uid,color=mapColors[0]):Da
 export function newMap(i:number,makeId=uid):Course{return {id:makeId(),name:`Carte ${i}`,color:mapColors[(i-1)%mapColors.length],controls:6,distance:1000,penalty:0,difficulty:'Découverte',rubric:{enabled:false,thresholds:[600,780,960],maxErrors:[0,1,3]}};}
 export interface LessonTemplate{name:string;courses:Course[];}
 export function copyLesson(d:Data,s:Session):LessonTemplate{return {name:s.name,courses:s.courseIds.map(id=>d.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c).map(c=>structuredClone(c))};}
-export function createLesson(d:Data,className:string,name:string,date:string,template?:LessonTemplate,makeId=uid):{data:Data;session:Session}{
+export interface NewLessonOptions {cards:number;controls:number;}
+export function createLesson(d:Data,className:string,name:string,date:string,template?:LessonTemplate,makeId=uid,options:NewLessonOptions={cards:6,controls:6}):{data:Data;session:Session}{
  if(!classNames(d).includes(className))throw new Error('Classe introuvable.');if(!name.trim()||!date)throw new Error('Indiquez un nom et une date.');
  let q=d.sequences.find(q=>q.classes.length===1&&q.classes[0]===className&&!q.archived);if(!q)q={id:makeId(),name:className,period:'',objectives:'',classes:[className],archived:false};
- const courses=template?template.courses.map(c=>({...structuredClone(c),familyId:c.familyId||c.id,id:makeId()})):Array.from({length:6},(_,i)=>newMap(i+1,makeId));
+ if(!template&&(!Number.isInteger(options.cards)||options.cards<1||options.cards>30||!Number.isInteger(options.controls)||options.controls<1||options.controls>60))throw new Error('Choisissez entre 1 et 30 cartes et entre 1 et 60 balises par carte.');
+ const courses=template?template.courses.map(c=>({...structuredClone(c),familyId:c.familyId||c.id,id:makeId()})):Array.from({length:options.cards},(_,i)=>({...newMap(i+1,makeId),controls:options.controls}));
  const session:Session={id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className).map(p=>p.id)};
  return {data:{...d,sequences:d.sequences.some(x=>x.id===q!.id)?d.sequences:[...d.sequences,q],courses:[...d.courses,...courses],sessions:[...d.sessions,session]},session};
 }
