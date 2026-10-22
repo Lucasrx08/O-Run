@@ -16,10 +16,10 @@ Deux onglets distincts : **Correction** et **Classement**. La correction affiche
 
 Dans Classement, choisir **cette leçon** ou **toutes les leçons**, puis l’une des quatre vues :
 
-- **Général** : nombre de cartes effectuées et corrigées décroissant, total de bonnes balises décroissant, puis temps moyen croissant.
-- **Par parcours** : bonnes balises décroissantes, puis temps brut croissant ; meilleur passage par élève.
-- **Balises** : total de bonnes balises décroissant, puis temps moyen croissant.
-- **Par élève** : détail de ses parcours, bonnes balises, balises fausses ou manquantes et temps.
+- **Général** : nombre de cartes effectuées et corrigées décroissant, total de balises correctes décroissant, puis temps moyen croissant.
+- **Par carte** : balises correctes décroissantes, puis temps brut croissant ; meilleur passage par élève.
+- **Balises** : total de balises correctes décroissant, puis temps moyen croissant.
+- **Par élève** : détail de ses cartes, balises correctes, balises fausses et temps.
 
 Pour valoriser les cartes différentes, une carte ne compte qu’une fois par élève et par leçon ; une répétition retient le meilleur passage corrigé. Les absences et cartes non tentées ne produisent aucun zéro. Les résultats non corrigés ne reçoivent ni rang ni couleur de zéro.
 
