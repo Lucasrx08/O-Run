@@ -116,3 +116,101 @@
  .wave-next-card{padding:12px;border-radius:19px}
 }
 @media print{.result-selector,.card-filter,.wave-focus{display:none!important}}
+
+
+/* O'Run V2 — Navigation compacte et cartes fidèles à la page « Les cartes ». */
+:root{--orun-ink:#193c2f;--orun-green:#285b41;--orun-border:#dbe6d4}
+
+/* Navigation de leçon : une barre nette, sans boutons surdimensionnés. */
+.main-content:has(.results-page) .lesson-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:5px;margin:0 0 14px;width:fit-content;max-width:100%;border:1px solid var(--orun-border);background:#edf3e7;border-radius:17px}
+.main-content:has(.results-page) .lesson-tabs button{min-height:45px;padding:9px 18px;border-radius:12px;font-size:14px;font-weight:800;white-space:nowrap}
+.main-content:has(.results-page) .lesson-tabs button.active{background:#fff;box-shadow:0 2px 8px #28483214;color:var(--orun-green)}
+.main-content:has(.results-page) .lesson-heading{margin-bottom:16px}
+.main-content:has(.results-page){padding-top:17px}
+.results-page{display:flex;flex-direction:column;gap:0}
+.results-page .results-commandbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:10px 13px;margin:0 0 12px;background:#fff;border:1px solid var(--orun-border);border-radius:20px;box-shadow:0 3px 0 #eaf0e5}
+.results-page .primary-results-tabs{display:flex!important;width:auto;max-width:100%;flex:0 0 auto;gap:6px;background:transparent;margin:0;padding:0;border:0}
+.results-page .primary-results-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;min-width:135px;min-height:44px;border:1px solid #dce8d7;border-radius:12px;padding:10px 17px;background:#f6f9f2;color:#587252;font-weight:850;font-size:14px;box-shadow:none}
+.results-page .primary-results-tabs button.active{background:var(--orun-green);border-color:var(--orun-green);color:#fff;box-shadow:0 3px 0 #194931}
+.results-page .primary-results-tabs button span{display:inline-flex;align-items:center;justify-content:center;min-width:21px;min-height:21px;padding:2px 5px;background:#ffffff26;border-radius:8px;font-size:11px}
+.results-page .list-toolbar{display:flex;justify-content:flex-end!important;align-items:center;gap:8px;margin:0;padding:0;min-width:0;flex:1}
+.results-page .list-toolbar .head-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:0;flex-wrap:wrap}
+.results-page .list-toolbar .icon-button{min-width:44px;width:44px;height:44px;padding:9px;border-radius:12px;background:#f5f8f0;border:1px solid #e2eadd;color:#557a63}
+.results-page .list-toolbar .button{min-height:44px;padding:9px 15px;border-radius:12px;font-size:13px;font-weight:800;box-shadow:none}
+.results-page .list-toolbar .button.primary{box-shadow:0 3px 0 #b65b24}
+.results-page .results-filterbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 18px;padding:9px 12px;margin:0 0 11px;border:1px solid var(--orun-border);border-radius:17px;background:#f0f5eb;min-width:0}
+.results-page .results-filterbar .results-views,.results-page .results-filterbar .results-scope{display:flex;flex-wrap:wrap;gap:5px;margin:0;padding:0;background:transparent;border:0;width:auto;vertical-align:middle}
+.results-page .results-filterbar .results-views button,.results-page .results-filterbar .results-scope button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:39px;padding:8px 13px;border:1px solid transparent;background:transparent;border-radius:10px;color:#5c7961;box-shadow:none;font-size:13px;font-weight:850;white-space:nowrap}
+.results-page .results-filterbar .results-views button.active{background:#fff;color:#225539;border-color:#e0e8da;box-shadow:0 2px 5px #23432912}
+.results-page .results-filterbar .results-scope{border-right:1px solid #ceddca;padding-right:13px;margin-right:auto}
+.results-page .results-filterbar .results-scope button{border-color:#d6e3d0;background:#ffffffa8;min-width:112px}
+.results-page .results-filterbar .results-scope button.active{background:var(--orun-green);border-color:var(--orun-green);color:white}
+.results-page .results-filterbar .queue-tabs{display:flex;justify-content:flex-end;gap:5px;margin:0 0 0 auto;flex-wrap:wrap}
+.results-page .results-filterbar .queue-tabs button{display:flex;align-items:center;gap:7px;min-height:39px;padding:7px 11px;border:1px solid #dce8d5;border-radius:10px;font-size:12px;font-weight:850;box-shadow:none;background:#fff;color:#648064}
+.results-page .results-filterbar .queue-tabs button.active{color:white;border-color:var(--orun-green);background:var(--orun-green)}
+.results-page .results-filterbar .queue-tabs span{margin:0;font-size:11px;opacity:.84}
+.results-page .results-card-rail{display:flex;align-items:center;gap:8px;max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:5px 2px 11px;margin:0 0 12px;scrollbar-width:thin}
+.results-page .results-card-rail .rail-caption{color:#667e68;font-weight:900;font-size:12px;letter-spacing:.04em;margin-right:6px;flex:0 0 auto}
+.results-page .results-card-rail button{--card-color:#eb7834;scroll-snap-align:start;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:45px;padding:10px 15px;background:#fff;border:1.5px solid #dce6d7;border-radius:12px;color:#405e49;font-size:14px;font-weight:850;white-space:nowrap;box-shadow:0 2px 0 #e9efe3;transition:background .15s,border-color .15s,transform .15s}
+.results-page .results-card-rail button i{display:block;flex:0 0 10px;width:10px;height:10px;border-radius:4px;background:var(--card-color)}
+.results-page .results-card-rail button small{display:inline-flex;align-items:center;justify-content:center;background:#eef2e9;border-radius:7px;padding:2px 6px;font-size:11px;color:#657b5e}
+.results-page .results-card-rail button.active{background:color-mix(in srgb,var(--card-color) 12%,white);color:#234534;border-color:var(--card-color);box-shadow:0 3px 0 color-mix(in srgb,var(--card-color) 38%,white)}
+.results-page .results-card-rail button:hover:not(.active){border-color:var(--card-color);transform:translateY(-1px)}
+.results-page .results-card-rail button:focus-visible{outline:3px solid var(--card-color);outline-offset:2px}
+.results-page .results-student-toolbar{display:flex;align-items:center;gap:11px;justify-content:flex-start;flex-wrap:wrap;margin:3px 0 16px}
+.results-page .results-student-toolbar .search{width:min(340px,100%);max-width:100%;margin:0;min-height:44px}
+.results-page .results-student-select{display:flex;align-items:center;gap:9px;min-width:0;font-size:12px;font-weight:850;color:#537458}
+.results-page .results-student-select select{min-height:44px;min-width:200px;max-width:min(330px,100%);padding:9px 12px;border:1px solid #d5e3cf;border-radius:12px;background:#fff;color:#244d39;font-size:14px;font-weight:800}
+.results-page .route-ranking,.results-page .route-correction,.results-page .student-ranking{margin-top:4px}
+.results-page .route-title{margin-bottom:12px}
+.results-page .results-table{margin-top:8px}
+
+/* Redépart : on retrouve exactement le vocabulaire graphique des tuiles de l'écran Les cartes. */
+.dialog:has(.picker-map-card){width:min(900px,calc(100vw - 32px));max-height:min(88dvh,800px);padding:clamp(18px,2.5vw,32px);border-radius:27px;background:#fff;overflow-y:auto;margin:auto}
+.dialog:has(.picker-map-card) .dialog-head{margin-bottom:10px}
+.dialog:has(.picker-map-card) .dialog-head h2{font-size:clamp(23px,2.5vw,32px);color:var(--orun-ink);line-height:1.15}
+.dialog:has(.picker-map-card) .picker-intro{font-size:14px;color:#71836e;margin:8px 0 17px;line-height:1.5}
+.dialog:has(.picker-map-card) .course-picker-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:17px;margin:0;max-height:none;overflow:visible}
+.dialog:has(.picker-map-card) .picker-map-card{display:flex!important;flex-direction:column;align-items:stretch;justify-content:space-between;text-align:left;width:100%;min-height:218px;padding:24px!important;position:relative;overflow:hidden;border:1px solid #dee8d7;border-radius:21px;background:#fff url('/contours.svg') right top/370px;box-shadow:0 4px 0 #e7eedf;transition:transform .16s,border-color .16s,box-shadow .16s}
+.dialog:has(.picker-map-card) .picker-map-card:before{left:0;right:0;top:0;height:5px;background:var(--card-color);border-radius:0}
+.dialog:has(.picker-map-card) .picker-map-card .map-card-top{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;position:relative;z-index:1}
+.dialog:has(.picker-map-card) .picker-map-card .map-symbol{width:46px;height:46px;border:1px solid color-mix(in srgb,var(--card-color) 15%,white);border-radius:14px;background:#fff;color:var(--card-color)}
+.dialog:has(.picker-map-card) .picker-map-card .map-main{display:block;position:relative;min-height:95px;padding:10px 0 0;width:100%;z-index:0}
+.dialog:has(.picker-map-card) .picker-map-card .map-number{font-size:clamp(64px,6vw,85px);line-height:1;right:5px;top:-18px;letter-spacing:-4px;color:color-mix(in srgb,var(--card-color) 12%,white);font-weight:750;pointer-events:none}
+.dialog:has(.picker-map-card) .picker-map-title{display:block;position:relative;max-width:78%;font-family:'Outfit Variable',sans-serif;font-size:clamp(22px,2.4vw,29px);letter-spacing:-.5px;font-weight:750;color:var(--orun-ink);line-height:1.12;overflow-wrap:anywhere}
+.dialog:has(.picker-map-card) .picker-map-count{display:block;position:relative;margin-top:13px;color:#718667;font-size:13px;font-weight:850}
+.dialog:has(.picker-map-card) .picker-map-action{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #e8eee2;padding-top:13px;margin-top:13px;color:color-mix(in srgb,var(--card-color) 75%,#194630);font-size:12px;font-weight:850}
+.dialog:has(.picker-map-card) .picker-map-action svg{flex-shrink:0}
+.dialog:has(.picker-map-card) .picker-map-card:hover{transform:translateY(-3px);border-color:var(--card-color);box-shadow:0 7px 0 color-mix(in srgb,var(--card-color) 20%,white)}
+.dialog:has(.picker-map-card) .picker-map-card:focus-visible{outline:3px solid var(--card-color);outline-offset:3px}
+.dialog:has(.picker-map-card) .picker-map-card:disabled{opacity:.6;transform:none;cursor:wait}
+@media(max-width:1000px){
+ .results-page .results-filterbar .results-scope{margin-right:0}
+ .results-page .results-ranking-filters{justify-content:flex-start}
+ .results-page .results-filterbar .results-views{flex:1 1 auto}
+}
+@media(max-width:650px){
+ .main-content:has(.results-page) .lesson-tabs{width:100%;justify-content:center}
+ .main-content:has(.results-page) .lesson-tabs button{flex:1 1 auto;min-width:0;padding:9px}
+ .results-page .results-commandbar{padding:10px;gap:10px;justify-content:center}
+ .results-page .primary-results-tabs{width:100%;justify-content:stretch}
+ .results-page .primary-results-tabs button{flex:1;min-width:0}
+ .results-page .list-toolbar{flex:none;width:100%;justify-content:center!important}
+ .results-page .list-toolbar .head-actions{justify-content:center}
+ .results-page .results-filterbar{padding:8px;gap:8px}
+ .results-page .results-filterbar .results-views{width:100%;justify-content:space-evenly}
+ .results-page .results-filterbar .results-views button{flex:1}
+ .results-page .results-filterbar .queue-tabs{width:100%;justify-content:space-between}
+ .results-page .results-filterbar .queue-tabs button{flex:1;justify-content:center;padding-inline:5px}
+ .results-page .results-filterbar .results-scope{width:100%;border-right:0;padding-right:0;justify-content:center}
+ .results-page .results-filterbar .results-scope button{flex:1;min-width:0}
+ .results-page .results-student-toolbar .search{width:100%}
+ .results-page .results-student-select{width:100%;justify-content:space-between}
+ .results-page .results-student-select select{flex:1;min-width:0}
+ .dialog:has(.picker-map-card){max-height:92dvh;padding:16px}
+ .dialog:has(.picker-map-card) .course-picker-grid{grid-template-columns:1fr!important;gap:12px}
+ .dialog:has(.picker-map-card) .picker-map-card{min-height:190px;padding:18px!important}
+}
+@media print{
+ .results-page .results-commandbar,.results-page .results-filterbar,.results-page .results-card-rail,.results-page .results-student-toolbar{display:none!important}
+}
