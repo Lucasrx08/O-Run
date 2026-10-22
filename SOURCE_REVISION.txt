@@ -1,0 +1,2 @@
+Import de la version O’Run validée par 107 tests.
+Source originale : fd78dca195d5ca50117bb9b1d5196c38ae486564
