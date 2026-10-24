@@ -18,7 +18,7 @@ export default function App(){
  const currentClass=className&&classNames(s.data).includes(className)?className:inferredClass,active=s.data.runs.filter(r=>r.end===undefined);
  const workMode=s.role==='departure'?'departures':s.role==='arrival'?'arrivals':s.mode;
  const field=teacher?(lessonView?(workMode==='control'?'results':['departures','arrivals'].includes(workMode)?'field':lessonView):null):'field';
- const postLabel=workMode==='arrivals'?'Poste d’arrivée':workMode==='departures'?'Poste de départ':workMode==='control'?'Poste de pilotage':'';
+ const postLabel=s.offline?.post==='A'||s.offline?.post==='B'?`iPad ${s.offline.post} · ${s.offline.studentIds.length} élèves`:s.offline?.post==='C'?'Poste C · Corrections':workMode==='arrivals'?'Poste d’arrivée':workMode==='departures'?'Poste de départ':workMode==='control'?'Poste de pilotage':'';
  useEffect(()=>{const prevent=(e:Event)=>e.preventDefault();const touch=(e:TouchEvent)=>{if(e.touches.length>1)e.preventDefault();};document.addEventListener('gesturestart',prevent,{passive:false});document.addEventListener('gesturechange',prevent,{passive:false});document.addEventListener('touchmove',touch,{passive:false});return()=>{document.removeEventListener('gesturestart',prevent);document.removeEventListener('gesturechange',prevent);document.removeEventListener('touchmove',touch);};},[]);
  const home=()=>{setClassName(null);setLessonView(null);s.go('home');};
  const openClass=(n:string)=>{setClassName(n);setLessonView(null);setTab(s.data.students.some(p=>p.className===n)?'lessons':'students');s.go('home');};

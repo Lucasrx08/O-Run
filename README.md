@@ -8,7 +8,7 @@ L’accueil présente les classes. Créer une classe, choisir sa couleur, ajoute
 
 Les départs simultanés ou par vagues utilisent de grandes tuiles. Toucher un prénom arrête le chrono ; toucher la tuile arrivée puis une carte restante relance un passage. Le poste départ n’affiche que les élèves disponibles, l’arrivée les chronos actifs, le pilotage les corrections, et le mode complet toutes les fonctions. Affichage terrain : prénom et initiale du nom.
 
-**Mode local opérationnel.** Le bandeau indique « Local » tant qu’aucun espace partagé n’est rejoint. Une nouvelle installation démarre vide. Les données déjà présentes ne sont pas effacées ; les exemples peuvent être chargés explicitement dans les réglages.
+**Mode local uniquement.** O’Run n’utilise plus de synchronisation serveur. Une nouvelle installation démarre vide ; les données existantes restent enregistrées sur leur appareil. Le stockage local peut être protégé par une phrase secrète depuis Mon poste.
 
 ## Correction et classement
 
@@ -27,7 +27,7 @@ Toutes les colonnes sont triables ; les rangs officiels restent ceux du classeme
 
 Couleurs iDoceo (reprises de la référence fournie) :
 
-| Niveau couleur | Cartes | Balises fausses / manquantes |
+| Niveau couleur | Cartes | Balises fausses |
 |---|---|---|
 | Vert | 4 ou plus | 0 |
 | Jaune | 3 | 1–2 |
@@ -36,13 +36,21 @@ Couleurs iDoceo (reprises de la référence fournie) :
 
 Ces repères de participation et de précision sont distincts des niveaux d’évaluation d’un barème. Le CSV iDoceo contient les deux repères séparés, sans inventer une note globale. Le PDF comporte le nom de classe en grand, la leçon ou la dernière leçon comptabilisée, le décor d’orientation et les couleurs ; aucun en-tête générique ni pied de page de navigateur n’y est ajouté. Le bouton d’impression prépare ce PDF à imprimer.
 
-## Connecter plusieurs appareils
+## Séance hors ligne sur trois appareils
 
-Un serveur Supabase dédié est nécessaire. **Il n’a pas pu être créé lors de cette mise à jour : le compte a déjà ses deux projets gratuits actifs (AS Bon Sauveur et Gestion Cross).** Aucun de ces projets n’a été modifié, arrêté ou supprimé.
+Depuis **Réglages → Appareils**, choisir une leçon sur le Mac ou l’iPad central (poste **C**). O’Run partage les élèves en deux moitiés équilibrées dans l’ordre alphabétique des noms ; chaque élève peut être déplacé manuellement avant validation.
 
-Quand un emplacement de projet est disponible : installer le schéma `supabase/schema.sql` sur un projet dédié en région UE, créer les comptes autorisés, puis renseigner l’URL et la clé **publishable** dans **Réglages → Appareils** de chaque appareil. Les variables Vite équivalentes sont aussi supportées. Ne jamais renseigner une clé secrète ou service_role dans le client.
+1. Configurer C puis envoyer par **AirDrop** la préparation « A » au premier iPad et « B » au second.
+2. Sur chaque iPad, importer le fichier reçu depuis **Appareils**. L’iPad ne reçoit que les élèves de son groupe, affichés avec leur prénom et l’initiale du nom, et chronomètre leurs départs, arrivées et redéparts.
+3. Sur C, corriger les cartons de contrôle au fur et à mesure : sélectionner l’élève, sa carte et le numéro de passage, puis saisir **uniquement le nombre de balises fausses**. Les chronos ne sont pas nécessaires à ce stade.
+4. En fin de séance, arrêter tous les chronos sur A et B et choisir **Envoyer les chronos à C**. Le fichier de chronos chiffré est partagé manuellement par AirDrop, sans synchronisation automatique. Si le partage système n'est pas disponible, le fichier est téléchargé et peut être envoyé depuis l'application Fichiers.
+5. Sur C, importer les deux fichiers reçus. Les résultats sont associés grâce aux identifiants de leçon, élève, carte et numéro de passage. Les réimportations identiques ne créent aucun doublon ; les fichiers incohérents sont refusés.
 
-L’enseignant doit chiffrer le stockage local avant sa connexion, partager les classes et leçons, puis autoriser les comptes départs/arrivées. Les comptes doivent rejoindre le même espace. L’interface seule et GitHub ne synchronisent pas les données. Les règles SQL contrôlent les droits et réduisent les noms transmis aux postes. Le serveur est préparé pour plusieurs leçons d’un même espace ; il reste à installer et à tester sur le projet réel.
+**Le mode appareil unique est conservé.** Le scanner de cartons poinçonnés est une piste future et ne fait pas partie de ce mode.
+
+**Protection des données :** la préparation initiale contient uniquement les prénoms et initiales nécessaires aux tablettes ; le fichier de chronos utilise un chiffrement AES-GCM propre à la séance. Les fichiers de préparation doivent néanmoins être conservés dans un emplacement protégé et supprimés une fois importés. AirDrop est un transfert manuel entre appareils Apple, pas une synchronisation. La validation RGPD du traitement et la sécurité des appareils restent à organiser avec l’établissement.
+
+L'ancien code de serveur situé dans `supabase/` et les anciens tests de connexion sont conservés uniquement comme références historiques : l’interface courante ne propose plus de connexion à ce service.
 
 ## Développer et publier
 

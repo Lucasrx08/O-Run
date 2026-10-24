@@ -1,7 +1,9 @@
 import {apply} from '../domain/engine';
 import {demo,emptyData} from '../domain/demo';
 import type {Command,Data,Role} from '../domain/types';
-export interface Workspace {data:Data;pending:Command[];room:string|null;role?:Role;}
+import type {OfflineConfig} from '../domain/types';
+import {importSessionPack as combineSession,mergeTimes as combineTimes,type TimesPack} from '../domain/offline';
+export interface Workspace {data:Data;pending:Command[];room:string|null;role?:Role;offline?:OfflineConfig;}
 interface RecordValue {revision:number;payload?:Workspace;cipher?:ArrayBuffer;iv?:Uint8Array;salt?:Uint8Array;}
 let dbPromise:Promise<IDBDatabase>|null=null;let key:CryptoKey|null=null;let keySalt:Uint8Array|undefined;
 export class LockedError extends Error {constructor(){super('Cet espace est verrouillé.');}}
@@ -13,7 +15,20 @@ async function encode(w:Workspace,revision:number):Promise<RecordValue>{if(!key)
 async function cas(expected:number,record:RecordValue){const d=await db();return new Promise<boolean>((resolve,reject)=>{const tx=d.transaction('workspace','readwrite');const s=tx.objectStore('workspace');const q=s.get('main');let saved=false;q.onsuccess=()=>{if((q.result?.revision??-1)===expected){s.put(record,'main');saved=true;}};tx.oncomplete=()=>resolve(saved);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error??new Error('Enregistrement interrompu.'));});}
 export async function mutate(fn:(w:Workspace)=>Workspace):Promise<Workspace>{for(let i=0;i<8;i++){const old=await readRecord();const w=old?await decode(old):{data:emptyData(),pending:[],room:null};const next=fn(w);const record=await encode(next,(old?.revision??-1)+1);if(await cas(old?.revision??-1,record))return next;}throw new Error('Le stockage est occupé par un autre onglet. Réessayez.');}
 export async function loadWorkspace(){const r=await readRecord();return r?decode(r):mutate(w=>w);}
-export async function execute(command:Command,role:Role='teacher'){return mutate(w=>{const next=apply(w.data,command,w.room?(w.role??'arrival'):role);return {...w,data:next,pending:next===w.data?w.pending:w.room?[...w.pending,command]:[]};});}
+export async function execute(command:Command,role:Role='teacher'){return mutate(w=>{const next=apply(w.data,command,role);return {...w,data:next,room:null,pending:w.pending};});}
+export async function setOfflineConfig(offline:OfflineConfig){
+ return mutate(w=>({...w,room:null,offline}));
+}
+export async function importOfflineSession(pack:unknown){
+ return mutate(w=>{const result=combineSession(w.data,pack);return {...w,data:result.data,room:null,offline:result.config};});
+}
+export async function mergeOfflineTimes(pack:TimesPack){
+ let outcome={added:0,matched:0,withoutCorrection:0};
+ const workspace=await mutate(w=>{if(!w.offline)throw new Error('Configurez d’abord le poste C.');const result=combineTimes(w.data,w.offline,pack);
+  outcome={added:result.added,matched:result.matched,withoutCorrection:result.withoutCorrection};
+  return {...w,data:result.data,room:null,offline:{...w.offline,importedPosts:[...new Set([...(w.offline.importedPosts||[]),pack.post])]}};});
+ return {workspace,...outcome};
+}
 export async function acceptServer(room:string,data:Data,role:Role,exportedIds:string[]){return mutate(w=>{if(w.room!==room)throw new Error('L’espace partagé a changé.');if(w.pending.some(c=>!exportedIds.includes(c.id)))throw new Error('De nouvelles opérations ont été enregistrées. Exportez à nouveau avant de reprendre l’état serveur.');return {data,pending:[],room,role};});}
 export async function unlock(password:string){const r=await readRecord();if(!r?.salt)throw new Error('Aucun espace chiffré.');keySalt=r.salt;key=await derive(password,keySalt);return decode(r);}
 export async function protect(password:string){if(password.length<12)throw new Error('Utilisez au moins 12 caractères.');const w=await loadWorkspace();const old=await readRecord();keySalt=crypto.getRandomValues(new Uint8Array(16));key=await derive(password,keySalt);if(!await cas(old!.revision,await encode(w,old!.revision+1))){key=null;throw new Error('Le stockage a changé. Réessayez.');}}

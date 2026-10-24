@@ -51,11 +51,26 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   for(const s of cmd.students) check(s.firstName.trim()&&s.lastName.trim()&&s.className.trim(),'Prénom, nom et classe sont obligatoires.');
   for(const s of cmd.sessions) check(cmd.sequences.some(q=>q.id===s.sequenceId)&&s.studentIds.every(id=>cmd.students.some(p=>p.id===id))&&s.courseIds.every(id=>cmd.courses.some(c=>c.id===id)),'Séance incohérente.');
   for(const r of next.runs)check(cmd.students.some(s=>s.id===r.studentId)&&cmd.sessions.some(s=>s.id===r.sessionId),'Supprimez les résultats associés avant de supprimer cet élève ou cette séance.');
-  next.students=cmd.students;next.sequences=cmd.sequences;next.sessions=cmd.sessions;next.courses=cmd.courses;detail=cmd.detail;
+  next.students=cmd.students;next.sequences=cmd.sequences;next.sessions=cmd.sessions;next.courses=cmd.courses;
+  next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>cmd.students.some(s=>s.id===c.studentId)&&cmd.sessions.some(s=>s.id===c.sessionId&&s.courseIds.includes(c.courseId)&&s.studentIds.includes(c.studentId)));
+  detail=cmd.detail;
  }else if(cmd.kind==='deleteClass'){
   check(cmd.baseVersion===data.version,'La classe a changé sur un autre poste. Réessayez.');Object.assign(next,removeClass(next,cmd.className));detail=`Classe supprimée : ${cmd.className}`;
  }else if(cmd.kind==='purge') {
-  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);detail='Résultats de la séance supprimés';
+  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);detail='Résultats de la séance supprimés';
+ }else if(cmd.kind==='offlineCorrect'){
+  const session=next.sessions.find(s=>s.id===cmd.sessionId);
+  const course=next.courses.find(c=>c.id===cmd.courseId);
+  check(!!session&&!!course&&session.courseIds.includes(course.id)&&session.studentIds.includes(cmd.studentId),'Élève ou carte absent de cette leçon.');
+  check(Number.isInteger(cmd.attempt)&&cmd.attempt>=1&&cmd.attempt<=50,'Numéro de passage invalide.');
+  check(Number.isInteger(cmd.errors)&&cmd.errors>=0&&cmd.errors<=course.controls,'Nombre de balises fausses invalide.');
+  const corrections=next.offlineCorrections||[];
+  const previous=corrections.find(c=>c.sessionId===cmd.sessionId&&c.studentId===cmd.studentId&&c.courseId===cmd.courseId&&c.attempt===cmd.attempt);
+  next.offlineCorrections=[...corrections.filter(c=>c!==previous),{id:previous?.id||cmd.id,at:cmd.at,sessionId:cmd.sessionId,studentId:cmd.studentId,courseId:cmd.courseId,attempt:cmd.attempt,errors:cmd.errors}];
+  const matching=next.runs.filter(r=>r.sessionId===cmd.sessionId&&r.studentId===cmd.studentId&&r.courseId===cmd.courseId&&r.end!==undefined).sort((a,b)=>a.start-b.start||a.id.localeCompare(b.id));
+  const run=matching[cmd.attempt-1];
+  if(run){run.errors=cmd.errors;run.revision++;}
+  detail=`Correction carton · passage ${cmd.attempt} · ${cmd.errors} balise(s) fausse(s)`;
  }else{
   const run=next.runs.find(r=>r.id===cmd.runId);check(run,'Passage introuvable.');
   const paused=run.pauses.at(-1)?.end===undefined&&run.pauses.length>0;
