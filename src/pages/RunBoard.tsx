@@ -9,9 +9,9 @@ import {drift,now} from '../services/clock';
 import {Dialog,Empty} from '../components/ui';
 
 export function RunBoard({session,className}:{session:Session;className:string}){
- const s=useStore(),time=useNow(),pupils=lessonStudents(s.data,session,className),labels=studentLabels(s.data.students);
+ const s=useStore(),time=useNow(),pupils=lessonStudents(s.data,session,className).filter(p=>(s.offline?.post!=='A'&&s.offline?.post!=='B')||s.offline.sessionId!==session.id||s.offline.studentIds.includes(p.id)),labels=studentLabels(s.data.students);
  const courses=session.courseIds.map(id=>s.data.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c);
- const workMode=s.role==='arrival'?'arrivals':s.role==='departure'?'departures':s.mode;
+ const workMode=s.offline?.sessionId===session.id&&(s.offline.post==='A'||s.offline.post==='B')?'complet':s.role==='arrival'?'arrivals':s.role==='departure'?'departures':s.mode;
  const completed=(id:string)=>new Set(s.data.runs.filter(r=>r.studentId===id&&r.sessionId===session.id&&r.end!==undefined).map(r=>r.courseId));
  const remaining=(id:string)=>courses.filter(c=>!completed(id).has(c.id));
  const canStart=workMode!=='arrivals'&&workMode!=='control',canStop=workMode!=='departures'&&workMode!=='control';
