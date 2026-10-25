@@ -1,7 +1,7 @@
 import {describe,it,expect} from 'vitest';
 import {createClass,addClassStudents,createLesson} from '../src/domain/classroom';
 import {emptyData} from '../src/domain/demo';
-import {apply} from '../src/domain/engine';
+import {apply,elapsed,parseTime} from '../src/domain/engine';
 import {alphabeticalStudents,splitAlphabetical,createSessionPack,importSessionPack,exportTimes,mergeTimes} from '../src/domain/offline';
 import type {Data,OfflineConfig,Student} from '../src/domain/types';
 import {openTimes,sealTimes} from '../src/services/offlineTransfer';
@@ -54,6 +54,10 @@ describe('Séance hors ligne A/B/C',()=>{
   const again=mergeTimes(merged.data,central,packet);
   expect(again.added).toBe(0);expect(again.data.runs).toHaveLength(1);
   expect(again.data.offlineCorrections).toEqual(corrected.offlineCorrections);
+  const retouched=apply(again.data,{kind:'offlineCorrect',id:'correction-time',at:480000,sessionId:session.id,studentId,courseId,attempt:1,errors:1,milliseconds:84500});
+  expect(retouched.runs[0].errors).toBe(1);
+  expect(elapsed(retouched.runs[0])).toBe(84500);
+  expect(retouched.audit.at(-1)?.detail).toContain('Chrono rectifié');
  });
  it('rejette les fichiers mal affectés et les chronos modifiés',()=>{
   const {data,session}=fixture(),split=splitAlphabetical(data,session.id);
@@ -71,4 +75,10 @@ describe('Séance hors ligne A/B/C',()=>{
   expect(await openTimes(sealed,c)).toEqual(pack);
   await expect(openTimes(sealed,{...c,transferKey:'cd'.repeat(32)})).rejects.toThrow(/déchiffrer/);
  });
+});
+it('corrige les temps saisis en minutes:secondes et rejette les valeurs invalides',()=>{
+ expect(parseTime('01:24.5')).toBe(84500);expect(parseTime('1:24,5')).toBe(84500);
+ expect(parseTime('13.2')).toBe(13200);
+ expect(()=>parseTime('01:75')).toThrow();
+ expect(()=>parseTime('abc')).toThrow();
 });

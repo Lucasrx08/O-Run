@@ -50,7 +50,55 @@ it('vagues espacées, suspension et reprise sans redépart des élèves déjà p
  const runs=(await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id);expect(new Set(runs.map(r=>r.studentId)).size).toBe(3);expect(runs[2].start-runs[1].start).toBeGreaterThanOrEqual(5000);
 });
 it('importe une liste sans colonne Classe dans la classe ouverte',async()=>{
- await prepared();render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('tab',{name:/Élèves/}));fireEvent.click(screen.getByRole('button',{name:'Importer'}));fireEvent.change(screen.getByLabelText('Ou coller la liste'),{target:{value:'Nom;Prénom\nExemple;Zoé'}});fireEvent.click(screen.getByRole('button',{name:'Vérifier la liste'}));fireEvent.click(screen.getByRole('button',{name:'Importer 1 élèves'}));await screen.findByText('Zoé Exemple');const d=(await loadWorkspace()).data,p=d.students.find(p=>p.firstName==='Zoé'&&p.lastName==='Exemple')!;expect(p.className).toBe('3e Vagues');expect(d.sessions.at(-1)!.studentIds).toContain(p.id);
+ await prepared();render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('tab',{name:/Élèves/}));fireEvent.click(screen.getByRole('button',{name:'Importer'}));fireEvent.change(screen.getByLabelText('Ou colle directement les noms depuis ÉcoleDirecte'),{target:{value:'Nom;Prénom\nExemple;Zoé'}});fireEvent.click(screen.getByRole('button',{name:'Vérifier la liste'}));fireEvent.click(screen.getByRole('button',{name:'Ajouter 1 élève à la classe'}));await screen.findByText('Zoé Exemple');const d=(await loadWorkspace()).data,p=d.students.find(p=>p.firstName==='Zoé'&&p.lastName==='Exemple')!;expect(p.className).toBe('3e Vagues');expect(d.sessions.at(-1)!.studentIds).toContain(p.id);
+});
+
+it('importe des noms ÉcoleDirecte sans en-tête, avec virgules finales',async()=>{
+ await prepared();render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
+ fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('tab',{name:/Élèves/}));fireEvent.click(screen.getByRole('button',{name:'Importer'}));
+ fireEvent.change(screen.getByLabelText('Ou colle directement les noms depuis ÉcoleDirecte'),{target:{value:'MARTEL Théo,,,,\nBELIN Léa,,,,\nBOREL Nina,,,,\nDUPONT-LECLERC Ana,,,,'}});
+ fireEvent.click(screen.getByRole('button',{name:'Vérifier la liste'}));expect(screen.getByText('4 nouveaux élèves')).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Ajouter 4 élèves à la classe'}));
+ await screen.findByText('Théo MARTEL');await screen.findByText('Ana DUPONT-LECLERC');
+ expect((await loadWorkspace()).data.sessions.at(-1)!.studentIds).toHaveLength(7);
+});
+
+it('autorise à rectifier le chrono directement dans la fenêtre de correction',async()=>{
+ const session=await prepared();render(<Provider><App/></Provider>);await openBoard();
+ fireEvent.click(screen.getByRole('button',{name:'Lancer 3 élèves'}));await screen.findByRole('button',{name:'Arrêter le chrono de Alice E.'});
+ fireEvent.click(screen.getByRole('button',{name:'Arrêter le chrono de Alice E.'}));await screen.findByRole('button',{name:'Choisir une nouvelle carte pour Alice E.'});
+ fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'}));
+ fireEvent.click(screen.getByRole('button',{name:'Modifier le chrono'}));fireEvent.change(screen.getByRole('textbox',{name:'Temps corrigé'}),{target:{value:'01:24.5'}});
+ fireEvent.click(screen.getByRole('button',{name:'Enregistrer le résultat'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.runs.find(r=>r.sessionId===session.id&&r.studentId==='a')?.manualTimeMs).toBe(84500));
+ expect((await loadWorkspace()).data.audit.some(a=>a.detail.includes('Chrono'))).toBe(true);
+});
+
+it('poste C : corrige la carte d’un élève avant de recevoir ses chronos',async()=>{
+ const session=await prepared();await mutate(w=>({...w,offline:{post:'C',sessionId:session.id,studentIds:session.studentIds,groupA:['a','b'],groupB:['c'],transferKey:'ab'.repeat(32),importedPosts:[]}}));
+ render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
+ fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
+ expect(screen.getByRole('heading',{name:'Corriger par élève'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:/Alice E\. 0\/6/}));
+ fireEvent.click(screen.getByRole('button',{name:/Carte 2.*À corriger/}));
+ const dialog=screen.getByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'2'}));fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer la carte'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.offlineCorrections?.some(c=>c.studentId==='a'&&c.courseId===session.courseIds[1]&&c.errors===2)).toBe(true));
+ expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(0);
+});
+
+it('poste C : le chrono reçu se corrige sur la carte de l’élève',async()=>{
+ const session=await prepared();await mutate(w=>{
+  const course=w.data.courses.find(c=>c.id===session.courseIds[0])!;
+  return {...w,offline:{post:'C',sessionId:session.id,studentIds:session.studentIds,groupA:['a','b'],groupB:['c'],transferKey:'ab'.repeat(32)},
+   data:{...w.data,runs:[...w.data.runs,{id:'c-run',studentId:'a',sessionId:session.id,courseId:course.id,courseSnapshot:course,start:100000,end:145000,pauses:[],errors:null,manualLevel:null,revision:0}]}};
+ });
+ render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
+ fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
+ fireEvent.click(screen.getByRole('button',{name:/Alice E\. 0\/6/}));fireEvent.click(screen.getByRole('button',{name:/Carte 1.*À corriger/}));
+ const dialog=screen.getByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'Corriger le temps du poste C'}));
+ fireEvent.change(within(dialog).getByRole('textbox',{name:'Temps corrigé du poste C'}),{target:{value:'01:25.3'}});
+ fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer la carte'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.runs.find(r=>r.id==='c-run')?.manualTimeMs).toBe(85300));
 });
 
 it('enregistre un barème balises seules puis temps seul en minutes et secondes',async()=>{

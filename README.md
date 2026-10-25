@@ -40,11 +40,11 @@ Ces repères de participation et de précision sont distincts des niveaux d’é
 
 Depuis **Réglages → Appareils**, choisir une leçon sur le Mac ou l’iPad central (poste **C**). O’Run partage les élèves en deux moitiés équilibrées dans l’ordre alphabétique des noms ; chaque élève peut être déplacé manuellement avant validation.
 
-1. Configurer C puis envoyer par **AirDrop** la préparation « A » au premier iPad et « B » au second.
-2. Sur chaque iPad, importer le fichier reçu depuis **Appareils**. L’iPad ne reçoit que les élèves de son groupe, affichés avec leur prénom et l’initiale du nom, et chronomètre leurs départs, arrivées et redéparts.
-3. Sur C, corriger les cartons de contrôle au fur et à mesure : sélectionner l’élève, sa carte et le numéro de passage, puis saisir **uniquement le nombre de balises fausses**. Les chronos ne sont pas nécessaires à ce stade.
-4. En fin de séance, arrêter tous les chronos sur A et B et choisir **Envoyer les chronos à C**. Le fichier de chronos chiffré est partagé manuellement par AirDrop, sans synchronisation automatique. Si le partage système n'est pas disponible, le fichier est téléchargé et peut être envoyé depuis l'application Fichiers.
-5. Sur C, importer les deux fichiers reçus. Les résultats sont associés grâce aux identifiants de leçon, élève, carte et numéro de passage. Les réimportations identiques ne créent aucun doublon ; les fichiers incohérents sont refusés.
+1. Configurer C puis envoyer par **AirDrop** les préparations **ORun_Preparation_A.json** et **ORun_Preparation_B.json** aux deux iPads. Les fichiers sont en JSON standard pour être sélectionnables dans **Fichiers** sur iPadOS. Les anciennes préparations à extension spéciale doivent être régénérées.
+2. Sur chaque iPad, enregistrer le fichier reçu dans **Fichiers**, puis ouvrir **Réglages → Appareils → Choisir la préparation dans Fichiers**. L’iPad ne reçoit que les élèves de son groupe (prénom et initiale) et chronomètre ses départs et arrivées.
+3. Sur C, ouvrir **Réglages → Appareils → Ouvrir les profils des élèves**. Toucher un élève puis l’une de ses cartes pour saisir **uniquement ses balises fausses**. Aucun numéro de passage à renseigner : chaque carte de la leçon est réalisée au plus une fois. La correction fonctionne **avant** de recevoir les chronos.
+4. En fin de séance, arrêter tous les chronos sur A et B et choisir **Envoyer les chronos à C**. Les fichiers chiffrés **ORun_Chronos_A.json** et **ORun_Chronos_B.json** sont partagés manuellement par AirDrop, sans synchronisation automatique. Si le partage système n'est pas disponible, ils sont téléchargés et peuvent être envoyés depuis **Fichiers**.
+5. Sur C, importer les deux fichiers de chronos depuis **Réglages → Appareils**. Les durées s’associent aux cartons corrigés grâce aux identifiants de séance, d’élève et de carte. Il est possible de corriger manuellement un chrono dans la fiche de carte dès que le fichier correspondant a été importé. Les réimportations identiques ne créent pas de doublons.
 
 **Le mode appareil unique est conservé.** Le scanner de cartons poinçonnés est une piste future et ne fait pas partie de ce mode.
 

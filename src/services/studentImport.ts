@@ -1,12 +1,33 @@
 import {csvCell,importStudents,parseCSV} from '../domain/csv';
 import {uid,type Student} from '../domain/types';
+
+const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+function separateName(value:string):[string,string]|null{
+ // ÉcoleDirecte colle souvent « NOM Prénom,,,, » sans ligne d'en-tête.
+ const match=value.trim().match(/^([\p{Lu}\p{M}'’\-]+(?:\s+[\p{Lu}\p{M}'’\-]+)*)\s+(.+)$/u);
+ if(match)return [match[1],match[2].trim()];
+ const words=value.trim().split(/\s+/);
+ return words.length>=2?[words[0],words.slice(1).join(' ')]:null;
+}
+
 export function inspectStudents(text:string,existing:Student[],className:string){
- const rows=parseCSV(text);if(rows.length<2)throw new Error('Ajoutez la ligne d’en-tête Nom et Prénom puis les élèves.');
- const normalize=(s:string)=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
- const ci=rows[0].findIndex(h=>['classe','class'].includes(normalize(h)));
- if(ci<0){rows[0].push('Classe');for(const row of rows.slice(1))row.push(className);}else for(const row of rows.slice(1))row[ci]=className;
+ const rows=parseCSV(text.trim());
+ if(!rows.length)throw new Error('Collez des noms ou sélectionnez un fichier CSV / Excel.');
  if(rows.length>2001)throw new Error('Import limité à 2 000 élèves.');
- return importStudents(rows.map(r=>r.map(csvCell).join(';')).join('\n'),existing,uid);
+ const header=rows[0].map(normalize);
+ const ni=header.findIndex(h=>['nom','last name','lastname','nom de famille'].includes(h));
+ const pi=header.findIndex(h=>['prenom','first name','firstname'].includes(h));
+ const structured=ni>=0&&pi>=0;
+ const studentsRows=structured?rows.slice(1):rows;
+ const entries=studentsRows.map(row=>{
+  if(structured)return [row[ni]||'',row[pi]||'',className];
+  const filled=row.map(cell=>cell.trim()).filter(Boolean);
+  if(filled.length>=2)return [filled[0],filled[1],className];
+  const name=separateName(filled[0]||'');
+  return [name?.[0]||'',name?.[1]||'',className];
+ });
+ if(!entries.length)throw new Error('Le fichier ne contient aucun élève.');
+ return importStudents([['Nom','Prénom','Classe'],...entries].map(r=>r.map(csvCell).join(';')).join('\n'),existing,uid);
 }
 export async function studentFileText(file:File){
  if(file.size>5*1024*1024)throw new Error('Fichier limité à 5 Mo.');
