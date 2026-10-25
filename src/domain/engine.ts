@@ -1,6 +1,7 @@
 import {removeClass} from './classroom';
 import type {Command, Course, Data, Level, Role, Run, Student} from './types';
 export function elapsed(run:Run, now=Date.now()):number {
+ if(run.end!==undefined&&run.manualTimeMs!==undefined)return run.manualTimeMs;
  const end=run.end ?? now;
  const paused=run.pauses.reduce((n,p)=>n+Math.max(0,Math.min(p.end ?? end,end)-p.start),0);
  return Math.max(0,end-run.start-paused);
@@ -8,6 +9,17 @@ export function elapsed(run:Run, now=Date.now()):number {
 export function formatTime(ms:number, tenths=false):string {
  const s=Math.floor(Math.max(0,ms)/1000); const base=`${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
  return tenths?`${base}.${Math.floor(ms%1000/100)}`:base;
+}
+export function parseTime(text:string):number{
+ const parts=text.trim().replace(',','.').split(':');
+ if(parts.length>3||!parts.length||parts.some(p=>!/^\d+(?:\.\d+)?$/.test(p)))throw new Error('Saisissez un temps, par exemple 01:24.5.');
+ const values=parts.map(Number);
+ if(values.some(v=>!Number.isFinite(v))||(parts.length>1&&values.slice(1).some(v=>v>=60))||
+  (parts.length===3&&values[1]>=60))throw new Error('Temps incorrect : les secondes doivent être inférieures à 60.');
+ const seconds=values.reduce((total,value)=>total*60+value,0);
+ const rounded=Math.round(seconds*10)*100;
+ if(rounded<100||rounded>24*60*60*1000)throw new Error('Le temps doit être compris entre 0,1 seconde et 24 heures.');
+ return rounded;
 }
 export function score(run:Run):number|null {return run.end===undefined||run.errors===null?null:elapsed(run)+run.errors*run.courseSnapshot.penalty*1000;}
 export function level(run:Run):Level|null {
@@ -69,8 +81,12 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   next.offlineCorrections=[...corrections.filter(c=>c!==previous),{id:previous?.id||cmd.id,at:cmd.at,sessionId:cmd.sessionId,studentId:cmd.studentId,courseId:cmd.courseId,attempt:cmd.attempt,errors:cmd.errors}];
   const matching=next.runs.filter(r=>r.sessionId===cmd.sessionId&&r.studentId===cmd.studentId&&r.courseId===cmd.courseId&&r.end!==undefined).sort((a,b)=>a.start-b.start||a.id.localeCompare(b.id));
   const run=matching[cmd.attempt-1];
-  if(run){run.errors=cmd.errors;run.revision++;}
-  detail=`Correction carton · passage ${cmd.attempt} · ${cmd.errors} balise(s) fausse(s)`;
+  if(cmd.milliseconds!==undefined){
+   check(run,'Importez les chronos avant d’en corriger la durée.');
+   check(Number.isInteger(cmd.milliseconds)&&cmd.milliseconds>=100&&cmd.milliseconds<=24*60*60*1000,'Temps corrigé invalide.');
+  }
+  if(run){run.errors=cmd.errors;if(cmd.milliseconds!==undefined)run.manualTimeMs=cmd.milliseconds;run.revision++;}
+  detail=`Correction carton · ${cmd.errors} balise(s) fausse(s)${cmd.milliseconds!==undefined?' · Chrono rectifié : '+formatTime(cmd.milliseconds,true):''}`;
  }else{
   const run=next.runs.find(r=>r.id===cmd.runId);check(run,'Passage introuvable.');
   const paused=run.pauses.at(-1)?.end===undefined&&run.pauses.length>0;
@@ -86,14 +102,23 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   if(cmd.kind==='reopen'){
    check(run.end!==undefined,'Ce passage est déjà actif.');check(cmd.reason?.trim(),'Un motif est obligatoire.');
    check(!next.runs.some(r=>r.id!==run.id&&r.studentId===run.studentId&&r.end===undefined),'Un autre passage est actif.');
-   run.end=undefined;run.errors=null;run.manualLevel=null;detail=`Arrivée annulée : ${cmd.reason}`;
+   run.end=undefined;run.errors=null;run.manualLevel=null;run.manualTimeMs=undefined;detail=`Arrivée annulée : ${cmd.reason}`;
   }
-  if(cmd.kind==='correct'||cmd.kind==='level'){
+  if(cmd.kind==='correct'||cmd.kind==='level'||cmd.kind==='adjustTime'){
    check(run.end!==undefined,'La course doit être terminée.');
    check(run.revision===cmd.expectedRevision,'Ce résultat a changé sur un autre poste. Rechargez sa correction.');
-   if(cmd.kind==='correct'){
+   if(cmd.kind==='adjustTime'){
+    check(Number.isInteger(cmd.milliseconds)&&cmd.milliseconds>=100&&cmd.milliseconds<=24*60*60*1000,'Temps invalide (minimum 0,1 seconde, maximum 24 heures).');
+    detail=`Chrono rectifié : ${formatTime(elapsed(run),true)} → ${formatTime(cmd.milliseconds,true)}`;
+    run.manualTimeMs=cmd.milliseconds;
+   }else if(cmd.kind==='correct'){
     check(Number.isInteger(cmd.errors)&&cmd.errors>=0&&cmd.errors<=run.courseSnapshot.controls,'Nombre de balises fausses invalide.');
     detail=`Balises fausses : ${run.errors===null?'non corrigé':run.errors} → ${cmd.errors}${cmd.reason?' · '+cmd.reason:''}`;run.errors=cmd.errors;
+    if(cmd.milliseconds!==undefined){
+     check(Number.isInteger(cmd.milliseconds)&&cmd.milliseconds>=100&&cmd.milliseconds<=24*60*60*1000,'Temps corrigé invalide.');
+     detail+=` · Chrono ${formatTime(elapsed(run),true)} → ${formatTime(cmd.milliseconds,true)}`;
+     run.manualTimeMs=cmd.milliseconds;
+    }
    }else{check(cmd.reason.trim(),'Un motif est obligatoire.');check(cmd.level===null||[1,2,3,4].includes(cmd.level),'Niveau invalide.');detail=`Niveau manuel : ${cmd.level??'barème'} · ${cmd.reason}`;run.manualLevel=cmd.level;}
   }
   run.revision++;

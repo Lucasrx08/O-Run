@@ -2,11 +2,9 @@ import {useState,type ChangeEvent} from 'react';
 import {ArrowRight,Check,CheckCircle2,Download,FileUp,Flag,LockKeyhole,Monitor,Share2,Tablet,Timer,Users} from 'lucide-react';
 import {useStore} from '../store';
 import {alphabeticalStudents,createSessionPack,exportTimes,splitAlphabetical,validateSessionPack} from '../domain/offline';
-import {studentLabels} from '../domain/engine';
-import {uid,type OfflineConfig} from '../domain/types';
+import {type OfflineConfig} from '../domain/types';
 import {newTransferKey,openTimes,sealTimes,shareOrDownload} from '../services/offlineTransfer';
 import * as storage from '../services/storage';
-import {now} from '../services/clock';
 
 export function OfflineSession(){
  const s=useStore(),sessions=s.data.sessions;
@@ -17,15 +15,8 @@ export function OfflineSession(){
  const effectiveA=selectedA??(s.offline?.post==='C'&&s.offline.sessionId===current&&s.offline.groupA? s.offline.groupA:current?splitAlphabetical(s.data,current).A:[]);
  const split=current?splitAlphabetical(s.data,current,effectiveA):{A:[],B:[]};
  const post=s.offline?.post||'solo',config=s.offline;
- const labels=studentLabels(s.data.students);
- const [busy,setBusy]=useState(false),[pupil,setPupil]=useState(''),[course,setCourse]=useState(''),[attempt,setAttempt]=useState(1),[errors,setErrors]=useState(0);
+ const [busy,setBusy]=useState(false);
  const [lastMessage,setLastMessage]=useState('');
- const session=s.data.sessions.find(t=>t.id===(config?.post==='C'?config.sessionId:current));
- const allStudents=(session?.studentIds||[]).map(id=>s.data.students.find(p=>p.id===id)).filter((p):p is NonNullable<typeof p>=>!!p)
-  .sort((a,b)=>a.lastName.localeCompare(b.lastName,'fr',{sensitivity:'base'})||a.firstName.localeCompare(b.firstName,'fr',{sensitivity:'base'}));
- const courses=(session?.courseIds||[]).map(id=>s.data.courses.find(c=>c.id===id)).filter((c):c is NonNullable<typeof c>=>!!c);
- const correctionStudent=allStudents.some(p=>p.id===pupil)?pupil:'';
- const correctionCourse=courses.some(c=>c.id===course)?course:'';
  const existing=s.data.offlineCorrections||[];
  const corrections=existing.filter(c=>c.sessionId===config?.sessionId);
  const finished=s.data.runs.filter(r=>r.sessionId===config?.sessionId&&r.end!==undefined);
@@ -43,7 +34,7 @@ export function OfflineSession(){
   const ids=p==='A'?config.groupA:config.groupB;
   if(!ids?.length)throw new Error('Ce groupe est vide.');
   const pack=createSessionPack(s.data,current,p,ids,config.transferKey);
-  s.notify(await shareOrDownload(`ORun_Lecon_${p}.orunsession`,JSON.stringify(pack)));
+  s.notify(await shareOrDownload(`ORun_Preparation_${p}.json`,JSON.stringify(pack)));
  });
  const importSetup=(event:ChangeEvent<HTMLInputElement>)=>protect(async()=>{
   const file=event.target.files?.[0];event.target.value='';
@@ -54,7 +45,7 @@ export function OfflineSession(){
  const exportChronos=()=>protect(async()=>{
   if(!config)throw new Error('Importez d’abord votre préparation.');
   const pack=exportTimes(s.data,config),sealed=await sealTimes(pack,config);
-  s.notify(await shareOrDownload(`ORun_Chronos_${config.post}.oruntimes`,sealed));
+  s.notify(await shareOrDownload(`ORun_Chronos_${config.post}.json`,sealed));
  });
  const importChronos=(event:ChangeEvent<HTMLInputElement>)=>protect(async()=>{
   const file=event.target.files?.[0];event.target.value='';
@@ -65,15 +56,6 @@ export function OfflineSession(){
   await s.refresh();
   const msg=`Tablette ${pack.post} : ${r.added} chrono(s) ajoutés, ${r.matched} associé(s) aux corrections, ${r.withoutCorrection} encore à corriger.`;
   setLastMessage(msg);s.notify(msg);
- });
- const saveCorrection=()=>protect(async()=>{
-  if(!config||config.post!=='C'||!correctionStudent||!correctionCourse)throw new Error('Choisissez un élève et une carte.');
-  const max=s.data.courses.find(c=>c.id===correctionCourse)?.controls||0;
-  if(!Number.isInteger(errors)||errors<0||errors>max)throw new Error('Nombre de balises fausses invalide.');
-  if(await s.command({kind:'offlineCorrect',id:uid(),at:now(),sessionId:config.sessionId,studentId:correctionStudent,courseId:correctionCourse,attempt,errors})){
-   s.notify(`Correction enregistrée : ${labels.get(correctionStudent)} · ${errors} faute(s).`);
-   setPupil('');setCourse('');setErrors(0);setAttempt(1);
-  }
  });
  const resetSolo=()=>protect(async()=>{
   await s.saveOffline({post:'solo',sessionId:s.sessionId,studentIds:[]});
@@ -99,8 +81,8 @@ export function OfflineSession(){
    {!students.length&&<p className="muted">Créez d’abord une classe et une leçon pour utiliser trois appareils.</p>}
    {config?.post==='C'&&config.sessionId===current&&<div className="offline-send-row"><button className="button" disabled={busy} onClick={()=>sendPack('A')}><Share2 size={17}/>Envoyer la préparation A</button><button className="button" disabled={busy} onClick={()=>sendPack('B')}><Share2 size={17}/>Envoyer la préparation B</button></div>}
   </section>}
-  {post!=='C'&&<section className="offline-panel"><h3><FileUp size={20}/>Configurer un iPad A ou B</h3><p>Depuis le poste C, recevez la préparation par AirDrop puis ouvrez-la ici. L’importation conserve les autres leçons déjà présentes sur cette tablette.</p>
-   <label className="button offline-file-button"><FileUp size={18}/>Importer une préparation reçue<input className="sr-only" type="file" accept=".orunsession,.json" onChange={importSetup}/></label>
+  {post!=='C'&&<section className="offline-panel"><h3><FileUp size={20}/>Configurer un iPad A ou B</h3><p>Depuis le poste C, récupérez le fichier <b>ORun_Preparation_A.json</b> ou <b>ORun_Preparation_B.json</b> par AirDrop et enregistrez-le dans Fichiers. Puis choisissez-le ici. L’importation conserve les autres leçons de la tablette.</p>
+   <label className="button offline-file-button"><FileUp size={18}/>Choisir la préparation dans Fichiers<input className="sr-only" type="file" accept=".json,application/json" onChange={importSetup}/></label>
   </section>}
   {(post==='A'||post==='B')&&<section className="offline-panel offline-action"><h3><Timer size={20}/>Tablette {post} · {config?.studentIds.length||0} élèves</h3>
    <p>Cette tablette gère les départs, les arrivées et les redéparts de son groupe uniquement.</p>
@@ -108,21 +90,15 @@ export function OfflineSession(){
     <button className="button" disabled={busy} onClick={exportChronos}><Share2 size={18}/>Envoyer les chronos à C</button></div>
    <p className="muted compact">AirDrop sur Mac ou iPad C. Le fichier de temps est chiffré ; aucun nom complet n’est transmis.</p>
   </section>}
-  {post==='C'&&<><section className="offline-panel"><h3><CheckCircle2 size={20}/>Corriger les cartons reçus</h3>
-   <p>Après l’arrivée, sélectionnez l’élève, la carte et le nombre de balises fausses. Le chrono sera associé après AirDrop.</p>
-   <div className="offline-correction-form"><label className="field"><span>Élève</span><select value={correctionStudent} onChange={e=>{setPupil(e.target.value);setErrors(0);setAttempt(1);}}><option value="">Choisir un élève…</option>{allStudents.map(p=><option value={p.id} key={p.id}>{labels.get(p.id)}</option>)}</select></label>
-    <label className="field"><span>Carte</span><select value={correctionCourse} onChange={e=>{setCourse(e.target.value);setErrors(0);setAttempt(1);}}><option value="">Choisir une carte…</option>{courses.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-    <label className="field"><span>Passage n°</span><input type="number" value={attempt} min={1} max={50} onChange={e=>setAttempt(Math.max(1,Math.min(50,+e.target.value||1)))}/></label>
-   </div>
-   <div className="offline-errors"><span>Balises fausses</span><div className="offline-error-buttons">{Array.from({length:Math.min(12,courses.find(c=>c.id===correctionCourse)?.controls||6)+1},(_,i)=><button type="button" key={i} className={errors===i?'active':''} aria-pressed={errors===i} onClick={()=>setErrors(i)}>{i}</button>)}</div></div>
-   <button className="button primary" disabled={busy||!correctionStudent||!correctionCourse} onClick={saveCorrection}><Check size={18}/>Enregistrer la correction</button>
-   <div className="offline-stats"><span><strong>{corrections.length}</strong> cartons corrigés</span><span><strong>{finished.length}</strong> passages importés</span></div>
-   {corrections.length>0&&<div className="offline-recent"><strong>Dernières corrections</strong>{corrections.slice().sort((a,b)=>b.at-a.at).slice(0,6).map(c=><div key={c.id}><span>{labels.get(c.studentId)} · {courses.find(x=>x.id===c.courseId)?.name||'Carte'} · passage {c.attempt}</span><b>{c.errors} faute(s)</b></div>)}</div>}
+  {post==='C'&&<><section className="offline-panel offline-action"><h3><CheckCircle2 size={20}/>Correction par élève</h3>
+   <p>La saisie se fait maintenant directement dans le poste de correction : choisissez l’élève, puis sa carte papier. Vous n’avez pas besoin d’attendre les chronos A et B.</p>
+   <button className="button primary" onClick={()=>{s.setSessionId(config!.sessionId);s.go('control');}}><Users size={18}/>Ouvrir les profils des élèves <ArrowRight size={18}/></button>
+   <div className="offline-stats"><span><strong>{corrections.length}</strong> cartons corrigés</span><span><strong>{finished.length}</strong> chronos reçus</span></div>
   </section>
   <section className="offline-panel"><h3><Download size={20}/>Récupérer les chronos par AirDrop</h3>
    <p>Recevez les fichiers A et B par AirDrop sur ce Mac ou cet iPad, puis importez-les ci-dessous. Les corrections restent enregistrées.</p>
    <div className="offline-import-status">{(['A','B'] as const).map(p=><span key={p} className={config?.importedPosts?.includes(p)?'received':''}><Tablet size={16}/>Tablette {p} {config?.importedPosts?.includes(p)?'· reçue':'· en attente'}</span>)}</div>
-   <label className="button primary offline-file-button"><FileUp size={18}/>Importer les chronos A ou B<input className="sr-only" type="file" accept=".oruntimes,.json" onChange={importChronos}/></label>
+   <label className="button primary offline-file-button"><FileUp size={18}/>Importer les chronos A ou B<input className="sr-only" type="file" accept=".json,application/json" onChange={importChronos}/></label>
    {lastMessage&&<p className="offline-merge-message" role="status">{lastMessage}</p>}
    <button className="button" onClick={()=>{s.setSessionId(config!.sessionId);s.go('control');}}><ArrowRight size={18}/>Afficher les résultats complets</button>
   </section></>}
