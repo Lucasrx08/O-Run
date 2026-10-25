@@ -20,7 +20,7 @@ export async function setOfflineConfig(offline:OfflineConfig){
  return mutate(w=>({...w,room:null,offline}));
 }
 export async function importOfflineSession(pack:unknown){
- return mutate(w=>{const result=combineSession(w.data,pack);return {...w,data:result.data,room:null,offline:result.config};});
+ return mutate(w=>{const result=combineSession(w.data,pack,w.offline);return {...w,data:result.data,room:null,offline:result.config};});
 }
 export async function mergeOfflineTimes(pack:TimesPack){
  let outcome={added:0,matched:0,withoutCorrection:0};

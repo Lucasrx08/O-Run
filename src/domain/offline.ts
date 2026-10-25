@@ -39,24 +39,42 @@ export function validateSessionPack(value:unknown):SessionPack{
   !p.session.courseIds.every(id=>p.courses.some(c=>c.id===id)))throw new Error('Fichier de répartition invalide.');
  return p;
 }
-export function importSessionPack(data:Data,input:unknown):{data:Data;config:OfflineConfig}{
+export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig):{data:Data;config:OfflineConfig}{
  const p=validateSessionPack(input);
  const existing=data.sessions.find(s=>s.id===p.sessionId);
- if(existing&&JSON.stringify(existing)!==JSON.stringify(p.session))throw new Error('Cette leçon existe déjà avec une autre répartition. Conservez une sauvegarde et vérifiez la tablette.');
+ const fromTablet=!!config&&['A','B','AB'].includes(config.post)&&config.sessionId===p.sessionId;
+ if(existing&&!fromTablet)throw new Error('Cette leçon existe déjà sur cet appareil. Pour fusionner A et B, importez la préparation sur un iPad configuré en A ou B.');
+ if(fromTablet&&config!.transferKey!==p.transferKey)throw new Error('Préparation incompatible : les fichiers A et B ne proviennent pas de la même séance.');
+ if(existing&&(existing.sequenceId!==p.session.sequenceId||existing.name!==p.session.name||
+  existing.date!==p.session.date||existing.className!==p.session.className||
+  JSON.stringify(existing.courseIds)!==JSON.stringify(p.session.courseIds)))throw new Error('Préparation incompatible avec la leçon présente sur cet iPad.');
+ const groupA=fromTablet?(config!.groupA??(config!.post==='A'?config!.studentIds:[])):[];
+ const groupB=fromTablet?(config!.groupB??(config!.post==='B'?config!.studentIds:[])):[];
+ const opposite=p.post==='A'?groupB:groupA;
+ if(p.students.some(s=>opposite.includes(s.id)))throw new Error('Un élève est affecté aux deux groupes. Réexportez A et B depuis le poste C.');
+ const nextA=p.post==='A'?p.session.studentIds:groupA;
+ const nextB=p.post==='B'?p.session.studentIds:groupB;
+ if(fromTablet&&data.runs.some(r=>r.sessionId===p.sessionId&&(
+  groupA.includes(r.studentId)&&!nextA.includes(r.studentId)||groupB.includes(r.studentId)&&!nextB.includes(r.studentId))))
+  throw new Error('Cette préparation modifierait un groupe qui contient déjà des chronos.');
+ const studentIds=[...new Set([...nextA,...nextB])];
  const byId=<T extends {id:string}>(previous:T[],incoming:T[])=>{
   const map=new Map(previous.map(x=>[x.id,x]));
   for(const item of incoming)map.set(item.id,item);
   return [...map.values()];
  };
  const next={...data,students:byId(data.students,p.students),sequences:byId(data.sequences,[p.sequence]),
-  sessions:byId(data.sessions,[p.session]),courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
- return {data:next,config:{post:p.post,sessionId:p.sessionId,studentIds:p.session.studentIds,transferKey:p.transferKey}};
+  sessions:byId(data.sessions,[{...p.session,studentIds}]),courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
+ return {data:next,config:{post:nextA.length&&nextB.length?'AB':p.post,sessionId:p.sessionId,studentIds,groupA:nextA,groupB:nextB,transferKey:p.transferKey}};
 }
-export function exportTimes(data:Data,config:OfflineConfig):TimesPack{
- if(config.post!=='A'&&config.post!=='B')throw new Error('Sélectionnez une tablette A ou B.');
- const runs=data.runs.filter(r=>r.sessionId===config.sessionId&&config.studentIds.includes(r.studentId));
+export function exportTimes(data:Data,config:OfflineConfig,post?:'A'|'B'):TimesPack{
+ const source=post??(config.post==='A'||config.post==='B'?config.post:undefined);
+ if(!source||!['A','B','AB'].includes(config.post))throw new Error('Choisissez le groupe de chronos A ou B.');
+ const assigned=source==='A'?(config.groupA??(config.post==='A'?config.studentIds:[])):(config.groupB??(config.post==='B'?config.studentIds:[]));
+ if(!assigned.length)throw new Error(`Le groupe ${source} n’est pas installé sur cet appareil.`);
+ const runs=data.runs.filter(r=>r.sessionId===config.sessionId&&assigned.includes(r.studentId));
  if(runs.some(r=>r.end===undefined))throw new Error('Des chronos sont encore en cours. Arrêtez-les avant cet export.');
- return {kind:'orun-times-v1',post:config.post,sessionId:config.sessionId,createdAt:Date.now(),
+ return {kind:'orun-times-v1',post:source,sessionId:config.sessionId,createdAt:Date.now(),
   runs:runs.map(r=>({id:r.id,studentId:r.studentId,courseId:r.courseId,start:r.start,end:r.end!,pauses:r.pauses}))};
 }
 export function mergeTimes(data:Data,config:OfflineConfig,input:unknown):{data:Data;added:number;matched:number;withoutCorrection:number}{

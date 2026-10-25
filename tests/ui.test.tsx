@@ -78,11 +78,14 @@ it('poste C : corrige la carte d’un élève avant de recevoir ses chronos',asy
  const session=await prepared();await mutate(w=>({...w,offline:{post:'C',sessionId:session.id,studentIds:session.studentIds,groupA:['a','b'],groupB:['c'],transferKey:'ab'.repeat(32),importedPosts:[]}}));
  render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
  fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
- expect(screen.getByRole('heading',{name:'Corriger par élève'})).toBeTruthy();
- fireEvent.click(screen.getByRole('button',{name:/Alice E\. 0\/6/}));
- fireEvent.click(screen.getByRole('button',{name:/Carte 2.*À corriger/}));
- const dialog=screen.getByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'2'}));fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer la carte'}));
+ expect(screen.getByRole('heading',{name:'Correction par élève'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E.'}));
+ const dialog=screen.getByRole('dialog');
+ fireEvent.click(within(dialog).getByRole('button',{name:'Carte 2 · 2 fautes'}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Carte 3 · 0 faute'}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer les cartes'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.offlineCorrections?.some(c=>c.studentId==='a'&&c.courseId===session.courseIds[1]&&c.errors===2)).toBe(true));
+ expect((await loadWorkspace()).data.offlineCorrections?.some(c=>c.studentId==='a'&&c.courseId===session.courseIds[2]&&c.errors===0)).toBe(true);
  expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(0);
 });
 
@@ -94,10 +97,10 @@ it('poste C : le chrono reçu se corrige sur la carte de l’élève',async()=>{
  });
  render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
  fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
- fireEvent.click(screen.getByRole('button',{name:/Alice E\. 0\/6/}));fireEvent.click(screen.getByRole('button',{name:/Carte 1.*À corriger/}));
- const dialog=screen.getByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'Corriger le temps du poste C'}));
- fireEvent.change(within(dialog).getByRole('textbox',{name:'Temps corrigé du poste C'}),{target:{value:'01:25.3'}});
- fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer la carte'}));
+ fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E.'}));
+ const dialog=screen.getByRole('dialog');fireEvent.click(within(dialog).getByRole('button',{name:'Carte 1 · 0 faute'}));fireEvent.click(within(dialog).getByRole('button',{name:'Modifier le temps · Carte 1'}));
+ fireEvent.change(within(dialog).getByRole('textbox',{name:'Temps corrigé · Carte 1'}),{target:{value:'01:25.3'}});
+ fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer les cartes'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.runs.find(r=>r.id==='c-run')?.manualTimeMs).toBe(85300));
 });
 

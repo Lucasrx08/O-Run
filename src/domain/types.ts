@@ -10,7 +10,7 @@ export interface Pause {start:number;end?:number;}
 export interface Run {id:string;studentId:string;sessionId:string;courseId:string;start:number;end?:number;pauses:Pause[];errors:number|null;manualLevel:Level|null;revision:number; courseSnapshot:Course; manualTimeMs?:number;}
 export interface Audit {id:string;at:number;action:string;runId?:string;actor:string;detail:string;}
 export interface OfflineCorrection {id:string;at:number;sessionId:string;studentId:string;courseId:string;attempt:number;errors:number;}
-export type OfflinePost = 'solo'|'A'|'B'|'C';
+export type OfflinePost = 'solo'|'A'|'B'|'AB'|'C';
 export interface OfflineConfig {post:OfflinePost;sessionId:string;studentIds:string[];groupA?:string[];groupB?:string[];transferKey?:string;importedPosts?:Array<'A'|'B'>;}
 export interface Data {schema:1;version:number;students:Student[];sequences:Sequence[];sessions:Session[];courses:Course[];runs:Run[];audit:Audit[];applied:string[];updatedAt:number;offlineCorrections?:OfflineCorrection[];}
 export type Command =
