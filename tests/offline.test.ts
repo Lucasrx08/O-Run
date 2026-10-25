@@ -37,6 +37,27 @@ describe('Séance hors ligne A/B/C',()=>{
   expect(imported.data.sessions[0].courseIds).toEqual(session.courseIds);
   expect(imported.data.courses).toHaveLength(6);
  });
+ it('installe A et B sur le même iPad dans les deux sens et exporte chaque groupe séparément',()=>{
+  const {data,session}=fixture(),split=splitAlphabetical(data,session.id);
+  for(const [first,second] of [['A','B'],['B','A']] as const){
+   const preparation1=createSessionPack(data,session.id,first,split[first],transferKey);
+   const preparation2=createSessionPack(data,session.id,second,split[second],transferKey);
+   const one=importSessionPack(emptyData(),preparation1);
+   const studentId=split[first][0],courseId=session.courseIds[0];
+   const started=apply(one.data,{kind:'start',id:'op-1',at:100000,sessionId:session.id,courseId,students:[studentId],runIds:['run-1']});
+   const ended=apply(started,{kind:'stop',id:'op-2',at:250000,runId:'run-1'});
+   const both=importSessionPack(ended,preparation2,one.config);
+   expect(both.config.post).toBe('AB');
+   expect(new Set(both.config.studentIds)).toEqual(new Set(session.studentIds));
+   expect(both.data.runs.map(r=>r.id)).toEqual(['run-1']);
+   expect(both.data.sessions[0].studentIds).toHaveLength(7);
+   expect(exportTimes(both.data,both.config,'A').post).toBe('A');
+   expect(exportTimes(both.data,both.config,'B').post).toBe('B');
+   expect(exportTimes(both.data,both.config,first).runs.map(r=>r.id)).toEqual(['run-1']);
+   expect(exportTimes(both.data,both.config,second).runs).toHaveLength(0);
+   expect(()=>importSessionPack(both.data,{...preparation1,transferKey:'cd'.repeat(32)},both.config)).toThrow(/incompatible/);
+  }
+ });
  it('fusionne les temps reçus après les corrections, sans doublons ni écrasement',()=>{
   const {data,session}=fixture(),split=splitAlphabetical(data,session.id);
   const central:OfflineConfig={post:'C',sessionId:session.id,studentIds:session.studentIds,groupA:split.A,groupB:split.B,transferKey};

@@ -9,9 +9,9 @@ import {drift,now} from '../services/clock';
 import {Dialog,Empty} from '../components/ui';
 
 export function RunBoard({session,className}:{session:Session;className:string}){
- const s=useStore(),time=useNow(),pupils=lessonStudents(s.data,session,className).filter(p=>(s.offline?.post!=='A'&&s.offline?.post!=='B')||s.offline.sessionId!==session.id||s.offline.studentIds.includes(p.id)),labels=studentLabels(s.data.students);
+ const s=useStore(),time=useNow(),pupils=lessonStudents(s.data,session,className).filter(p=>(!['A','B','AB'].includes(s.offline?.post||''))||s.offline!.sessionId!==session.id||s.offline!.studentIds.includes(p.id)),labels=studentLabels(s.data.students);
  const courses=session.courseIds.map(id=>s.data.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c);
- const workMode=s.offline?.sessionId===session.id&&(s.offline.post==='A'||s.offline.post==='B')?'complet':s.role==='arrival'?'arrivals':s.role==='departure'?'departures':s.mode;
+ const workMode=s.offline?.sessionId===session.id&&['A','B','AB'].includes(s.offline.post)?'complet':s.role==='arrival'?'arrivals':s.role==='departure'?'departures':s.mode;
  const completed=(id:string)=>new Set(s.data.runs.filter(r=>r.studentId===id&&r.sessionId===session.id&&r.end!==undefined).map(r=>r.courseId));
  const remaining=(id:string)=>courses.filter(c=>!completed(id).has(c.id));
  const canStart=workMode!=='arrivals'&&workMode!=='control',canStop=workMode!=='departures'&&workMode!=='control';
@@ -49,7 +49,7 @@ export function RunBoard({session,className}:{session:Session;className:string})
   return <article key={p.id} className={`run-tile ${state}`} style={{'--card-color':c?.color||'#ef702c'} as CSSProperties}>
    <button className="run-tile-main" aria-label={action} disabled={foreign||waiting||stopping.has(p.id)||(!r&&(!canStart||dispatching||!courses.length))||!!r&&!canStop} onClick={()=>{if(r){void stop(r);return;}if(finished){setPicker({studentId:p.id,restart:true});return;}setSelected(prev=>{const next=new Set(prev);if(next.has(p.id))next.delete(p.id);else next.add(p.id);return next;});}}>
     <div className="run-tile-top"><span className="run-status">{foreign?'Autre leçon':r?'En course':waiting?'Dans la vague':finished?'Arrivé':'Prêt au départ'}</span>{r?<span className="stop-square"><Square size={13} fill="currentColor"/></span>:finished?<span className="finished-check"><Check size={17}/></span>:<span className={`selection-check ${selected.has(p.id)?'checked':''}`}>{selected.has(p.id)&&<Check size={14}/>}</span>}</div>
-    <h2 title={label} style={{fontSize:`${Math.max(12,Math.min(36,layout.unit*.24,layout.tileWidth/(Math.max(8,label.length)*.50)))}px`}}>{label}</h2><div className={`run-time ${!r&&!finished?'chrono-idle':''}`}>{r?formatTime(elapsed(r,time)):finished?formatTime(elapsed(done!)):'00:00'}</div>
+    <h2 title={label} style={{fontSize:`${Math.max(13,Math.min(29,layout.tileHeight*.19,layout.tileWidth/(Math.max(10,label.length)*.56)))}px`}}>{label}</h2><div className={`run-time ${!r&&!finished?'chrono-idle':''}`}>{r?formatTime(elapsed(r,time)):finished?formatTime(elapsed(done!)):'00:00'}</div>
     <span className="run-action-hint">{foreign?'Chrono déjà actif':r?(canStop?'Toucher pour arrêter':'Chrono en cours'):waiting?'Départ programmé':finished?'Toucher pour repartir':selected.has(p.id)?'Sélectionné':'Toucher pour sélectionner'}</span>
    </button><div className="run-tile-bottom">{!r&&!finished&&!waiting&&canStart?<button className="run-map-choice" aria-label={`Carte de départ de ${label}`} disabled={dispatching||!courses.length} onClick={()=>setPicker({studentId:p.id,restart:false})}><span><i/>{c?.name||'Aucune carte'}</span><ChevronDown size={15}/></button>:<span className="run-map-label"><i/>{c?.name}</span>}</div>
   </article>;

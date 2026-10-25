@@ -451,3 +451,127 @@
  .offline-send-row>.button{flex:1;justify-content:center}
  .results-page .correction-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,185px),1fr))}
 }
+
+/* O'Run — parcours guidé à quatre temps, une section visible à la fois. */
+.offline-wizard{gap:14px}
+.offline-wizard-hero{padding:17px 22px}
+.offline-wizard-hero h2{margin:0 0 4px}
+.offline-wizard-hero p{font-size:12px}
+.offline-stepbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.offline-step{display:flex;align-items:center;gap:11px;padding:12px 14px;min-width:0;text-align:left;background:#fff;color:#59765e;border:1px solid #dbe7d6;border-radius:16px}
+.offline-step.active{background:#fff5e9;border:2px solid #f18a45;color:#8c4e26;box-shadow:0 3px 0 #f9e2c9;padding:11px 13px}
+.offline-step-number{display:grid;place-items:center;flex:0 0 33px;height:33px;border-radius:11px;background:#e9f3e6;color:#3e754c;font:800 19px 'Outfit Variable',sans-serif}
+.offline-step.active .offline-step-number{background:#f47b31;color:#fff}
+.offline-step-text{display:flex;flex-direction:column;min-width:0;gap:2px;flex:1}
+.offline-step-text strong{font-size:14px;font-weight:850;white-space:nowrap}
+.offline-step-text small{font-size:11px;color:#8b9b85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.offline-step>svg{flex:0 0 auto;color:#98b296}
+.offline-step.active>svg{color:#dc7b30}
+.offline-current-role{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#7f9479}
+.offline-current-role>span{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:850;padding:8px 13px;border-radius:12px;background:#f0f5ec}
+.offline-current-role>span.live{background:#eaf4e1;color:#3c7548}
+.offline-current-role>small{font-size:11px}
+.offline-step-panel{min-height:230px;padding:clamp(16px,2vw,24px)}
+.offline-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}
+.offline-panel-heading h3{font:800 clamp(22px,2.3vw,29px) 'Outfit Variable',sans-serif;letter-spacing:-.7px;color:#315b42;margin:4px 0 0}
+.offline-panel-heading .eyebrow{margin:0;color:#e88336}
+.offline-panel-hint{font-size:12px;font-weight:750;color:#7c9476}
+.offline-step-panel>.field{max-width:480px;margin:0 0 12px}
+.offline-step-panel .offline-split{margin:8px 0 13px}
+.offline-group-roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-height:min(33dvh,285px);overflow:auto}
+.offline-group-roster>.offline-student{min-width:0;min-height:35px;font-size:11px;padding:6px 12px;border-right:1px solid #edf1e8;gap:7px}
+.offline-group-roster>.offline-student span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.offline-step-actions{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin-top:12px}
+.offline-tablet-import{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 17px;border:1px dashed #c6dbbd;border-radius:14px;background:#f7fbf4;margin-top:13px}
+.offline-tablet-import strong{font-size:13px;color:#376348}
+.offline-tablet-import p{font-size:12px;color:#758a74;line-height:1.5;margin:4px 0 0;max-width:720px}
+.offline-tablet-import>.button{flex:0 0 auto}
+.offline-step-panel>p{max-width:800px;margin:5px 0 13px}
+
+/* Correction : plateau de 25 grandes tuiles, puis six cartes en vue unique. */
+.c-correction-new{padding:clamp(12px,1.5vw,19px)}
+.c-correction-new .c-correction-head{margin-bottom:10px}
+.c-correction-new .c-correction-head h2{font-size:clamp(22px,2.5vw,28px)}
+.c-correction-new .c-correction-head p{margin-bottom:0}
+.c-correction-toolbar{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:9px 0 12px}
+.c-correction-toolbar>span{display:flex;align-items:center;gap:8px;color:#578063;font-size:13px;font-weight:850}
+.c-correction-toolbar .search{max-width:230px;width:100%}
+.c-pupil-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(7px,1vw,13px)}
+.c-student-tile{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;position:relative;min-width:0;min-height:clamp(98px,11.8vh,150px);padding:clamp(10px,1.25vw,19px);background:#f9fcf5;border:1.5px solid #bfd7ad;border-radius:15px;box-shadow:0 2px 0 #e1e9d8;color:#244c37;text-align:left;overflow:hidden}
+.c-student-tile:hover,.c-student-tile:focus-visible{background:#edf7e5;border-color:#f18a41}
+.c-student-tile.complete{background:#ecf7e8}
+.c-student-tile>strong{align-self:center;max-width:100%;font:750 clamp(16px,1.9vw,26px) 'Outfit Variable',sans-serif;text-align:center;line-height:1.12;overflow-wrap:anywhere;margin:auto 0}
+.c-student-check{position:absolute;top:8px;left:8px;display:grid;place-items:center;width:17px;height:17px;border-radius:5px;background:#e2efdc;color:#61935c}
+.c-student-progress{display:flex;width:100%;align-items:center;justify-content:space-between;border-top:1px solid #e0ebda;padding-top:8px;color:#789773;font-size:11px;font-weight:850}
+.c-student-progress>span{color:#ee8238}
+.dialog:has(.c-student-sheet)[open]{width:min(1120px,calc(100vw - 25px));max-width:none;max-height:calc(100dvh - 24px);height:min(91dvh,800px);display:flex;flex-direction:column;overflow:hidden;padding:clamp(14px,2vw,23px)}
+.dialog:has(.c-student-sheet) .dialog-head{flex:0 0 auto;padding-bottom:7px;margin-bottom:7px}
+.c-student-sheet{display:flex;flex-direction:column;flex:1;min-height:0;gap:9px}
+.c-student-sheet>p{flex:0 0 auto;margin:0;color:#789071;font-size:12px}
+.c-sheet-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);flex:1;min-height:0;gap:11px;overflow:auto;padding:2px}
+.c-sheet-card{display:flex;flex-direction:column;justify-content:space-between;gap:7px;min-width:0;min-height:145px;border:1px solid #dce8d6;border-top:5px solid var(--card-color);background:#fff;border-radius:14px;padding:clamp(10px,1vw,15px);box-shadow:0 2px 0 #eaf0e7}
+.c-sheet-card.corrected{background:#f7fbf5}
+.c-sheet-card.dirty{background:#fff6ed;border-color:#edaa70}
+.c-sheet-top{display:flex;align-items:center;gap:9px;color:#32593d}
+.c-sheet-top strong{flex:1;min-width:0;font:750 clamp(16px,1.5vw,21px) 'Outfit Variable',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-sheet-map-icon{display:grid;place-items:center;color:var(--card-color)}
+.c-sheet-prompt{font-size:11px;color:#7e9376;font-weight:850}
+.c-sheet-buttons{display:flex;flex-wrap:wrap;gap:5px}
+.c-sheet-buttons button{display:grid;place-items:center;width:clamp(27px,2.7vw,36px);height:clamp(29px,3vw,38px);background:#f4f9ef;color:#5d7c5c;border:1px solid #d9e6d0;border-radius:9px;font:850 14px 'Outfit Variable'}
+.c-sheet-buttons button.active{background:#f57b2f;border-color:#f57b2f;color:#fff;box-shadow:0 2px 0 #cc6424}
+.c-sheet-time{display:flex;align-items:center;gap:6px;min-width:0;font-size:11px;font-weight:800;color:#809681;border-top:1px solid #e9eee5;padding-top:7px}
+.c-sheet-time button{display:inline-flex;align-items:center;gap:4px;color:#d87937;border:0;background:transparent;font-size:11px;font-weight:800;margin-left:auto}
+.c-sheet-time input{max-width:100%;width:120px;border-radius:8px;border:1px solid #ed924a;padding:4px 7px;font-size:12px}
+.c-sheet-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:0 0 auto;border-top:1px solid #e0e9da;padding-top:12px}
+.c-sheet-footer>span{font-size:12px;font-weight:850;color:#6f8a6b}
+.c-sheet-footer .offline-step-actions{margin:0}
+.c-sheet-footer .button{padding:9px 13px;min-height:37px}
+
+/* Les onglets d'une leçon occupent EXACTEMENT la même place dans chaque vue. */
+.main-content:has(.lesson-heading-stable){width:100%;max-width:none;padding-inline:clamp(16px,3vw,44px);padding-top:17px}
+.main-content:has(.results-page){padding-inline:clamp(16px,3vw,44px);padding-top:17px}
+.lesson-heading-stable,.main-content:has(.results-page) .lesson-heading-stable{display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:68px;margin:0 0 15px}
+.lesson-heading-stable .lesson-heading-meta{min-width:0;flex:1;display:block}
+.lesson-heading-stable h1,.main-content:has(.results-page) .lesson-heading-stable h1{font-size:clamp(24px,2.5vw,33px);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lesson-heading-stable .page-intro{font-size:12px;margin:3px 0 0}
+.lesson-heading-controls{flex:none;display:flex;justify-content:flex-end;align-items:center;min-width:0}
+.main-content .lesson-heading-stable .lesson-tabs,.terrain-mode .lesson-heading-stable .lesson-tabs,.main-content:has(.results-page) .lesson-heading-stable .lesson-tabs{position:static!important;top:auto!important;right:auto!important;width:auto!important;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:3px;margin:0!important;padding:4px!important;background:#eaf0e2;border:0;border-radius:13px}
+.main-content .lesson-heading-stable .lesson-tabs button,.main-content:has(.results-page) .lesson-heading-stable .lesson-tabs button{min-height:38px;flex:none;border-radius:9px;padding:8px clamp(9px,1.15vw,17px);font-size:clamp(11px,.95vw,13px);white-space:nowrap}
+.lesson-copy-line{display:flex;justify-content:flex-end;margin:-5px 0 9px}
+.lesson-copy-line .button{min-height:30px;padding:6px 11px;font-size:11px}
+.terrain-mode .main-content:has(.lesson-heading-stable){padding:12px 24px 16px}
+.terrain-mode .lesson-heading-stable,.terrain-mode .main-content:has(.results-page) .lesson-heading-stable{min-height:43px;margin:0 0 7px}
+.terrain-mode .lesson-heading-stable .lesson-heading-meta{display:block}
+.terrain-mode .lesson-heading-stable .lesson-heading-meta .title-with-action{display:flex}
+.terrain-mode .lesson-heading-stable .lesson-heading-meta .page-intro{display:block}
+.terrain-mode .run-tile-main h2{max-height:2.25em;min-height:0;flex:0 1 auto;line-height:1.07;white-space:normal!important;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;text-align:center;align-self:stretch;overflow-wrap:anywhere;margin:3px 0 2px}
+.terrain-mode .run-tile-main .run-time{flex:0 0 auto;align-self:center;font-size:clamp(14px,calc(var(--tile-unit)*.175),28px);white-space:nowrap;margin:2px 0}
+
+/* Une vraie balise et un numéro enfin lisible sur les tuiles de leçon. */
+.lesson-card-illustrated .lesson-card-decor{right:18px;top:44px;width:120px;height:116px;opacity:1;transform:none}
+.lesson-card-illustrated .lesson-card-decor svg{display:none}
+.lesson-card-illustrated .lesson-card-decor:before{content:"";position:absolute;top:0;right:0;width:42px;height:42px;border-radius:11px;background:#fff url('/logo.svg') center/cover;opacity:.95;box-shadow:0 2px 7px #15381f17}
+.lesson-card-illustrated .lesson-card-decor span{font-size:86px;line-height:1;letter-spacing:-4px;font-weight:850;color:#91b39a;opacity:.9}
+
+@media(max-width:1050px){
+ .offline-step{gap:7px;padding:11px 9px}.offline-step.active{padding:10px 8px}.offline-step>svg{display:none}.offline-step-text strong{font-size:12px}.offline-step-text small{font-size:10px}
+ .c-pupil-board{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .c-sheet-grid{gap:8px}.c-sheet-card{padding:9px}
+}
+@media(max-width:720px){
+ .offline-stepbar{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .offline-step{flex-direction:column;align-items:center;padding:8px 4px}.offline-step.active{padding:7px 3px}
+ .offline-step-number{height:26px;flex-basis:26px;width:26px;font-size:15px}.offline-step-text{text-align:center}
+ .offline-step-text strong{font-size:10px}.offline-step-text small{display:none}
+ .offline-tablet-import{flex-direction:column;align-items:flex-start}.offline-panel-hint{display:none}
+ .offline-group-roster{grid-template-columns:1fr}
+ .c-pupil-board{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .c-student-tile{min-height:104px;padding:8px}.c-student-tile>strong{font-size:clamp(14px,3vw,19px)}
+ .c-sheet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.c-sheet-buttons button{width:29px;height:30px}
+ .lesson-heading-stable,.main-content:has(.results-page) .lesson-heading-stable{min-height:72px;gap:7px}
+ .lesson-heading-stable h1,.main-content:has(.results-page) .lesson-heading-stable h1{font-size:20px}
+ .main-content .lesson-heading-stable .lesson-tabs button,.main-content:has(.results-page) .lesson-heading-stable .lesson-tabs button{font-size:10px;padding:7px 6px}
+ .main-content .lesson-heading-stable .lesson-tabs button span{display:none}
+ .c-sheet-footer{flex-direction:column;align-items:stretch}.c-sheet-footer .offline-step-actions{justify-content:flex-end}
+}
+@media(max-width:480px){.c-pupil-board{grid-template-columns:repeat(2,minmax(0,1fr))}.c-sheet-grid{grid-template-columns:1fr}.lesson-heading-stable .page-intro{display:none}.c-student-tile{min-height:94px}}
