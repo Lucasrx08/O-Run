@@ -626,3 +626,38 @@
 .qr-show{text-align:center}.qr-show>p{font-size:13px;color:#789179;margin-bottom:9px}.qr-image{display:block;width:min(100%,480px);aspect-ratio:1;margin:10px auto;border:1px solid #e2e8df;border-radius:13px;background:white;image-rendering:auto}.qr-pager{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;margin:12px 0}.qr-pager strong{font-size:16px;color:#325e40}.qr-scanner{text-align:center}.qr-camera{position:relative;width:min(100%,580px);aspect-ratio:4/3;margin:auto;border-radius:18px;overflow:hidden;background:#16382c}.qr-camera video{width:100%;height:100%;object-fit:cover}.qr-target{position:absolute;inset:20% 26%;border:3px solid #ff8a37;border-radius:18px;display:grid;place-items:center;color:#ff973e;pointer-events:none}.qr-camera-label{display:flex;align-items:center;justify-content:center;gap:7px;color:#648666;font-size:12px;margin:10px 0}.qr-scan-status{font-weight:850;color:#2d6848;font-size:14px;margin:12px 0}.qr-manual{text-align:left;border:1px solid #e1e9da;border-radius:13px;padding:12px;margin-top:14px}.qr-manual summary{cursor:pointer;font-size:12px;display:flex;gap:7px;align-items:center}.qr-manual textarea{width:100%;margin:12px 0;padding:10px;min-height:75px;font-size:12px}
 @media(max-width:950px){.station-options,.device-mode-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.station-choice{padding:14px;min-height:205px}.station-choice strong{font-size:20px}.device-mode-card{padding:15px;min-height:175px}.device-mode-card strong{font-size:22px}.lesson-heading-controls{flex-wrap:wrap}.device-send{align-items:flex-start}.run-qr-toolbar{padding:9px 12px}}
 @media(max-width:690px){.station-options,.device-mode-grid{grid-template-columns:1fr}.station-choice,.device-mode-card{min-height:0;padding:14px 17px}.station-choice-icon,.device-mode-icon{width:39px;height:39px}.station-choice{gap:7px}.device-mode-card{gap:7px}.device-preview,.device-send{padding:14px}.device-preview-cols{grid-template-columns:1fr}.lesson-heading-controls{flex-wrap:wrap;justify-content:flex-end}.lesson-mode-shortcut{padding:7px 8px;font-size:11px}.results-page .results-commandbar{align-items:stretch}.results-qr-actions .button{font-size:11px;min-height:39px}.run-qr-toolbar{align-items:flex-start}.run-qr-buttons .button{font-size:11px}}
+
+/* O’Run — vue enseignant strictement limitée au poste de chronométrage A/B. */
+.tablet-teacher-mode .main-content{padding:10px 16px 12px}
+.tablet-teacher-mode .run-qr-toolbar{flex:0 0 auto;margin-bottom:6px;padding:8px 12px}
+.tablet-teacher-mode .run-qr-toolbar small{font-size:10px}
+.tablet-teacher-mode .app-header .header-inner{max-width:none;padding-inline:18px}
+.tablet-teacher-mode .app-header .brand{cursor:default}
+.terrain-mode .start-map select{width:min(26vw,245px);max-width:245px;text-overflow:ellipsis}
+.terrain-mode .run-tile h2{font-family:'Outfit Variable',sans-serif;font-weight:850;letter-spacing:-.035em;color:#1e4734}
+.terrain-mode .run-tile-main{padding:clamp(3px,calc(var(--tile-unit)*.045),11px)}
+.terrain-mode .run-tile-top{min-height:12px;margin-bottom:0}
+.terrain-mode .run-tile-main h2{margin:1px 0 0;line-height:1.04;max-height:2.1em}
+.terrain-mode .run-tile-main .run-time{margin:0;font-size:clamp(12px,calc(var(--tile-unit)*.16),25px)}
+.lesson-card-illustrated .lesson-card-link{position:relative;z-index:2}
+.lesson-card-open{display:block;text-align:left;border:0;background:transparent;padding:0;width:100%;color:inherit;position:relative}
+.lesson-card-open:hover h2,.lesson-card-open:focus-visible h2{color:#d26b2e}
+.lesson-card-illustrated .lesson-card-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:12px}
+.lesson-card-copy{display:inline-flex;align-items:center;gap:7px;background:#eef5e8;color:#34644b;border:1px solid #d2e4cb;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:850}
+.lesson-card-copy:hover{background:#e3f0db;color:#d26927}
+/* Un classement complet en deux colonnes, avec rangs conservés (1–13 / 14–25). */
+.ranking-two-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;align-items:start;width:100%}
+.ranking-two-columns>.results-table{width:100%;min-width:0;overflow-x:auto}
+.ranking-two-columns .results-table table{width:100%;table-layout:auto}
+.results-page .route-ranking .ranking-two-columns .results-table th,.results-page .route-ranking .ranking-two-columns .results-table td,.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td{padding:7px 5px;font-size:clamp(9px,.74vw,12px);white-space:nowrap}
+.ranking-two-columns .column-sort{font-size:inherit;white-space:nowrap}
+.ranking-two-columns .results-table th:first-child,.ranking-two-columns .results-table td:first-child{width:32px}
+.results-page .ranking-two-columns .table-scroll{max-height:none;overflow-x:auto}
+@media(max-width:1250px){.ranking-two-columns{grid-template-columns:1fr}}
+/* Une fenêtre QR complète : le bas et les boutons Précédent / Suivant restent accessibles. */
+.dialog:has(.qr-show)[open]{display:flex;flex-direction:column;max-height:calc(100dvh - 20px);overflow:hidden;padding:clamp(12px,2vh,24px)}
+.dialog:has(.qr-show)>.dialog-head{flex:0 0 auto;margin-bottom:5px}
+.dialog:has(.qr-show) .qr-show{min-height:0;flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:7px}
+.dialog:has(.qr-show) .qr-image{width:min(100%,52dvh,480px);margin:2px auto;height:auto;flex:0 1 auto;object-fit:contain}
+.dialog:has(.qr-show) .qr-pager{flex:0 0 auto;width:100%;margin:4px 0;gap:10px;position:sticky;bottom:0;padding:6px;background:#fff;border-radius:12px;z-index:2}
+.dialog:has(.qr-show) .qr-auto{flex:0 0 auto;margin-bottom:5px}
