@@ -103,3 +103,17 @@ it('corrige les temps saisis en minutes:secondes et rejette les valeurs invalide
  expect(()=>parseTime('01:75')).toThrow();
  expect(()=>parseTime('abc')).toThrow();
 });
+
+it('supprime seulement la leçon ciblée, en gardant les autres leçons et les élèves',()=>{
+ const {data,session,pupils}=fixture();
+ const second=createLesson(data,'3e Alphas','Leçon suivante','2026-11-03',undefined,(()=>{let n=0;return ()=>`next-${++n}`})());
+ const run=apply(second.data,{kind:'start',id:'start-delete-test',at:100000,sessionId:session.id,courseId:session.courseIds[0],students:[pupils[0].id],runIds:['run-delete-test']});
+ expect(()=>apply(run,{kind:'deleteLesson',id:'delete-blocked',at:120000,sessionId:session.id,baseVersion:run.version})).toThrow(/Arrêtez les chronos/);
+ const finished=apply(run,{kind:'stop',id:'stop-delete-test',at:140000,runId:'run-delete-test'});
+ const removed=apply(finished,{kind:'deleteLesson',id:'delete-session',at:150000,sessionId:session.id,baseVersion:finished.version});
+ expect(removed.sessions).toHaveLength(1);
+ expect(removed.sessions[0].name).toBe('Leçon suivante');
+ expect(removed.students).toHaveLength(pupils.length);
+ expect(removed.courses).toHaveLength(6);
+ expect(removed.runs).toHaveLength(0);
+});

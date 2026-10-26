@@ -21,6 +21,7 @@ export type Command =
  | {kind:'level';id:string;at:number;runId:string;level:Level|null;expectedRevision:number;reason:string}
  | {kind:'config';id:string;at:number;baseVersion:number;students:Student[];sequences:Sequence[];sessions:Session[];courses:Course[];detail:string}
  | {kind:'deleteClass';id:string;at:number;className:string;baseVersion:number}
+ | {kind:'deleteLesson';id:string;at:number;sessionId:string;baseVersion:number}
  | {kind:'purge';id:string;at:number;sessionId:string}
  | {kind:'offlineCorrect';id:string;at:number;sessionId:string;studentId:string;courseId:string;attempt:number;errors:number;milliseconds?:number};
 export interface WavePlan {sessionId:string;courseId:string;queue:string[];size:number;interval:number;nextAt:number;paused:boolean;remaining?:number;sound:boolean;}

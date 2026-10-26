@@ -1,4 +1,4 @@
-import {removeClass} from './classroom';
+import {removeClass,removeLesson} from './classroom';
 import type {Command, Course, Data, Level, Role, Run, Student} from './types';
 export function elapsed(run:Run, now=Date.now()):number {
  if(run.end!==undefined&&run.manualTimeMs!==undefined)return run.manualTimeMs;
@@ -68,6 +68,11 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   detail=cmd.detail;
  }else if(cmd.kind==='deleteClass'){
   check(cmd.baseVersion===data.version,'La classe a changé sur un autre poste. Réessayez.');Object.assign(next,removeClass(next,cmd.className));detail=`Classe supprimée : ${cmd.className}`;
+ }else if(cmd.kind==='deleteLesson'){
+  check(cmd.baseVersion===data.version,'La leçon a changé sur un autre poste. Réessayez.');
+  const lesson=next.sessions.find(s=>s.id===cmd.sessionId);
+  check(lesson,'Leçon introuvable.');
+  Object.assign(next,removeLesson(next,cmd.sessionId));detail=`Leçon supprimée : ${lesson.name}`;
  }else if(cmd.kind==='purge') {
   next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);detail='Résultats de la séance supprimés';
  }else if(cmd.kind==='offlineCorrect'){

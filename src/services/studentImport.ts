@@ -14,13 +14,17 @@ export function inspectStudents(text:string,existing:Student[],className:string)
  const rows=parseCSV(text.trim());
  if(!rows.length)throw new Error('Collez des noms ou sélectionnez un fichier CSV / Excel.');
  if(rows.length>2001)throw new Error('Import limité à 2 000 élèves.');
- const header=rows[0].map(normalize);
+ // ÉcoleDirecte ajoute souvent plusieurs lignes administratives avant « Nom ».
+ // Ne jamais confondre l'effectif, la classe ou le professeur avec un élève.
+ const headerIndex=rows.findIndex(row=>row.some(cell=>['nom','nom de famille','last name','lastname'].includes(normalize(cell))));
+ const header=(headerIndex<0?rows[0]:rows[headerIndex]).map(normalize);
  const ni=header.findIndex(h=>['nom','last name','lastname','nom de famille'].includes(h));
  const pi=header.findIndex(h=>['prenom','first name','firstname'].includes(h));
  const structured=ni>=0&&pi>=0;
- const studentsRows=structured?rows.slice(1):rows;
+ const studentsRows=headerIndex>=0?rows.slice(headerIndex+1):rows;
  const entries=studentsRows.map(row=>{
   if(structured)return [row[ni]||'',row[pi]||'',className];
+  if(headerIndex>=0&&ni>=0){const name=separateName(row[ni]||'');return [name?.[0]||'',name?.[1]||'',className];}
   const filled=row.map(cell=>cell.trim()).filter(Boolean);
   if(filled.length>=2)return [filled[0],filled[1],className];
   const name=separateName(filled[0]||'');

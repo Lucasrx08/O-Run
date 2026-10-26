@@ -661,3 +661,61 @@
 .dialog:has(.qr-show) .qr-image{width:min(100%,52dvh,480px);margin:2px auto;height:auto;flex:0 1 auto;object-fit:contain}
 .dialog:has(.qr-show) .qr-pager{flex:0 0 auto;width:100%;margin:4px 0;gap:10px;position:sticky;bottom:0;padding:6px;background:#fff;border-radius:12px;z-index:2}
 .dialog:has(.qr-show) .qr-auto{flex:0 0 auto;margin-bottom:5px}
+
+/* Stabilisation des fenêtres sur Safari iPad : dimensions connues avant chargement des QR. */
+.dialog:has(.qr-show)[open]{width:min(700px,calc(100vw - 24px));height:min(92dvh,790px);min-height:350px;max-height:calc(100dvh - 16px);margin:auto}
+.dialog:has(.qr-show) .qr-show{width:100%;height:100%;min-height:0;justify-content:space-between}
+.dialog:has(.qr-show) .qr-image{display:block;flex:0 1 auto;width:min(100%,49dvh,510px);max-height:min(49dvh,510px);min-height:160px;aspect-ratio:1;object-fit:contain;align-self:center}
+.dialog:has(.qr-show) .qr-pager{margin-top:auto}
+.dialog:has(.class-import-drop)[open]{display:flex;flex-direction:column;width:min(870px,calc(100vw - 20px));height:min(89dvh,760px);max-height:calc(100dvh - 14px);margin:auto;overflow-y:auto;overscroll-behavior:contain;padding:clamp(14px,1.7vw,24px)}
+.dialog:has(.class-import-drop) .dialog-head{flex:0 0 auto;position:sticky;top:0;background:#fff;z-index:2;padding:0 0 10px;margin:0 0 8px}
+.dialog:has(.class-import-drop) .class-import-drop{flex:0 0 auto;margin:3px 0 12px;padding:clamp(9px,1.3vh,16px);gap:4px}
+.dialog:has(.class-import-drop) .class-import-drop>svg{height:22px}
+.dialog:has(.class-import-drop) .field{margin:4px 0}
+.dialog:has(.class-import-drop) textarea{min-height:68px;max-height:115px;resize:vertical;font-size:13px}
+.dialog:has(.class-import-drop) .class-import-preview{max-height:87px}
+.dialog:has(.class-import-drop) .dialog-actions{position:sticky;bottom:0;background:#fff;padding-top:8px;z-index:2}
+
+/* Pavé tactile : aucun clavier Safari ne recouvre l'écran au moment du déverrouillage. */
+.dialog:has(.kiosk-keypad)[open]{width:min(390px,calc(100vw - 24px));max-height:calc(100dvh - 16px);margin:auto;overflow-y:auto;padding:clamp(13px,2vh,25px)}
+.dialog:has(.kiosk-keypad) .dialog-head h2{font-size:clamp(19px,2.4vw,25px)}
+.kiosk-pin-form{display:flex;flex-direction:column;align-items:stretch;gap:5px}
+.kiosk-pin-form>p{margin:5px 0;font-size:12px}
+.kiosk-pin-form .kiosk-pin-lock{width:38px;height:38px;border-radius:10px}
+.kiosk-pin-form .kiosk-pin-lock svg{width:20px}
+.kiosk-code-label{text-align:center;color:#3b674c!important;font-weight:850}
+.kiosk-code-dots{display:flex;justify-content:center;gap:12px;margin:4px 0 8px}
+.kiosk-code-dots span{display:block;width:13px;height:13px;border-radius:50%;border:2px solid #a4bbaa;background:#fff}
+.kiosk-code-dots span.filled{background:#ed7b32;border-color:#ed7b32}
+.kiosk-keypad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;max-width:290px;width:100%;margin:0 auto}
+.kiosk-keypad button{display:grid;place-items:center;min-height:clamp(43px,5.8dvh,55px);border:1px solid #d7e5d3;border-radius:11px;background:#f7faf4;color:#295941;font:750 22px 'Outfit Variable',sans-serif}
+.kiosk-keypad button:active{background:#ffead7;border-color:#ef8f45}
+.kiosk-pin-form .dialog-actions{margin-top:8px;padding-top:8px}
+
+/* Correction : conserver l'effectif à l'écran sur les ordinateurs larges. */
+.c-correction-new .c-correction-head{margin-bottom:5px}
+.c-correction-new .c-correction-toolbar{gap:9px;flex-wrap:wrap;margin:5px 0 8px}
+.c-correction-filters{display:flex;align-items:center;gap:5px;margin-left:auto;background:#edf5e9;border-radius:11px;padding:4px}
+.c-correction-filters button{min-height:34px;border:1px solid transparent;border-radius:8px;background:transparent;color:#648268;padding:6px 9px;font-size:12px;font-weight:850}
+.c-correction-filters button.active{background:#2d6346;color:#fff}
+.c-correction-filters button span{font-weight:800;margin-left:4px}
+.c-manual-toggle{display:inline-block;margin:0 0 8px;text-align:left}
+.c-pupil-board{grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.c-correction-new .c-student-tile{min-height:clamp(80px,10dvh,118px);padding:9px 12px}
+.c-correction-new .c-student-tile>strong{font-size:clamp(15px,1.45vw,21px);line-height:1.08}
+.c-correction-new .c-student-progress{font-size:10px;padding-top:5px}
+@media(min-width:1500px){.c-pupil-board{grid-template-columns:repeat(8,minmax(0,1fr))}}
+@media(max-width:1100px){.c-pupil-board{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:700px){.c-pupil-board{grid-template-columns:repeat(3,minmax(0,1fr))}.c-correction-toolbar .search{max-width:none}.c-correction-filters{margin-left:0}}
+
+/* Cartes et pilotage : aucune déformation des titres, hauteur bornée au viewport. */
+.lesson-card-actions{display:flex;gap:8px;align-items:center}
+.lesson-card-actions .lesson-delete{border:1px solid #efdcd4;background:#fffaf7;color:#be6549}
+.lesson-card-actions .lesson-delete:hover{background:#fff0e6;color:#a63e27}
+.lesson-card-illustrated .lesson-card-bottom{gap:10px}
+@media(min-width:900px){.map-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.map-grid .map-card{height:clamp(165px,calc((100dvh - 365px)/2),290px);min-height:0;overflow:hidden}.map-grid .map-main{min-height:0;flex:1}.map-grid .map-main h3{font-size:clamp(19px,2.1vw,30px)}}
+.wave-focus{gap:clamp(6px,1.3vh,15px)}
+.wave-focus-head{flex:0 0 auto;padding:clamp(10px,1.5vh,20px)}
+.wave-next-grid{flex:1;min-height:0;align-content:stretch}
+.wave-next-card{min-width:0;min-height:0;height:100%;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.wave-next-card strong{max-width:100%;overflow-wrap:anywhere;font-size:clamp(19px,3vw,52px);line-height:1.08}

@@ -9,12 +9,15 @@ import {Dialog} from './ui';
 export function QRShowDialog({title,frames,onClose}:{title:string;frames:string[];onClose:()=>void}){
  const [index,setIndex]=useState(0),[src,setSrc]=useState(''),[error,setError]=useState(''),[autoplay,setAutoplay]=useState(frames.length>1);
  useEffect(()=>{if(!autoplay||frames.length<2)return;const id=window.setInterval(()=>setIndex(i=>(i+1)%frames.length),2000);return()=>window.clearInterval(id);},[autoplay,frames.length]);
- useEffect(()=>{let alive=true;setSrc('');QRCode.toDataURL(frames[index],{width:620,margin:3,errorCorrectionLevel:frames[index].length>1000?'L':'M'})
-  .then(url=>{if(alive)setSrc(url);}).catch(()=>{if(alive)setError('Impossible de dessiner ce QR code. Utilisez le fichier de secours.');});
+ useEffect(()=>{let alive=true;setError('');setSrc('');const frame=frames[index];if(!frame){setError('Aucune donnée QR à afficher. Réessayez depuis les chronos.');return;}
+  // SVG = pas de canevas géant en mémoire sur Safari iPad, même avec beaucoup de chronos.
+  QRCode.toString(frame,{type:'svg',margin:3,errorCorrectionLevel:'L'})
+   .then(svg=>{if(alive)setSrc(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);})
+   .catch(()=>{if(alive)setError('Impossible de dessiner ce QR code. Réexportez les chronos depuis cette tablette.');});
   return()=>{alive=false;};},[frames,index]);
  return <Dialog wide title={title} onClose={onClose}><div className="qr-show">
   <p>Présentez cet écran devant la caméra de l’autre appareil. Aucun fichier ni réseau n’est nécessaire.</p>
-  {error?<p role="alert" className="form-error">{error}</p>:src?<img src={src} alt={`QR code ${index+1} sur ${frames.length}`} className="qr-image"/>:<p>Préparation du QR code…</p>}
+  {error?<p role="alert" className="form-error">{error}</p>:src?<img src={src} alt={`QR code ${index+1} sur ${frames.length}`} className="qr-image"/>:<p role="status">Préparation du QR code…</p>}
   <div className="qr-pager"><button type="button" className="button" disabled={index===0} onClick={()=>setIndex(i=>i-1)}><ArrowLeft size={17}/>Précédent</button>
    <strong>QR {index+1} / {frames.length}</strong>
    <button type="button" className="button primary" disabled={index===frames.length-1} onClick={()=>setIndex(i=>i+1)}>Suivant<ArrowRight size={17}/></button></div>

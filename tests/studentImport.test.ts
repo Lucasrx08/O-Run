@@ -24,3 +24,13 @@ it('lit réellement un classeur Excel .xlsx, puis l’importe dans la classe sé
  const text=await studentFileText(file);
  expect(inspectStudents(text,[],'3e Test').students.map(p=>p.firstName)).toEqual(['Théo','Léa']);
 });
+
+it('ignore les six lignes administratives ÉcoleDirecte et démarre sous « Nom »',()=>{
+ const exportED=['Edité le 25/10/2026 à 20:03;;;;Année scolaire : 2026 - 2027',
+  ';Classe : 6e Exemple;;;;',';Prof principal : Exemple;;;;',';Effectif : 3 élèves;;;;',
+  '(2 filles et 1 garçon);;;;',';;;;','Nom;;;;',
+  'MARTIN Camille;;;;','DUPONT Léa;;;;','DE LA ROCHE Hugo;;;;'].join('\n');
+ const parsed=inspectStudents(exportED,[],'6e Test');
+ expect(parsed.invalid).toBe(0);
+ expect(parsed.students.map(p=>[p.lastName,p.firstName])).toEqual([['MARTIN','Camille'],['DUPONT','Léa'],['DE LA ROCHE','Hugo']]);
+});
