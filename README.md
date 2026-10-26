@@ -36,18 +36,29 @@ Couleurs iDoceo (reprises de la référence fournie) :
 
 Ces repères de participation et de précision sont distincts des niveaux d’évaluation d’un barème. Le CSV iDoceo contient les deux repères séparés, sans inventer une note globale. Le PDF comporte le nom de classe en grand, la leçon ou la dernière leçon comptabilisée, le décor d’orientation et les couleurs ; aucun en-tête générique ni pied de page de navigateur n’y est ajouté. Le bouton d’impression prépare ce PDF à imprimer.
 
-## Séance hors ligne sur trois appareils
+## Une leçon, un à trois appareils — QR codes hors ligne
 
-Depuis **Réglages → Appareils**, un bandeau horizontal de quatre numéros guide les collègues sur Mac ou iPad :
+Dans **Mes classes → Leçon**, commencer par choisir l’organisation de la séance :
 
-1. **Répartir** : configurer le poste **C**. O’Run partage les élèves par ordre alphabétique en deux moitiés équilibrées, ajustables manuellement. Envoyer par **AirDrop** les fichiers **Préparation tablette A.json** et **Préparation tablette B.json**. Sur les iPads, ouvrir les fichiers dans **Réglages → Appareils → 1 → Ajouter une préparation A ou B**. Une même tablette peut recevoir **A puis B (ou B puis A)**, sans supprimer les premiers élèves ni les chronos déjà enregistrés : l’application affiche alors **iPad A + B**.
-2. **Sur le terrain** : chronométrer les groupes depuis les grandes tuiles sur A et/ou B. Au poste C, sélectionner le prénom d’un élève sur le plateau de tuiles, puis indiquer les **balises fausses de plusieurs cartes à la fois**. Les corrections sont enregistrées ensemble, même avant la réception des chronos. Un chrono reçu peut être corrigé depuis la même fiche.
-3. **Rassembler** : une fois tous les chronos arrêtés, exporter **Chrono de la tablette A.json** et **Chrono de la tablette B.json**, séparément, même si les deux groupes ont été chronométrés sur un seul iPad. Sur C, recevoir par AirDrop et importer les deux fichiers. Le sélecteur accepte aussi les anciens fichiers **.oruntimes** ; les réimportations identiques ne créent pas de doublons et les corrections sont conservées.
-4. **Classements** : ouvrir l’onglet **Résultats → Classement** de la **leçon existante**, une fois les chronos récupérés. Aucun écran de classement distinct n’est créé.
+| Mode | Départs et arrivées | Correction / résultats | Répartition |
+|---|---|---|---|
+| **1 appareil** | Appareil principal | Même appareil | Aucune |
+| **2 appareils** | **Tablette A** | **Poste C** (Mac ou iPad) | A gère la classe entière |
+| **3 appareils** | **Tablettes A et B** | **Poste C** (Mac ou iPad) | A : première moitié alphabétique ; B : seconde moitié |
 
-**Le mode appareil unique est conservé.** Le scanner de cartons poinçonnés est une piste future et ne fait pas partie de ce mode.
+La répartition en trois appareils est **alphabétique, équilibrée et ajustable** dans la leçon. Elle reste enregistrée avec la leçon. Si un iPad ne fonctionne plus, **une même tablette peut scanner les préparations A et B**, sans perdre les chronos déjà saisis.
 
-**Protection des données :** la préparation initiale contient uniquement les prénoms et initiales nécessaires aux tablettes ; le fichier de chronos utilise un chiffrement AES-GCM propre à la séance. Les fichiers de préparation doivent néanmoins être conservés dans un emplacement protégé et supprimés une fois importés. AirDrop est un transfert manuel entre appareils Apple, pas une synchronisation. La validation RGPD du traitement et la sécurité des appareils restent à organiser avec l’établissement.
+**Préparation des iPads (modes 2 et 3).** Sur C, choisir le mode, l'enregistrer, puis toucher « QR Tablette A » et, en mode 3, « QR Tablette B ». Sur l'iPad, ouvrir **Réglages → Mon poste → Tablette A/B**, puis scanner les QR codes affichés sur C. Si une préparation dépasse la capacité d'un seul code, O’Run affiche une courte série numérotée à scanner entièrement. L’ancienne importation de fichiers `.json` reste accessible dans le volet de secours des réglages.
+
+**Pendant la séance.** Les grandes tuiles sur A/B servent à démarrer et arrêter les chronos. Sur C, ouvrir **Résultats → Correction** : les élèves apparaissent sous forme de tuiles, et leurs cartes sont corrigées à partir des cartons papier, y compris avant réception des chronos. Plusieurs cartons d’un élève peuvent être enregistrés ensemble.
+
+**Fin de séance.** Sur chaque iPad, lorsque tous les chronos sont arrêtés, toucher **QR des chronos A** ou **QR des chronos B**. Sur C, ouvrir **Résultats → Correction → Scanner les chronos A / B**, puis scanner le ou les codes. Les temps se réunissent automatiquement avec les corrections déjà enregistrées ; un second scan identique ne crée pas de doublon. En cas d’impossibilité de lecture, utiliser **Fichier de secours (AirDrop)**. Les exports de chronos sont nommés `Chronos_Tablette_A.json` et `Chronos_Tablette_B.json`. Le **Classement** reste dans les résultats de cette même leçon, sans espace supplémentaire.
+
+**Capacité des QR codes :** un seul QR code peut contenir les chronos d'une tablette pour une séance habituelle, grâce à une représentation compacte. Si le volume de données est trop important, l'application affiche plusieurs QR codes numérotés ; le fichier de secours reste disponible.
+
+**Protection des données :** aucune donnée n’est envoyée à un serveur ni synchronisée automatiquement. La préparation QR ne contient que les prénoms et initiales nécessaires au terrain, mais ces informations restent des données personnelles. Les QR de chronos ne transportent ni noms ni clé secrète, et leur contenu est chiffré en AES-GCM avec une clé propre à la leçon. Protéger les appareils et leur stockage, limiter les personnes autorisées à scanner les préparations et organiser les durées de conservation avec l'établissement. L'absence de cloud ne suffit pas à elle seule à garantir la conformité RGPD.
+
+Le scanner automatique des cartons poinçonnés reste une piste future, non activée dans cette version.
 
 L'ancien code de serveur situé dans `supabase/` et les anciens tests de connexion sont conservés uniquement comme références historiques : l’interface courante ne propose plus de connexion à ce service.
 

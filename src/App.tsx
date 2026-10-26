@@ -1,17 +1,18 @@
 import {useEffect,useState} from 'react';
-import {ArrowLeft,Check,ChevronRight,Copy,LockKeyhole,Pencil,Settings,Timer} from 'lucide-react';
+import {ArrowLeft,Check,ChevronRight,Copy,LockKeyhole,Pencil,Settings,Timer,Monitor} from 'lucide-react';
 import {useStore,configCommand} from './store';
 import {classNames,copyLesson,type LessonTemplate} from './domain/classroom';
 import {Classes,ClassDetail} from './pages/Classrooms';
 import {LessonCards} from './pages/LessonCards';
 import {RunBoard} from './pages/RunBoard';
 import {LessonResults} from './pages/LessonResults';
+import {LessonDevices} from './pages/LessonDevices';
 import {SettingsPage} from './pages/Settings';
 import {Dialog,Empty,Field} from './components/ui';
 export default function App(){
  const s=useStore();
  const [className,setClassName]=useState<string|null>(null),[tab,setTab]=useState<'lessons'|'students'>('lessons');
- const [lessonView,setLessonView]=useState<'cards'|'field'|'results'|null>(null),[clipboard,setClipboard]=useState<LessonTemplate|null>(null);
+ const [lessonView,setLessonView]=useState<'devices'|'cards'|'field'|'results'|null>(null),[clipboard,setClipboard]=useState<LessonTemplate|null>(null);
  const [metadata,setMetadata]=useState(false),[name,setName]=useState(''),[date,setDate]=useState(''),[saving,setSaving]=useState(false);
  const teacher=s.role==='teacher',session=s.data.sessions.find(l=>l.id===s.sessionId);
  const inferredClass=session?.className||s.data.students.find(p=>session?.studentIds.includes(p.id))?.className||classNames(s.data)[0]||'';
@@ -22,7 +23,7 @@ export default function App(){
  useEffect(()=>{const prevent=(e:Event)=>e.preventDefault();const touch=(e:TouchEvent)=>{if(e.touches.length>1)e.preventDefault();};document.addEventListener('gesturestart',prevent,{passive:false});document.addEventListener('gesturechange',prevent,{passive:false});document.addEventListener('touchmove',touch,{passive:false});return()=>{document.removeEventListener('gesturestart',prevent);document.removeEventListener('gesturechange',prevent);document.removeEventListener('touchmove',touch);};},[]);
  const home=()=>{setClassName(null);setLessonView(null);s.go('home');};
  const openClass=(n:string)=>{setClassName(n);setLessonView(null);setTab(s.data.students.some(p=>p.className===n)?'lessons':'students');s.go('home');};
- const openLesson=(id:string)=>{s.setSessionId(id);setLessonView(workMode==='control'?'results':workMode==='departures'||workMode==='arrivals'?'field':'cards');s.go('home');};
+ const openLesson=(id:string)=>{s.setSessionId(id);setLessonView(workMode==='control'||(s.offline?.post==='C'&&s.offline?.sessionId===id)?'results':workMode==='departures'||workMode==='arrivals'||(['A','B','AB'].includes(s.offline?.post||'')&&s.offline?.sessionId===id)?'field':'devices');s.go('home');};
  useEffect(()=>{if(['departures','arrivals','control'].includes(s.view)){setClassName(inferredClass);setLessonView(s.view==='control'?'results':'field');}},[s.view,inferredClass]);
  const jumpToRun=()=>{const r=active[0];if(!r)return;s.setSessionId(r.sessionId);setClassName(s.data.students.find(p=>p.id===r.studentId)?.className||'');setLessonView('field');s.go('home');};
  return <div className={`app ${field==='field'&&s.view!=='settings'?'terrain-mode':''}`}><a className="skip" href="#main">Aller au contenu</a>
@@ -31,9 +32,9 @@ export default function App(){
  {s.view==='settings'?<><button className="back-link" onClick={()=>s.go('home')}><ArrowLeft size={16}/>Retour</button><SettingsPage/></>:teacher&&!className&&!lessonView?<Classes open={openClass}/>:<>
  {teacher&&<nav className="breadcrumbs" aria-label="Fil d’Ariane"><button onClick={home}>Mes classes</button><ChevronRight size={14}/>{field?<><button onClick={()=>openClass(currentClass)}>{currentClass}</button><ChevronRight size={14}/><span>{session?.name}</span></>:<span>{currentClass}</span>}</nav>}
  {field?session?<><div className="page-heading lesson-heading lesson-heading-stable"><div className="lesson-heading-meta"><div className="title-with-action"><h1>{session.name}</h1>{teacher&&<button className="icon-button" aria-label="Modifier la leçon" onClick={()=>{setName(session.name);setDate(session.date);setMetadata(true);}}><Pencil size={17}/></button>}</div><p className="page-intro">{!teacher&&classNames(s.data).length>1?<select aria-label="Classe affichée" value={currentClass} onChange={e=>setClassName(e.target.value)}>{classNames(s.data).map(n=><option key={n}>{n}</option>)}</select>:currentClass}<span className="separator">·</span>{new Date(session.date+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long'})}</p></div>
- {teacher&&workMode==='complet'&&<div className="lesson-heading-controls"><div className="section-tabs lesson-tabs" role="tablist" aria-label="Leçon"><button role="tab" aria-selected={field==='cards'} className={field==='cards'?'active':''} onClick={()=>setLessonView('cards')}>Cartes<span>{session.courseIds.length}</span></button><button role="tab" aria-selected={field==='field'} className={field==='field'?'active':''} onClick={()=>setLessonView('field')}>Départs & arrivées</button><button role="tab" aria-selected={field==='results'} className={field==='results'?'active':''} onClick={()=>setLessonView('results')}>Résultats</button></div></div>}</div>
+ {teacher&&workMode==='complet'&&<div className="lesson-heading-controls"><button type="button" className={field==='devices'?'lesson-mode-shortcut active':'lesson-mode-shortcut'} onClick={()=>setLessonView('devices')}><Monitor size={16}/>Organisation</button>{field!=='devices'&&<div className="section-tabs lesson-tabs" role="tablist" aria-label="Leçon"><button role="tab" aria-selected={field==='cards'} className={field==='cards'?'active':''} onClick={()=>setLessonView('cards')}>Cartes<span>{session.courseIds.length}</span></button><button role="tab" aria-selected={field==='field'} className={field==='field'?'active':''} onClick={()=>setLessonView('field')}>Départs & arrivées</button><button role="tab" aria-selected={field==='results'} className={field==='results'?'active':''} onClick={()=>setLessonView('results')}>Résultats</button></div>}</div>}</div>
  {teacher&&workMode==='complet'&&field==='cards'&&<div className="lesson-copy-line"><button className="button" onClick={()=>{setClipboard(copyLesson(s.data,session));s.notify('Leçon copiée. Ouvrez une classe pour la coller.');}}><Copy size={17}/>Copier la leçon</button></div>}
- {field==='cards'?<LessonCards key={session.id} session={session} className={currentClass} onStart={()=>setLessonView('field')}/>:field==='results'?<LessonResults key={session.id+currentClass+workMode} session={session} className={currentClass} correctionOnly={workMode==='control'}/>:<RunBoard key={session.id+currentClass} session={session} className={currentClass}/>}
+ {field==='devices'?<LessonDevices key={session.id} session={session} onContinue={()=>setLessonView('cards')}/>:field==='cards'?<LessonCards key={session.id} session={session} className={currentClass} onStart={()=>setLessonView('field')}/>:field==='results'?<LessonResults key={session.id+currentClass+workMode} session={session} className={currentClass} correctionOnly={workMode==='control'}/>:<RunBoard key={session.id+currentClass} session={session} className={currentClass}/>}
  </>:<Empty title="Aucune leçon disponible."/>:<ClassDetail key={currentClass} className={currentClass} tab={tab} setTab={setTab} openLesson={openLesson} renamed={setClassName} clipboard={clipboard} setClipboard={setClipboard}/>}
  </>}
  </main><footer className="app-footer"><span>O’Run · Créé par L. RIGAUX</span><span>{s.room?s.connection:'Enregistré sur cet appareil'}</span></footer>

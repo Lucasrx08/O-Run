@@ -19,6 +19,7 @@ it('classe → élève → 6 cartes → arrêt → nouvelle carte → correction
  await user.click(screen.getByRole('button',{name:'Nouvelle classe'}));await user.type(screen.getByLabelText('Nom de la classe'),'3e Essai');await user.click(screen.getByRole('button',{name:'Créer la classe'}));
  await user.click(await screen.findByRole('button',{name:'Ajouter un élève'}));await user.type(screen.getByLabelText('Prénom'),'Camille');await user.type(screen.getByLabelText('Nom',{exact:true}),'Exemple');await user.click(screen.getByRole('button',{name:'Enregistrer l’élève'}));await screen.findByText('Camille Exemple');
  await user.click(screen.getByRole('tab',{name:/Leçons/}));await user.click(screen.getByRole('button',{name:'Nouvelle leçon'}));await user.click(screen.getByRole('button',{name:'Créer la leçon'}));
+ await user.click(await screen.findByRole('button',{name:'Ouvrir ma leçon'}));
  await screen.findByRole('button',{name:'Configurer Carte 6'});expect(screen.getAllByText('6 balises')).toHaveLength(6);
  await user.click(screen.getByRole('button',{name:'Modifier Carte 1'}));await user.click(screen.getByRole('button',{name:'Ajouter une balise'}));await user.click(screen.getByRole('button',{name:'Enregistrer la carte'}));await screen.findByText('7 balises');
  await user.click(screen.getByRole('button',{name:'Supprimer Carte 6'}));await user.click(screen.getByRole('button',{name:'Retirer la carte'}));await waitFor(()=>expect(screen.queryByRole('button',{name:'Configurer Carte 6'})).toBeNull());
@@ -37,7 +38,7 @@ it('classe → élève → 6 cartes → arrêt → nouvelle carte → correction
 async function prepared(){
  let d=(await loadWorkspace()).data;d=createClass(d,'3e Vagues');d=addClassStudents(d,'3e Vagues',[{id:'a',firstName:'Alice',lastName:'Essai',className:''},{id:'b',firstName:'Basile',lastName:'Essai',className:''},{id:'c',firstName:'Camille',lastName:'Essai',className:''}]);const result=createLesson(d,'3e Vagues','Vagues test','2026-10-20');await mutate(w=>({...w,data:result.data}));return result.session;
 }
-async function openBoard(){await screen.findByRole('heading',{name:/Mes classes/});fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(await screen.findByRole('button',{name:'Passer aux départs'}));}
+async function openBoard(){await screen.findByRole('heading',{name:/Mes classes/});fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));fireEvent.click(await screen.findByRole('button',{name:'Ouvrir ma leçon'}));fireEvent.click(await screen.findByRole('button',{name:'Passer aux départs'}));}
 it('départ simultané sur des cartes différentes avec un instant commun',async()=>{
  const session=await prepared();render(<Provider><App/></Provider>);await openBoard();fireEvent.click(screen.getByRole('button',{name:'Carte de départ de Basile E.'}));fireEvent.click(within(screen.getByRole('dialog')).getByRole('button',{name:'Carte 2'}));fireEvent.click(screen.getByRole('button',{name:'Lancer 3 élèves'}));await waitFor(async()=>expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(3));const runs=(await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id);expect(new Set(runs.map(r=>r.start)).size).toBe(1);expect(runs.find(r=>r.studentId==='b')!.courseSnapshot.name).toBe('Carte 2');
 });
@@ -108,16 +109,24 @@ it('enregistre un barème balises seules puis temps seul en minutes et secondes'
  const session=await prepared();render(<Provider><App/></Provider>);await openBoard();fireEvent.click(screen.getByRole('tab',{name:/Cartes/}));fireEvent.click(screen.getByRole('button',{name:'Modifier Carte 1'}));fireEvent.click(screen.getByText('Réglages avancés'));fireEvent.click(screen.getByLabelText('Utiliser un barème de maîtrise'));fireEvent.click(screen.getByLabelText('Évaluer le temps'));expect(screen.queryByLabelText('Minutes maximales niveau 4')).toBeNull();fireEvent.change(screen.getByLabelText('Balises fausses maximales niveau 4'),{target:{value:'1'}});fireEvent.click(screen.getByRole('button',{name:'Enregistrer la carte'}));await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());let d=(await loadWorkspace()).data;expect(d.courses.find(c=>c.id===session.courseIds[0])!.rubric.useTime).toBe(false);
  fireEvent.click(screen.getByRole('button',{name:'Modifier Carte 1'}));fireEvent.click(screen.getByText('Réglages avancés'));fireEvent.click(screen.getByLabelText('Évaluer le temps'));fireEvent.click(screen.getByLabelText('Évaluer les balises fausses'));expect(screen.queryByLabelText('Balises fausses maximales niveau 4')).toBeNull();fireEvent.change(screen.getByLabelText('Minutes maximales niveau 4'),{target:{value:'1'}});fireEvent.change(screen.getByLabelText('Secondes maximales niveau 4'),{target:{value:'30'}});fireEvent.click(screen.getByRole('button',{name:'Enregistrer la carte'}));await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());d=(await loadWorkspace()).data;expect(d.courses.find(c=>c.id===session.courseIds[0])!.rubric).toMatchObject({useControls:false,useTime:true,thresholds:[90,780,960]});
 });
-it('réglages visuels par rubrique et sélection explicite du poste',async()=>{
- await prepared();render(<Provider><App/></Provider>);await openBoard();fireEvent.click(screen.getByRole('button',{name:'Réglages'}));await screen.findByRole('heading',{name:/Réglages/});expect(screen.queryByText('Données & documentation')).toBeNull();expect(screen.queryByRole('button',{name:/Sauvegardes/})).toBeNull();expect(screen.queryByRole('button',{name:/Protection/})).toBeNull();fireEvent.click(screen.getByRole('button',{name:/Mon poste/}));fireEvent.click(screen.getByRole('button',{name:/^Départs Gérer le lancement/}));expect(localStorage.getItem('orun-mode')).toBe('departures');fireEvent.click(screen.getByRole('button',{name:'Utiliser ce poste'}));await screen.findByRole('button',{name:'Lancer 3 élèves'});
+it('propose les trois rôles de terrain et conserve le mode mono-appareil',async()=>{
+ await prepared();render(<Provider><App/></Provider>);await openBoard();fireEvent.click(screen.getByRole('button',{name:'Réglages'}));
+ await screen.findByRole('heading',{name:/Mon poste/});expect(screen.getByRole('button',{name:/Correction · C/})).toBeTruthy();
+ expect(screen.getByRole('button',{name:/Tablette A/})).toBeTruthy();expect(screen.getByRole('button',{name:/Tablette B/})).toBeTruthy();
+ expect(screen.queryByText('Données & documentation')).toBeNull();
+ expect(screen.getByText('Transfert par fichier (secours AirDrop)')).toBeTruthy();
 });
 
-it('sépare les postes départs, arrivées et pilotage',async()=>{
- await prepared();render(<Provider><App/></Provider>);await openBoard();fireEvent.click(screen.getByRole('button',{name:'Lancer 3 élèves'}));await screen.findByRole('button',{name:'Arrêter le chrono de Alice E.'});
- const switchPost=async(name:RegExp)=>{fireEvent.click(screen.getByRole('button',{name:'Réglages'}));fireEvent.click(screen.getByRole('button',{name}));fireEvent.click(screen.getByRole('button',{name:'Utiliser ce poste'}));};
- await switchPost(/^Arrivées Arrêter les chronos/);await screen.findByText('Poste d’arrivée');expect(screen.queryByRole('tab',{name:/Cartes/})).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Arrêter le chrono de Alice E.'}));await waitFor(()=>expect(screen.queryByRole('button',{name:'Arrêter le chrono de Alice E.'})).toBeNull());expect(screen.getByRole('button',{name:'Arrêter le chrono de Basile E.'})).toBeTruthy();
- await switchPost(/^Départs Gérer le lancement/);await screen.findByText('Poste de départ');expect(screen.queryByRole('button',{name:'Arrêter le chrono de Basile E.'})).toBeNull();expect(screen.getByRole('button',{name:'Choisir une nouvelle carte pour Alice E.'})).toBeTruthy();
- await switchPost(/^Correction Saisie des fautes/);await screen.findByText('Poste de pilotage');expect(screen.queryByRole('tab',{name:/Cartes/})).toBeNull();expect(screen.queryByRole('tab',{name:'Classement de toutes les leçons'})).toBeNull();expect(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'})).toBeTruthy();fireEvent.click(screen.getByRole('tab',{name:'Par élève'}));expect(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'})).toBeTruthy();
+it('organise trois appareils en deux groupes alphabétiques, avec QR de préparation et récupération',async()=>{
+ const session=await prepared();render(<Provider><App/></Provider>);
+ await screen.findByRole('heading',{name:/Mes classes/});fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));
+ fireEvent.click(screen.getByRole('button',{name:/3 appareils/}));
+ expect(screen.getByText('Répartition alphabétique')).toBeTruthy();expect(screen.getByText('2 élèves')).toBeTruthy();expect(screen.getByText('1 élève')).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Enregistrer la répartition'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.sessions.find(x=>x.id===session.id)?.deviceMode).toBe(3));
+ expect(screen.getByRole('button',{name:'QR Tablette A'})).toBeTruthy();expect(screen.getByRole('button',{name:'QR Tablette B'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Configurer les cartes'}));fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
+ expect(screen.getByRole('button',{name:'Scanner les chronos A / B'})).toBeTruthy();
 });
 it('choisit la couleur et supprime une classe après confirmation du nom',async()=>{
  const user=userEvent.setup();render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});await user.click(screen.getByRole('button',{name:'Nouvelle classe'}));await user.type(screen.getByLabelText('Nom de la classe'),'3e Couleur');await user.click(screen.getByRole('button',{name:'Couleur de classe #568d72'}));await user.click(screen.getByRole('button',{name:'Créer la classe'}));await screen.findByRole('heading',{name:'3e Couleur'});expect((await loadWorkspace()).data.sequences.find(q=>q.classes.includes('3e Couleur'))!.color).toBe('#568d72');await user.click(screen.getByRole('button',{name:'O’Run accueil'}));await user.click(screen.getByRole('button',{name:'Supprimer la classe 3e Couleur'}));expect(screen.queryByLabelText('Recopier le nom de la classe')).toBeNull();await user.click(screen.getByRole('button',{name:'Supprimer la classe'}));await waitFor(()=>expect(screen.queryByRole('button',{name:/^N.*3e Couleur/})).toBeNull());expect((await loadWorkspace()).data.sequences.some(q=>q.classes.includes('3e Couleur'))).toBe(false);
@@ -139,6 +148,7 @@ it('crée une nouvelle leçon avec le nombre de cartes et de balises choisi',asy
  fireEvent.change(screen.getByLabelText('Balises par carte'),{target:{value:'8'}});
  expect(screen.getByText(/4 cartes de 8 balises seront créées/)).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Créer la leçon'}));
+ fireEvent.click(await screen.findByRole('button',{name:'Ouvrir ma leçon'}));
  await screen.findByRole('button',{name:'Configurer Carte 4'});
  expect(screen.queryByRole('button',{name:'Configurer Carte 5'})).toBeNull();
  expect(screen.getAllByText('8 balises')).toHaveLength(4);
