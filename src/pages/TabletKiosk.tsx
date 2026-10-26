@@ -1,8 +1,8 @@
 import {useEffect,useState} from 'react';
-import {KeyRound,LockKeyhole,UnlockKeyhole} from 'lucide-react';
+import {Delete,KeyRound,LockKeyhole,UnlockKeyhole} from 'lucide-react';
 import {useStore} from '../store';
 import {RunBoard} from './RunBoard';
-import {Dialog,Field} from '../components/ui';
+import {Dialog} from '../components/ui';
 import type {Session} from '../domain/types';
 
 const PIN_KEY='orun-teacher-pin-v1';
@@ -17,9 +17,14 @@ async function pinDigest(pin:string,salt:string){
 export function TabletKiosk({session,onUnlock}:{session:Session;onUnlock:()=>void}){
  const s=useStore(),[showPin,setShowPin]=useState(()=>!localStorage.getItem(PIN_KEY));
  const [pin,setPin]=useState(''),[confirm,setConfirm]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ const [phase,setPhase]=useState<'pin'|'confirm'>('pin');
  const setup=!localStorage.getItem(PIN_KEY);
  const post=s.offline?.post||'A';
- useEffect(()=>{setPin('');setConfirm('');setError('');},[showPin]);
+ useEffect(()=>{setPin('');setConfirm('');setError('');setPhase('pin');},[showPin]);
+ const code=setup&&phase==='confirm'?confirm:pin;
+ const writeCode=(next:string)=>{if(setup&&phase==='confirm')setConfirm(next);else setPin(next);setError('');};
+ const pressDigit=(digit:string)=>{if(code.length<6)writeCode(code+digit);};
+ const advance=()=>{if(setup&&phase==='pin'){if(!validPin(pin)){setError('Choisissez un code de 4 à 6 chiffres.');return;}setPhase('confirm');return;}void submit();};
  const submit=async()=>{
   if(busy)return;
   if(!validPin(pin)){setError('Choisissez un code de 4 à 6 chiffres.');return;}
@@ -44,14 +49,17 @@ export function TabletKiosk({session,onUnlock}:{session:Session;onUnlock:()=>voi
   <RunBoard session={session} className={session.className||''} kiosk/>
   {s.notice&&<div className="toast" role="status">{s.notice}</div>}
   {showPin&&<Dialog title={setup?'Protéger la tablette':'Accès enseignant'} onClose={()=>{if(!setup)setShowPin(false);}}>
-   <form onSubmit={e=>{e.preventDefault();void submit();}} className="kiosk-pin-form">
+   <form onSubmit={e=>{e.preventDefault();advance();}} className="kiosk-pin-form">
     <div className="kiosk-pin-lock">{setup?<KeyRound size={29}/>:<UnlockKeyhole size={29}/>}</div>
     <p>{setup?'Définissez votre code enseignant de 4 à 6 chiffres. Les élèves n’auront accès qu’aux chronos.':'Entrez votre code pour retrouver les transferts QR, les réglages et l’organisation.'}</p>
-    <Field label="Code enseignant"><input type="password" inputMode="numeric" autoComplete="off" pattern="[0-9]{4,6}" maxLength={6} autoFocus value={pin} onChange={e=>setPin(e.target.value)}/></Field>
-    {setup&&<Field label="Confirmer le code"><input type="password" inputMode="numeric" autoComplete="off" maxLength={6} value={confirm} onChange={e=>setConfirm(e.target.value)}/></Field>}
+    <p className="kiosk-code-label">{setup?(phase==='pin'?'Choisir le code enseignant':'Confirmer le code enseignant'):'Code enseignant'}</p>
+    <div className="kiosk-code-dots" aria-label={`${code.length} chiffres saisis sur 4 à 6`} role="status">{Array.from({length:6},(_,i)=><span key={i} className={i<code.length?'filled':''}/>)}</div>
+    <div className="kiosk-keypad" role="group" aria-label="Pavé numérique du code enseignant">
+     {['1','2','3','4','5','6','7','8','9','C','0','delete'].map(d=><button key={d} type="button" aria-label={d==='delete'?'Effacer le dernier chiffre':d==='C'?'Effacer le code':`Chiffre ${d}`} onClick={()=>d==='delete'?writeCode(code.slice(0,-1)):d==='C'?writeCode(''):pressDigit(d)}>{d==='delete'?<Delete size={25}/>:d}</button>)}
+    </div>
     {error&&<p role="alert" className="form-error">{error}</p>}
     <p className="muted compact">Ce code empêche les manipulations accidentelles ; les données restent stockées localement sur l’iPad.</p>
-    <div className="dialog-actions"><button type="submit" className="button primary" disabled={busy}>{setup?'Activer la vue élèves':'Déverrouiller'}</button></div>
+    <div className="dialog-actions">{setup&&phase==='confirm'&&<button type="button" className="button" onClick={()=>{setPhase('pin');setConfirm('');setError('');}}>Retour</button>}<button type="submit" className="button primary" disabled={busy||code.length<4}>{setup?(phase==='pin'?'Suivant':'Activer la vue élèves'):'Déverrouiller'}</button></div>
    </form>
   </Dialog>}
  </div>;

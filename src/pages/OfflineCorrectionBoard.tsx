@@ -13,6 +13,7 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
  const students=alphabeticalStudents(s.data,session.id);
  const courses=session.courseIds.map(id=>s.data.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c);
  const [search,setSearch]=useState(''),[studentId,setStudentId]=useState('');
+ const [queueView,setQueueView]=useState<'pending'|'corrected'|'all'>('pending'),[manual,setManual]=useState(false);
  const [drafts,setDrafts]=useState<Record<string,number>>({}),[touched,setTouched]=useState<string[]>([]);
  const [timeDrafts,setTimeDrafts]=useState<Record<string,string>>({}),[timeTouched,setTimeTouched]=useState<string[]>([]);
  const [busy,setBusy]=useState(false);
@@ -22,7 +23,13 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
  const corrected=new Set([...corrections.map(c=>`${c.studentId}:${c.courseId}`),...runs.filter(r=>r.errors!==null).map(r=>`${r.studentId}:${r.courseId}`)]);
  const byCard=(sid:string,cid:string)=>corrections.find(c=>c.studentId===sid&&c.courseId===cid&&c.attempt===1);
  const byRun=(sid:string,cid:string)=>runs.find(r=>r.studentId===sid&&r.courseId===cid);
- const displayed=students.filter(p=>labels.get(p.id)?.toLowerCase().includes(search.toLowerCase()));
+ const cardsFor=(sid:string)=>courses.filter(course=>runs.some(r=>r.studentId===sid&&r.courseId===course.id)||manual);
+ const isComplete=(sid:string)=>{const cards=cardsFor(sid);return cards.length>0&&cards.every(c=>corrected.has(`${sid}:${c.id}`));};
+ const hasPending=(sid:string)=>cardsFor(sid).some(c=>!corrected.has(`${sid}:${c.id}`));
+ const pendingCount=students.filter(p=>hasPending(p.id)).length;
+ const completeCount=students.filter(p=>isComplete(p.id)).length;
+ const displayed=students.filter(p=>labels.get(p.id)?.toLowerCase().includes(search.toLowerCase())&&
+  (queueView==='pending'?hasPending(p.id):queueView==='corrected'?isComplete(p.id):cardsFor(p.id).length>0));
  const currentErrors=(course:Course)=>drafts[course.id]??byCard(studentId,course.id)?.errors??byRun(studentId,course.id)?.errors??null;
  const choose=(id:string)=>{setStudentId(id);setDrafts({});setTouched([]);setTimeDrafts({});setTimeTouched([]);};
  const selectErrors=(cid:string,count:number)=>{setDrafts(old=>({...old,[cid]:count}));setTouched(old=>old.includes(cid)?old:[...old,cid]);};
@@ -53,23 +60,27 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
   }else{setTouched(old=>old.slice(saved));setTimeTouched(old=>old.slice(saved));}
  };
  return <section className="c-correction-workspace c-correction-new" aria-label="Correction des cartons par élève">
-  <div className="c-correction-head"><div><span className="eyebrow">POSTE C · CARTONS PAPIER</span><h2>Correction par élève</h2><p>Comme pour les chronos : touchez une tuile, corrigez les cartes reçues, puis enregistrez-les ensemble.</p></div>
+  <div className="c-correction-head"><div><h2>Correction par élève</h2><p>Les tuiles présentent uniquement les parcours effectués.</p></div>
    <div className="c-correction-counter"><strong>{corrected.size}</strong><span>cartons corrigés</span></div>
   </div>
-  <div className="c-correction-toolbar"><span><Users size={18}/>{students.length} élèves</span>
+  <div className="c-correction-toolbar"><span><Users size={18}/>{students.length} élèves · {runs.length} chrono(s) reçu(s)</span>
+   <div className="c-correction-filters" role="tablist" aria-label="Statut des corrections">{([['pending','À corriger',pendingCount],['corrected','Corrigés',completeCount],['all','Tous',students.filter(p=>cardsFor(p.id).length).length]] as const).map(([id,name,count])=><button type="button" role="tab" key={id} aria-selected={queueView===id} className={queueView===id?'active':''} onClick={()=>setQueueView(id)}>{name} <span>{count}</span></button>)}</div>
    <label className="search"><Search size={17}/><input aria-label="Rechercher un élève à corriger" placeholder="Un prénom…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>
+  {!runs.length&&!manual&&<div className="c-pending-hint">Chronos A / B en attente : scannez les résultats pour retrouver les cartes effectuées. <button type="button" className="button" onClick={()=>setManual(true)}>Corriger un carton avant transfert</button></div>}
+  {runs.length>0&&!manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(true)}>Corriger un carton avant réception de son chrono</button>}
+  {manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(false)}>Afficher seulement les passages chronométrés</button>}
   <div className="c-pupil-board">{displayed.map(p=>{
-   const done=courses.filter(c=>corrected.has(`${p.id}:${c.id}`)).length;
-   return <button type="button" key={p.id} className={done===courses.length&&courses.length?'c-student-tile complete':'c-student-tile'} onClick={()=>choose(p.id)}
+   const cards=cardsFor(p.id),done=cards.filter(c=>corrected.has(`${p.id}:${c.id}`)).length;
+   return <button type="button" key={p.id} className={done===cards.length&&cards.length?'c-student-tile complete':'c-student-tile'} onClick={()=>choose(p.id)}
     aria-label={`Corriger ${labels.get(p.id)}`}>
     <span className="c-student-check">{done?<Check size={15}/>:<span/>}</span>
     <strong>{labels.get(p.id)}</strong>
-    <span className="c-student-progress">{done} / {courses.length} cartes <span><Map size={14}/></span></span>
+    <span className="c-student-progress">{done} / {cards.length} carte(s) <span><Map size={14}/></span></span>
    </button>;
   })}</div>
   {chosen&&<Dialog wide title={`Cartons · ${labels.get(chosen.id)}`} onClose={()=>choose('')}>
    <div className="c-student-sheet"><p>Indiquez les <b>balises fausses</b> uniquement sur les cartes récupérées. Vous pouvez corriger plusieurs cartes avant d’enregistrer.</p>
-    <div className="c-sheet-grid">{courses.map(course=>{
+    <div className="c-sheet-grid">{cardsFor(chosen.id).map(course=>{
      const run=byRun(chosen.id,course.id),value=currentErrors(course),dirty=touched.includes(course.id)||timeTouched.includes(course.id);
      return <div className={dirty?'c-sheet-card dirty':value!==null?'c-sheet-card corrected':'c-sheet-card'} key={course.id} style={{'--card-color':course.color} as CSSProperties}>
       <div className="c-sheet-top"><span className="c-sheet-map-icon"><Map size={17}/></span><strong>{course.name}</strong>{value!==null&&<CheckCircle2 size={16} color="#548a50"/>}</div>

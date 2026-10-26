@@ -79,6 +79,7 @@ it('poste C : corrige la carte d’un élève avant de recevoir ses chronos',asy
  render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
  fireEvent.click(screen.getByRole('button',{name:/^N.*3e Vagues/}));fireEvent.click(screen.getByRole('button',{name:/^Vagues test/}));
  expect(screen.getByRole('heading',{name:'Correction par élève'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Corriger un carton avant transfert'}));
  fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E.'}));
  const dialog=screen.getByRole('dialog');
  fireEvent.click(within(dialog).getByRole('button',{name:'Carte 2 · 2 fautes'}));

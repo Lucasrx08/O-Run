@@ -35,3 +35,13 @@ export function removeClass(d:Data,name:string):Data{
  const removedSessions=d.sessions.filter(l=>!sessions.some(x=>x.id===l.id)),removedCourses=new Set(removedSessions.flatMap(l=>l.courseIds)),removedRuns=new Set(d.runs.filter(r=>pupils.has(r.studentId)||removedSessions.some(l=>l.id===r.sessionId)).map(r=>r.id));
  return {...d,students:d.students.filter(p=>!pupils.has(p.id)),sessions,sequences:sequences.filter(q=>q.classes.length||sessions.some(l=>l.sequenceId===q.id)),courses:d.courses.filter(c=>!removedCourses.has(c.id)||sessions.some(l=>l.courseIds.includes(c.id))),runs:d.runs.filter(r=>!removedRuns.has(r.id)),offlineCorrections:(d.offlineCorrections||[]).filter(c=>!pupils.has(c.studentId)&&!removedSessions.some(l=>l.id===c.sessionId)),audit:d.audit.filter(a=>!a.runId||!removedRuns.has(a.runId))};
 }
+/** Supprime une seule leçon et ses passages, sans toucher aux élèves ni aux autres leçons. */
+export function removeLesson(d:Data,sessionId:string):Data{
+ const lesson=d.sessions.find(s=>s.id===sessionId);
+ if(!lesson)throw new Error('Leçon introuvable.');
+ if(d.runs.some(r=>r.sessionId===sessionId&&r.end===undefined))throw new Error('Arrêtez les chronos avant de supprimer cette leçon.');
+ const sessions=d.sessions.filter(s=>s.id!==sessionId);
+ const unusedCourses=new Set(lesson.courseIds.filter(id=>!sessions.some(s=>s.courseIds.includes(id))));
+ const deletedRuns=new Set(d.runs.filter(r=>r.sessionId===sessionId).map(r=>r.id));
+ return {...d,sessions,courses:d.courses.filter(c=>!unusedCourses.has(c.id)),runs:d.runs.filter(r=>r.sessionId!==sessionId),offlineCorrections:(d.offlineCorrections||[]).filter(c=>c.sessionId!==sessionId),audit:d.audit.filter(a=>!a.runId||!deletedRuns.has(a.runId))};
+}
