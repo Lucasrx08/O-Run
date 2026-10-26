@@ -74,6 +74,24 @@ it('autorise à rectifier le chrono directement dans la fenêtre de correction',
  expect((await loadWorkspace()).data.audit.some(a=>a.detail.includes('Chrono'))).toBe(true);
 });
 
+it('rouvre une correction depuis son historique et met à jour le résultat',async()=>{
+ const session=await prepared();render(<Provider><App/></Provider>);await openBoard();
+ fireEvent.click(screen.getByRole('button',{name:'Lancer 3 élèves'}));
+ await screen.findByRole('button',{name:'Arrêter le chrono de Alice E.'});
+ fireEvent.click(screen.getByRole('button',{name:'Arrêter le chrono de Alice E.'}));
+ await screen.findByRole('button',{name:'Choisir une nouvelle carte pour Alice E.'});
+ fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));
+ fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E. · Carte 1'}));
+ fireEvent.click(screen.getByRole('button',{name:'Enregistrer le résultat'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.runs.find(r=>r.sessionId===session.id&&r.studentId==='a')?.errors).toBe(0));
+ fireEvent.click(screen.getByRole('button',{name:'Historique des corrections'}));
+ expect(within(screen.getByRole('dialog')).getAllByText('Alice E.').length).toBeGreaterThan(0);
+ fireEvent.click(within(screen.getByRole('dialog')).getByRole('button',{name:'Modifier'}));
+ fireEvent.click(within(screen.getByRole('dialog')).getByRole('button',{name:'2 balises fausses'}));
+ fireEvent.click(within(screen.getByRole('dialog')).getByRole('button',{name:'Enregistrer le résultat'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.runs.find(r=>r.sessionId===session.id&&r.studentId==='a')?.errors).toBe(2));
+});
+
 it('poste C : corrige la carte d’un élève avant de recevoir ses chronos',async()=>{
  const session=await prepared();await mutate(w=>({...w,offline:{post:'C',sessionId:session.id,studentIds:session.studentIds,groupA:['a','b'],groupB:['c'],transferKey:'ab'.repeat(32),importedPosts:[]}}));
  render(<Provider><App/></Provider>);await screen.findByRole('heading',{name:/Mes classes/});
@@ -82,6 +100,9 @@ it('poste C : corrige la carte d’un élève avant de recevoir ses chronos',asy
  fireEvent.click(screen.getByRole('button',{name:'Corriger un carton avant transfert'}));
  fireEvent.click(screen.getByRole('button',{name:'Corriger Alice E.'}));
  const dialog=screen.getByRole('dialog');
+ expect(within(dialog).queryByRole('button',{name:'Carte 1 · 0 faute'})).toBeNull();
+ fireEvent.click(within(dialog).getByRole('button',{name:'Carte 2'}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Carte 3'}));
  fireEvent.click(within(dialog).getByRole('button',{name:'Carte 2 · 2 fautes'}));
  fireEvent.click(within(dialog).getByRole('button',{name:'Carte 3 · 0 faute'}));
  fireEvent.click(within(dialog).getByRole('button',{name:'Enregistrer les cartes'}));
