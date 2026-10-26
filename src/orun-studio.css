@@ -1,0 +1,330 @@
+/* O’Run — système d’interface 2026. Cohérence du poste de travail sur Mac,
+   iPad paysage/portrait et petit écran. Ce fichier est chargé après les
+   anciennes règles : les composants disposent d'une seule couche de finition. */
+:root {
+  --ink:#1d4033;
+  --green:#21583e;
+  --orange:#f4772e;
+  --muted:#607b6c;
+  --line:#dbe7da;
+  --surface:#ffffff;
+  --soft:#f0f6eb;
+  --focus:#f4772e;
+  color:var(--ink);
+  font-synthesis:none;
+}
+body {background-color:#f8faf5;background-size:680px 510px}
+button, input, textarea, select {font-family:'Nunito Sans Variable',sans-serif}
+button, a, input, select {touch-action:manipulation}
+button:focus-visible,a:focus-visible,[role="tab"]:focus-visible {outline:3px solid var(--focus);outline-offset:3px}
+.button, .icon-button, .section-tabs button, .results-views button {transition:background-color .15s,border-color .15s,box-shadow .15s}
+.button {min-height:44px;padding:9px 17px;border-radius:12px;border-color:#d4e3d4;font-size:14px;font-weight:850;color:#315f48;background:#fff}
+.button.primary {background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 3px 0 #ca5b21}
+.button.primary:hover:not(:disabled) {background:#e96a23;border-color:#e96a23}
+.text-button {font-size:13px;font-weight:850}
+.icon-button {min-width:42px;height:42px;color:#64836d}
+.icon-button:hover {background:#eaf3e7;color:#285e43}
+.app-header {height:68px;min-height:68px;flex:0 0 68px;background:#ffffffeb;border-bottom:1px solid #e0e9df}
+.header-inner {height:100%;padding-inline:clamp(18px,3vw,48px);max-width:none;gap:20px}
+.brand img {width:39px;height:39px}
+.brand strong {font-size:30px;letter-spacing:-1.3px}
+.brand small {font-size:8px;letter-spacing:1.6px;margin-top:4px}
+.demo-tag,.post-badge {font-size:12px;font-weight:850}
+.header-actions {gap:9px}
+.main-content {width:100%;max-width:1580px;padding:clamp(22px,2.3vw,33px) clamp(18px,3vw,44px) 34px}
+.main-content:has(.lesson-heading-stable),.main-content:has(.results-page) {max-width:none;padding:12px clamp(16px,2.1vw,36px) 18px}
+.page-heading {margin-bottom:23px;gap:16px}
+.page-heading h1 {font-size:clamp(31px,3vw,43px);line-height:1.08;letter-spacing:-.04em}
+.page-intro {font-size:14px;margin-top:7px;line-height:1.45;color:var(--muted)}
+.overline,.eyebrow {font-size:11px;font-weight:950;letter-spacing:.13em;color:#eb742d;margin-bottom:7px}
+.breadcrumbs {font-size:12px;min-height:24px;gap:9px;margin:0 0 8px}
+.breadcrumbs button {font-size:12px;font-weight:850;min-height:28px}
+.section-tabs {margin-bottom:17px}
+.section-tabs button {min-height:41px;font-size:14px}
+.lesson-heading-stable,.main-content:has(.results-page) .lesson-heading-stable {min-height:62px;gap:12px;margin-bottom:10px}
+.lesson-heading-stable h1,.main-content:has(.results-page) .lesson-heading-stable h1 {font-size:clamp(24px,2.35vw,31px);line-height:1.1}
+.lesson-heading-stable .page-intro {font-size:12px;margin-top:3px}
+.lesson-heading-controls {gap:7px}
+.lesson-mode-shortcut {min-height:43px;font-size:13px;padding:8px 14px;margin:0;border-radius:11px}
+.main-content .lesson-heading-stable .lesson-tabs,.main-content:has(.results-page) .lesson-heading-stable .lesson-tabs {gap:4px;padding:4px!important;background:#e9f1e6}
+.main-content .lesson-heading-stable .lesson-tabs button,.main-content:has(.results-page) .lesson-heading-stable .lesson-tabs button {min-height:43px;font-size:13px;padding:9px clamp(9px,1vw,16px)}
+.lesson-copy-line {margin:0 0 7px}
+.lesson-copy-line .button {font-size:12px;min-height:34px}
+.app-footer {font-size:11px;color:#7c9483;padding-block:12px}
+
+/* Accueil, classes et leçons : densité maîtrisée, textes vraiment lisibles. */
+.class-grid {grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.8vw,23px)}
+.class-card {min-height:266px;border-radius:22px;padding:0 22px 20px;box-shadow:0 4px 0 #e8f0e6;transition:transform .16s}
+.class-map {height:104px;margin-inline:-22px}
+.class-card-top {height:43px;margin-bottom:4px}
+.class-card h2 {font-size:clamp(22px,2.2vw,31px);line-height:1.08;letter-spacing:-.035em}
+.class-card-bottom {padding-top:12px}
+.class-card-bottom p {font-size:14px;line-height:1.4}
+.lesson-grid {gap:17px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.lesson-card {min-height:210px;padding:20px 23px 15px;border-radius:19px}
+.lesson-card h2 {font-size:clamp(22px,2vw,28px);font-weight:780;line-height:1.14;max-width:78%}
+.lesson-card p {font-size:14px;margin-top:5px}
+.lesson-card-illustrated .lesson-card-decor {top:24px;right:8px}
+.lesson-card-illustrated .lesson-card-decor span {font-size:75px}
+.lesson-card-illustrated .lesson-card-bottom {margin-top:17px;padding-top:10px;font-size:13px}
+.pupil-row {min-height:64px;padding:11px 18px}
+.pupil-row strong {font-size:15px}
+.search {min-height:44px;border-radius:12px}
+.search input {font-size:14px}
+.settings-panel,.device-preview,.device-send {border-radius:20px}
+.settings-panel p,.device-send p {font-size:14px}
+
+/* Six cartes sur une seule vue si l'écran le permet. Les grandes zones vides
+   laissent place au nom, au nombre de balises et aux actions. */
+.main-content:has(.map-grid) .content-heading {min-height:44px;margin:0 0 8px}
+.main-content:has(.map-grid) .content-heading h2 {font-size:clamp(23px,2.1vw,29px)}
+.main-content:has(.map-grid) .map-grid {gap:clamp(10px,1.4vw,18px);grid-template-columns:repeat(3,minmax(0,1fr))}
+.main-content:has(.map-grid) .map-card {display:flex;flex-direction:column;min-height:170px;height:clamp(170px,23.5dvh,222px);padding:clamp(13px,1.2vw,19px);border-radius:19px;background-size:380px}
+.main-content:has(.map-grid) .map-card-top {flex:0 0 auto;margin:0}
+.main-content:has(.map-grid) .map-symbol {width:40px;height:40px}
+.main-content:has(.map-grid) .map-actions .icon-button {width:42px;height:42px;min-width:42px}
+.main-content:has(.map-grid) .map-main {display:flex;flex:1;flex-direction:column;justify-content:center;align-items:flex-start;min-height:0;padding:0;text-align:left}
+.main-content:has(.map-grid) .map-main h3 {font-size:clamp(23px,2.1vw,31px);line-height:1.1;margin:0 0 6px;max-width:75%;font-weight:750}
+.main-content:has(.map-grid) .map-main p {font-size:14px;line-height:1.3;font-weight:850}
+.main-content:has(.map-grid) .map-number {top:50%;right:5px;transform:translateY(-50%);font-size:clamp(62px,6.5vw,104px);opacity:.64}
+.main-content:has(.map-grid) .map-file {margin-top:2px;padding:5px 0 0;font-size:12px}
+.main-content:has(.map-grid) .lesson-ready {min-height:61px;padding:10px 16px;margin-top:14px;border:1px solid #dce9d6;border-radius:16px;background:#eff5e9;color:#497354}
+.main-content:has(.map-grid) .lesson-ready p {font-size:14px;font-weight:850}
+.lesson-ready .button {min-height:43px}
+
+/* Redépart : cinq ou six cartes dans une fenêtre compacte sans défilement. */
+.dialog:has(.picker-map-card) {width:min(1050px,calc(100vw - 28px));max-height:calc(100dvh - 24px);padding:clamp(14px,2vw,25px);overflow:auto}
+.dialog:has(.picker-map-card) .dialog-head {margin-bottom:5px}
+.dialog:has(.picker-map-card) .picker-intro {margin:4px 0 12px;font-size:14px}
+.dialog:has(.picker-map-card) .course-picker-grid {grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:11px}
+.dialog:has(.picker-map-card) .picker-map-card {height:clamp(145px,18dvh,182px);min-height:0;padding:13px 17px!important;border-radius:17px}
+.dialog:has(.picker-map-card) .picker-map-card .map-card-top {margin:0}
+.dialog:has(.picker-map-card) .picker-map-card .map-symbol {width:36px;height:36px}
+.dialog:has(.picker-map-card) .picker-map-card .map-main {min-height:50px;padding:0;flex:1;display:flex;flex-direction:column;justify-content:center}
+.dialog:has(.picker-map-card) .picker-map-title {font-size:clamp(22px,2vw,28px)}
+.dialog:has(.picker-map-card) .picker-map-count {margin-top:4px;font-size:13px}
+.dialog:has(.picker-map-card) .picker-map-card .map-number {font-size:clamp(53px,6vw,72px);top:0;right:4px}
+.dialog:has(.picker-map-card) .picker-map-action {padding-top:7px;margin-top:2px;font-size:13px}
+
+/* Outils du terrain : prioritiser le prénom, sécuriser le chrono et garder
+   tous les élèves dans le cadre disponible. */
+.terrain-mode {height:100dvh;min-height:0;overflow:hidden;overscroll-behavior:none}
+.terrain-mode .app-header {height:53px;min-height:53px;flex-basis:53px}
+.terrain-mode .main-content {padding:6px clamp(10px,1.25vw,22px) 10px}
+.terrain-mode .breadcrumbs {margin:0 0 2px;min-height:17px}
+.terrain-mode .lesson-heading-stable {min-height:43px;margin-bottom:5px}
+.terrain-mode .start-toolbar {min-height:54px;margin-bottom:6px;padding:7px 11px;border-radius:13px;gap:12px}
+.terrain-mode .segmented button {font-size:13px;min-height:36px;padding:7px 13px}
+.terrain-mode .start-map>span {font-size:10px}
+.terrain-mode .start-map select {font-size:14px;max-width:260px;min-height:26px;width:auto}
+.terrain-mode .launch-button {font-size:13px;min-height:39px}
+.terrain-mode .board-toolbar {min-height:31px;margin-bottom:5px}
+.terrain-mode .board-counts {font-size:12px}
+.terrain-mode .board-tools>.text-button {font-size:12px;min-height:28px}
+.terrain-mode .board-search {min-height:30px;max-width:170px}
+.terrain-mode .board-search input {font-size:12px}
+.terrain-mode .run-grid {gap:clamp(6px,.65vw,10px)}
+.terrain-mode .run-tile {border-radius:13px;border-width:1.5px}
+.terrain-mode .run-tile-main {padding:5px 6px 3px;gap:2px}
+.terrain-mode .run-tile-main h2 {font-size:clamp(17px,calc(var(--tile-unit)*.17),32px)!important;font-weight:850;line-height:1.08;max-height:2.2em;margin:0 0 2px;text-align:center}
+.terrain-mode .run-tile-main .run-time {font-size:clamp(16px,calc(var(--tile-unit)*.18),29px);font-weight:750;line-height:1}
+.terrain-mode .run-tile-bottom {height:clamp(22px,calc(var(--tile-unit)*.18),30px)}
+.terrain-mode .run-map-choice,.terrain-mode .run-map-label {font-size:clamp(10px,calc(var(--tile-unit)*.075),12px);padding:3px 8px}
+.terrain-mode .run-tile-top {inset:5px 6px auto;width:calc(100% - 12px)}
+.tablet-kiosk {overflow:hidden;padding:0 clamp(10px,1.5vw,23px) 8px}
+.tablet-kiosk .kiosk-bar {height:54px;flex-basis:54px;margin-bottom:6px}
+.tablet-kiosk .kiosk-identity strong {font-size:27px}
+.tablet-kiosk .kiosk-identity>span {font-size:13px}
+.tablet-kiosk .kiosk-subtitle {font-size:13px}
+.tablet-kiosk .kiosk-teacher {font-size:14px;min-height:43px}
+.tablet-kiosk .start-toolbar {min-height:49px;margin-bottom:6px}
+.tablet-kiosk .start-toolbar .segmented button {font-size:14px}
+.tablet-kiosk .start-map select {font-size:14px}
+.tablet-kiosk .launch-button {font-size:14px;min-height:39px}
+.tablet-kiosk .run-grid {gap:clamp(7px,.7vw,12px)}
+.tablet-kiosk .run-tile {border-radius:16px}
+.tablet-kiosk .run-tile h2 {font-size:clamp(22px,calc(var(--tile-unit)*.185),43px)!important;line-height:1.02}
+.tablet-kiosk .run-time {font-size:clamp(20px,calc(var(--tile-unit)*.17),35px)}
+.tablet-kiosk .run-action-hint {font-size:clamp(10px,calc(var(--tile-unit)*.07),13px)}
+.tablet-kiosk .run-map-label {font-size:12px}
+
+/* Correction : chaque élève occupe un espace utile. Aucun carton fictif. */
+.c-results .results-commandbar {margin-bottom:9px}
+.c-transfer-status {gap:7px;margin:3px 0 9px}
+.c-transfer-status span {font-size:12px;padding:7px 10px}
+.c-correction-new {padding:clamp(12px,1.2vw,17px);border-radius:20px}
+.c-correction-new .c-correction-head {align-items:center;margin-bottom:5px}
+.c-correction-new .c-correction-head h2 {font-size:clamp(23px,2vw,29px)}
+.c-correction-new .c-correction-head p {font-size:12px}
+.c-correction-new .c-correction-counter {padding:8px 13px;min-width:105px}
+.c-correction-toolbar {gap:10px;margin:5px 0 10px}
+.c-correction-toolbar>span {font-size:13px}
+.c-correction-filters button {font-size:13px;min-height:39px;padding:7px 11px}
+.c-correction-toolbar .search {min-height:39px}
+.c-pupil-board {grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(7px,.8vw,12px)}
+.c-correction-new .c-student-tile {min-height:clamp(85px,10.3dvh,111px);padding:9px 12px;border-radius:14px}
+.c-correction-new .c-student-tile>strong {font-size:clamp(16px,1.4vw,23px);line-height:1.08}
+.c-correction-new .c-student-progress {font-size:12px;padding-top:5px}
+.c-manual-toggle {margin-bottom:5px}
+.c-attempt-picker {display:flex;flex-direction:column;gap:7px;border:1px solid #dce8d6;background:#f7faf4;padding:10px 13px;border-radius:12px}
+.c-attempt-picker>span {font-size:13px;font-weight:900;color:#38634c}
+.c-attempt-picker>div {display:flex;flex-wrap:wrap;gap:7px}
+.c-attempt-picker button {display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid #d9e5d3;border-radius:10px;background:#fff;color:#47674f;font-size:13px;font-weight:850}
+.c-attempt-picker button>span {width:9px;height:9px;border-radius:50%}
+.c-attempt-picker button.active {background:#fff0e2;border-color:var(--orange);color:#934b20}
+.c-attempt-picker button:disabled {opacity:1;background:#e9f4e5;color:#557c5d}
+.c-student-sheet>p {font-size:13px}
+.c-sheet-grid {gap:9px}
+.c-sheet-card {min-height:130px}
+.c-sheet-buttons button {min-width:36px;min-height:38px;font-size:15px}
+.c-sheet-footer .button {min-height:42px;font-size:13px}
+
+/* Résultats : barres de navigation sobres, trophées courts, grands tableaux
+   typographiques. Deux moitiés restent synchronisées quand on trie. */
+.results-page .results-commandbar {min-height:59px;padding:7px 10px;margin-bottom:7px;border-radius:15px}
+.results-page .primary-results-tabs button {min-height:43px;font-size:14px;min-width:130px}
+.results-page .list-toolbar .button {min-height:42px;font-size:13px;padding:8px 12px}
+.results-page .list-toolbar .head-actions {gap:7px}
+.results-page .results-filterbar {padding:6px 9px;min-height:55px;margin-bottom:9px;gap:8px;border-radius:14px}
+.results-page .results-filterbar .results-views button,.results-page .results-filterbar .results-scope button {min-height:41px;font-size:13px;padding:8px 12px}
+.results-page .results-filterbar .queue-tabs button {min-height:41px;font-size:13px}
+.results-page .results-card-rail {margin-bottom:8px;padding-bottom:5px}
+.results-page .results-card-rail button {min-height:41px}
+.results-page .route-ranking {margin-bottom:11px}
+.results-page .route-title {margin-bottom:7px}
+.results-page .route-title h2 {font-size:23px;margin-bottom:0}
+.results-page .podium-grid {gap:10px;margin:4px 0 12px}
+.results-page .podium-card {min-height:0;padding:12px 16px;border-radius:14px}
+.results-page .podium-card strong {font-size:clamp(20px,1.8vw,28px);line-height:1.05}
+.results-page .podium-card p {font-size:12px;margin-top:5px}
+.results-page .results-table {border-radius:15px;margin-top:2px}
+.ranking-two-columns {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.results-page .ranking-two-columns .results-table {overflow:hidden}
+.results-page .ranking-two-columns .results-table table {width:100%;table-layout:fixed}
+.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td,
+.results-page .route-ranking .ranking-two-columns .results-table th,.results-page .route-ranking .ranking-two-columns .results-table td {
+  font-size:clamp(12px,.78vw,14px);padding:8px 7px;line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.results-page .ranking-two-columns .results-table th {font-size:clamp(11px,.72vw,13px);font-weight:900}
+.results-page .ranking-two-columns .column-sort {font-size:inherit;font-weight:900;gap:2px}
+.results-page .ranking-two-columns .results-table th:first-child,.results-page .ranking-two-columns .results-table td:first-child {width:7%}
+.results-page .ranking-two-columns .results-table th:nth-child(2),.results-page .ranking-two-columns .results-table td:nth-child(2) {width:22%}
+.results-page .ranking-two-columns .results-table th:nth-child(3),.results-page .ranking-two-columns .results-table td:nth-child(3) {width:11%}
+.results-page .ranking-two-columns .results-table th:nth-child(4),.results-page .ranking-two-columns .results-table td:nth-child(4) {width:19%}
+.results-page .ranking-two-columns .results-table tbody tr:hover {background:#f2f7ee}
+.results-page .ranking-two-columns .table-scroll {overflow-x:hidden;max-height:none}
+.results-page .correction-grid {grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.results-page .correction-profile {min-height:165px}
+.history-intro {color:var(--muted);font-size:14px;margin:0 0 12px;line-height:1.4}
+.history-list {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:48dvh;overflow:auto;padding:2px}
+.history-row {display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #dce9d8;border-radius:12px;padding:10px 12px;background:#fafff8;min-width:0}
+.history-student {display:flex;flex-direction:column;gap:2px;min-width:0}
+.history-student strong {font-size:15px;color:#285b43}
+.history-student span {font-size:12px;color:#66876e}
+.history-edit {min-height:36px;font-size:12px;padding:6px 9px}
+.history-audit {margin-top:11px;padding:11px;background:#f4f8f1;border-radius:10px;color:#5a775e;font-size:13px}
+.history-audit summary {font-weight:850;cursor:pointer}
+.history-audit .audit-list {max-height:190px;overflow:auto}
+.orun-update-notice {position:fixed;z-index:11000;right:clamp(12px,2vw,28px);bottom:clamp(12px,2vw,28px);display:flex;align-items:center;gap:12px;max-width:min(550px,calc(100vw - 24px));padding:13px 14px;background:#1d543d;color:#fff;border:1px solid #376d55;border-radius:16px;box-shadow:0 12px 35px #122b2170}
+.orun-update-notice>div {display:flex;flex-direction:column;gap:2px;min-width:0}
+.orun-update-notice strong {font-size:15px}
+.orun-update-notice span {font-size:12px;color:#e0f0e5}
+.orun-update-notice button {margin-left:auto;border:0;border-radius:10px;padding:10px 13px;min-height:42px;background:#ff873c;color:#fff;font-size:13px;font-weight:900;white-space:nowrap}
+.orun-update-notice button:disabled {opacity:.5}
+
+/* Organisation et réglages : fortes cibles tactiles, titres sans wrapping hasardeux. */
+.device-mode-grid,.station-options {gap:clamp(10px,1.2vw,17px)}
+.device-mode-card {min-height:158px;padding:18px 21px;gap:7px}
+.device-mode-card strong {font-size:clamp(20px,1.6vw,26px)}
+.device-mode-card small,.station-choice small {font-size:13px;line-height:1.4}
+.device-preview,.device-send {padding:17px 20px;margin-top:13px}
+.device-preview-students {max-height:130px}
+.device-preview-students button {font-size:13px;min-height:34px}
+.device-actions {margin-top:14px}
+.station-choice {min-height:186px;padding:17px;gap:9px}
+.station-choice strong {font-size:clamp(21px,1.7vw,26px)}
+.dialog {border-radius:23px}
+.dialog-head h2 {font-weight:800;color:#224b37}
+.dialog .field input,.dialog .field textarea,.dialog .field select {font-size:16px}
+.dialog:has(.class-import-drop)[open] {overscroll-behavior:contain}
+
+@media (min-width:1500px) and (max-height:870px) {
+ .main-content:has(.map-grid) .map-card {height:clamp(160px,21dvh,190px)}
+ .c-correction-new .c-student-tile {min-height:clamp(75px,9.6dvh,95px)}
+ .results-page .podium-card {padding-block:9px}
+ .results-page .ranking-two-columns .results-table td {padding-block:6px}
+}
+@media (min-width:900px) and (max-width:1320px) {
+ .ranking-two-columns {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td {font-size:11px;padding:8px 4px}
+ .results-page .ranking-two-columns .results-table th:nth-child(n+6),.results-page .ranking-two-columns .results-table td:nth-child(n+6) {display:none}
+ .lesson-heading-controls {flex-wrap:wrap;justify-content:flex-end}
+ .main-content .lesson-heading-stable .lesson-tabs button {font-size:12px}
+ .c-pupil-board {grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:899px) {
+ .header-inner {padding-inline:16px}
+ .main-content {padding:17px 16px 25px}
+ .main-content:has(.lesson-heading-stable),.main-content:has(.results-page) {padding-inline:12px}
+ .page-heading h1 {font-size:31px}
+ .class-grid,.lesson-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .class-card h2 {font-size:23px}
+ .lesson-heading-stable {flex-wrap:wrap;gap:6px;min-height:unset!important}
+ .lesson-heading-controls {width:100%;justify-content:space-between;flex-wrap:wrap;gap:5px}
+ .main-content .lesson-heading-stable .lesson-tabs {width:auto!important;max-width:100%;flex:1;justify-content:space-evenly}
+ .main-content .lesson-heading-stable .lesson-tabs button {font-size:12px;padding:8px 8px}
+ .main-content:has(.map-grid) .map-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .main-content:has(.map-grid) .map-card {height:clamp(150px,17dvh,195px)}
+ .dialog:has(.picker-map-card) .course-picker-grid {grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .dialog:has(.picker-map-card) .picker-map-card {height:clamp(145px,18dvh,185px)}
+ .c-pupil-board {grid-template-columns:repeat(4,minmax(0,1fr))}
+ .results-page .results-commandbar,.results-page .results-filterbar {gap:7px}
+ .ranking-two-columns {grid-template-columns:1fr}
+ .history-list {grid-template-columns:1fr}
+ .station-options {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:640px) {
+ .app-header {height:60px;min-height:60px;flex-basis:60px}
+ .brand img {width:33px;height:33px}
+ .brand strong {font-size:26px}
+ .brand small {display:none}
+ .post-badge {font-size:10px;max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .class-grid,.lesson-grid {grid-template-columns:1fr}
+ .class-card {min-height:240px}
+ .page-heading {flex-wrap:wrap}
+ .page-heading>.head-actions {width:100%}
+ .lesson-heading-controls {justify-content:flex-start}
+ .main-content .lesson-heading-stable .lesson-tabs {width:100%!important;overflow-x:auto;justify-content:flex-start}
+ .main-content .lesson-heading-stable .lesson-tabs button {font-size:11px;padding:8px}
+ .main-content:has(.map-grid) .map-grid {grid-template-columns:1fr 1fr;gap:9px}
+ .main-content:has(.map-grid) .map-card {padding:10px;min-height:155px;height:180px}
+ .main-content:has(.map-grid) .map-symbol {width:31px;height:31px}
+ .main-content:has(.map-grid) .map-card-top .icon-button {min-width:32px;width:32px;height:32px;padding:5px}
+ .main-content:has(.map-grid) .map-main h3 {font-size:19px}
+ .main-content:has(.map-grid) .map-number {font-size:57px}
+ .main-content:has(.map-grid) .lesson-ready {flex-wrap:wrap}
+ .main-content:has(.map-grid) .lesson-ready .button {width:100%}
+ .dialog:has(.picker-map-card) .picker-map-card {min-height:135px;height:155px;padding:9px!important}
+ .dialog:has(.picker-map-card) .picker-map-title {font-size:19px}
+ .dialog:has(.picker-map-card) .picker-map-count {font-size:11px}
+ .c-pupil-board {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .c-correction-toolbar {flex-wrap:wrap}
+ .c-correction-toolbar .search {max-width:100%}
+ .c-correction-filters {margin-left:0;order:2;width:100%;justify-content:space-between}
+ .c-correction-filters button {flex:1;font-size:12px;padding:7px}
+ .c-sheet-grid {grid-template-columns:1fr 1fr}
+ .results-page .primary-results-tabs {flex:1}
+ .results-page .results-filterbar .results-views button {font-size:12px}
+ .results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td {font-size:12px}
+ .station-options,.device-mode-grid {grid-template-columns:1fr}
+ .station-choice,.device-mode-card {min-height:unset;padding:14px}
+}
+@media (max-height:670px) and (orientation:landscape) {
+ .tablet-kiosk .run-action-hint {display:none}
+ .tablet-kiosk .kiosk-bar {height:46px;flex-basis:46px}
+ .tablet-kiosk .start-toolbar {min-height:43px}
+ .terrain-mode .run-tile-bottom {height:20px}
+ .terrain-mode .lesson-heading-stable .page-intro {display:none}
+}
+@media (prefers-reduced-motion:reduce) {.class-card,.lesson-card,.map-card,.button {transition:none!important}}
+@media print {.app-header,.app-footer,.results-commandbar,.results-filterbar,.results-card-rail {display:none!important}}

@@ -1,5 +1,5 @@
 import {useState,type CSSProperties,type ChangeEvent} from 'react';
-import {Award,Check,Download,FileText,FileUp,History,Minus,Plus,ScanLine,Search,Trophy,Users,Map} from 'lucide-react';
+import {Award,Check,Download,FileText,FileUp,History,Minus,Plus,ScanLine,Search,Trophy,Users,Map,Pencil} from 'lucide-react';
 import {useStore} from '../store';
 import {elapsed,formatTime,level,parseTime,studentLabels} from '../domain/engine';
 import {rankRoute,routeKey,successPercent} from '../domain/successRanking';
@@ -121,7 +121,15 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
   <details onToggle={e=>setReopen(e.currentTarget.open)}><summary>Annuler cette arrivée</summary>{reopen&&<><p className="muted compact">Le chrono reprendra depuis le départ initial.</p><Field label="Motif"><input value={reason} onChange={e=>setReason(e.target.value)}/></Field><button className="button" disabled={!reason.trim()||busy} onClick={async()=>{setBusy(true);if(await s.command({kind:'reopen',id:uid(),at:now(),runId:edit.id,reason}))setEdit(null);setBusy(false);}}>Réouvrir le passage</button></>}</details>
  </Dialog>}
  {exporting&&<Dialog title="Exporter vers iDoceo" onClose={()=>setExporting(false)}><p>{scope==='general'?'Cumul de toutes les leçons disponibles':'Résultats de cette leçon'} · {className}</p><div className="export-options"><button className={wideExport?'active':''} onClick={()=>setWideExport(true)}><Users size={23}/><strong>Une ligne par élève</strong><small>Fautes, temps et niveau par carte.</small></button><button className={!wideExport?'active':''} onClick={()=>setWideExport(false)}><Map size={23}/><strong>Détail des cartes</strong><small>Une ligne par carte effectuée.</small></button></div><p className="muted compact">Les niveaux 1 à 4 proviennent de vos barèmes. Sans barème, le niveau reste vide : aucune évaluation n’est inventée.</p><div className="dialog-actions"><button className="button primary" onClick={()=>{download(`ORun_iDoceo_${scope}_${session.date}.csv`,gradebookCSV(s.data,visibleRows,wideExport),'text/csv;charset=utf-8');setExporting(false);s.notify('Fichier iDoceo téléchargé. Associez les colonnes lors de l’import.');}}><Download size={17}/>Télécharger pour iDoceo</button></div></Dialog>}
- {history&&<Dialog wide title="Historique des modifications" onClose={()=>setHistory(false)}><div className="audit-list">{s.data.audit.filter(a=>a.runId&&all.some(r=>r.id===a.runId)).slice().reverse().map(a=><div key={a.id}><strong>{labels.get(all.find(r=>r.id===a.runId)!.studentId)}</strong><p>{a.detail}</p><small>{new Date(a.at).toLocaleString('fr-FR')} · {a.actor}</small></div>)}</div></Dialog>}
+ {history&&<Dialog wide title="Historique des corrections" onClose={()=>setHistory(false)}>
+  <p className="history-intro">Une erreur de saisie ? Ouvrez un résultat pour modifier les balises ou le chrono. Le classement sera recalculé automatiquement.</p>
+  <div className="history-list">{all.filter(r=>r.end!==undefined&&r.errors!==null).slice().sort((a,b)=>(b.end??0)-(a.end??0)).map(r=><div className="history-row" key={r.id}>
+   <div className="history-student"><strong>{labels.get(r.studentId)}</strong><span>{r.courseSnapshot.name} · {r.errors} faute{r.errors!==1?'s':''} · {formatTime(elapsed(r),true)}</span></div>
+   <button type="button" className="button history-edit" onClick={()=>{setHistory(false);choose(r);}}><Pencil size={16}/>Modifier</button>
+  </div>)}</div>
+  {!all.some(r=>r.end!==undefined&&r.errors!==null)&&<Empty title="Aucune correction enregistrée."/>}
+  <details className="history-audit"><summary>Voir les modifications précédentes</summary><div className="audit-list">{s.data.audit.filter(a=>a.runId&&all.some(r=>r.id===a.runId)).slice().reverse().map(a=><div key={a.id}><strong>{labels.get(all.find(r=>r.id===a.runId)!.studentId)}</strong><p>{a.detail}</p><small>{new Date(a.at).toLocaleString('fr-FR')} · {a.actor}</small></div>)}</div></details>
+ </Dialog>}
  {qrControl}{prepControl}
  </div>;
 }
