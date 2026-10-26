@@ -574,6 +574,30 @@
  .main-content .lesson-heading-stable .lesson-tabs button span{display:none}
  .c-sheet-footer{flex-direction:column;align-items:stretch}.c-sheet-footer .offline-step-actions{justify-content:flex-end}
 }
+
+/* Tablettes A/B : écran de terrain autonome, sans menu enseignant. */
+.tablet-kiosk{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;padding:0 clamp(10px,1.7vw,23px) 10px;background:#f7f9f3 url('/contours.svg') center/550px;color:#214633}
+.kiosk-bar{height:62px;flex:0 0 62px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #dfe9d7;margin:0 0 8px}
+.kiosk-identity{display:flex;align-items:center;gap:8px;white-space:nowrap}.kiosk-identity img{width:33px;height:33px}.kiosk-identity strong{font:800 25px 'Outfit Variable',sans-serif;letter-spacing:-.05em}.kiosk-identity>span{padding:7px 10px;background:#e5f0df;border-radius:12px;color:#39734c;font-size:12px;font-weight:900}
+.kiosk-subtitle{font-size:12px;font-weight:800;color:#6a8968;text-align:center}.kiosk-teacher{border:1px solid #dbe7d5;background:#fff;border-radius:12px;display:flex;align-items:center;gap:7px;padding:9px 12px;color:#476b4c;font-size:12px;font-weight:850}
+.tablet-kiosk .run-board{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}.tablet-kiosk .start-toolbar{padding:7px 10px;margin-bottom:7px;min-height:48px;flex:0 0 auto;gap:9px;justify-content:space-between;background:#fff;border-radius:13px}
+.tablet-kiosk .start-toolbar .segmented button{font-size:12px;padding:8px 15px;min-height:31px}.tablet-kiosk .start-map{min-width:110px;padding-left:10px;flex:1}.tablet-kiosk .start-map>span{font-size:9px}.tablet-kiosk .start-map select{min-height:21px;font-size:12px}
+.tablet-kiosk .launch-button{min-height:35px;padding:8px 12px;margin-left:auto;font-size:12px}.tablet-kiosk .board-toolbar{flex:0 0 auto;margin-bottom:7px;min-height:25px}.tablet-kiosk .board-counts{font-size:11px;gap:15px}.tablet-kiosk .board-search{min-height:29px}.tablet-kiosk .board-search input{padding:4px!important}.tablet-kiosk .board-tools>.text-button{font-size:11px}
+.tablet-kiosk .run-grid{display:grid;grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));grid-template-rows:repeat(var(--grid-rows),minmax(0,1fr));gap:clamp(5px,.7vw,11px);flex:1;min-height:0;overflow:hidden}
+.tablet-kiosk .run-tile{display:flex;flex-direction:column;min-width:0;min-height:0;border-radius:14px;border:2px solid #bad0ae;background:#fcfff9;box-shadow:0 2px 0 #e3ecd9;position:relative}
+.tablet-kiosk .run-tile.running{background:#fff3e8;border-color:#ee8b42}.tablet-kiosk .run-tile.finished{background:#f1f8ea;border-color:#9ebe91}
+.tablet-kiosk .run-tile-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:0;padding:7px 5px 2px;text-align:center}
+.tablet-kiosk .run-tile-top{position:absolute;inset:4px 5px auto;width:calc(100% - 10px);min-height:0;margin:0}.tablet-kiosk .run-status{display:none}.tablet-kiosk .selection-check{display:none}.tablet-kiosk .stop-square,.tablet-kiosk .finished-check{width:18px;height:18px}
+.tablet-kiosk .run-tile h2{font-family:'Outfit Variable',sans-serif;font-weight:850;line-height:1.04;letter-spacing:-.035em;max-width:100%;max-height:2.25em;overflow:hidden;overflow-wrap:anywhere;text-wrap:balance;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin:1px 0;color:#1e4734}
+.tablet-kiosk .run-time{font:700 clamp(16px,calc(var(--tile-unit)*.19),28px) 'Outfit Variable',sans-serif;margin:0;line-height:1.1;color:#e27030}.tablet-kiosk .chrono-idle{color:#9cb39a}
+.tablet-kiosk .run-action-hint{font-size:clamp(9px,.86vw,12px);line-height:1.1;color:#67866d;max-width:100%;text-align:center}.tablet-kiosk .run-tile.running .run-action-hint{color:#ac602e;font-weight:800}
+.tablet-kiosk .run-tile-bottom{flex:0 0 21px;min-height:21px;display:flex;justify-content:center;align-items:center;border-top:1px solid #e5eddf}.tablet-kiosk .run-map-label{padding:0 3px;border:0;min-height:0;justify-content:center;text-align:center;font-size:10px;font-weight:900;color:#638665}
+.tablet-kiosk .board-hint{display:none}.tablet-kiosk .wave-focus{overflow:hidden}.tablet-kiosk .run-board:has(.wave-focus) .start-toolbar{display:none}
+.kiosk-pin-lock{margin:auto;display:grid;place-items:center;color:#e87732;background:#fff1df;border-radius:17px;width:56px;height:56px}.kiosk-pin-form>p{font-size:13px;line-height:1.45;color:#64816e;margin:12px 0}.kiosk-lock-button{background:#fff3e2;border-color:#e9b991;color:#985521}
+@media(max-width:880px){.kiosk-subtitle{display:none}.tablet-kiosk .start-toolbar{flex-wrap:wrap;gap:5px}.tablet-kiosk .start-map{min-width:95px}.tablet-kiosk .run-action-hint{font-size:9px}.tablet-kiosk .run-tile h2{letter-spacing:-.05em}}
+@media(max-height:700px){.kiosk-bar{height:46px;flex-basis:46px}.kiosk-identity img{width:27px;height:27px}.kiosk-identity strong{font-size:20px}.tablet-kiosk .start-toolbar{min-height:42px;padding:5px 8px}.tablet-kiosk .run-tile-main{padding:3px 4px 0}.tablet-kiosk .run-tile-bottom{flex-basis:17px;min-height:17px}.tablet-kiosk .run-action-hint{display:none}}
+.c-transfer-status{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 15px}.c-transfer-status span{display:flex;align-items:center;gap:5px;background:#eaf4e4;color:#3a764c;border:1px solid #d5e5d1;padding:9px 12px;border-radius:11px;font-size:12px;font-weight:850}.c-transfer-status span.attention{background:#fff2e3;color:#a96330;border-color:#f0d4b5}.c-pending-hint{margin:0 0 14px;color:#805d36;background:#fff8ec;border-left:4px solid #e89043;padding:10px 14px;border-radius:9px;font-size:12px;line-height:1.5}
+.qr-auto{display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;margin-top:7px}.qr-auto .button{min-height:35px;padding:7px 12px}.qr-auto p{max-width:260px}
 @media(max-width:480px){.c-pupil-board{grid-template-columns:repeat(2,minmax(0,1fr))}.c-sheet-grid{grid-template-columns:1fr}.lesson-heading-stable .page-intro{display:none}.c-student-tile{min-height:94px}}
 
 /* QR hors ligne : trois choix clairs, sans assistant interminable. */

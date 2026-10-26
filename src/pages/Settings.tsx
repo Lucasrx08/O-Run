@@ -9,7 +9,7 @@ import * as storage from '../services/storage';
 import {download} from '../services/download';
 
 export function SettingsPage(){
- const s=useStore(),[scanner,setScanner]=useState<'A'|'B'|null>(null),[busy,setBusy]=useState(false);
+ const s=useStore(),[scanner,setScanner]=useState<'A'|'B'|null>(null),[busy,setBusy]=useState(false),[recovery,setRecovery]=useState<'A'|'B'|null>(null);
  const [protect,setProtect]=useState(false),[password,setPassword]=useState(''),[confirmPassword,setConfirmPassword]=useState('');
  const loadPack=async(pack:unknown,role:'A'|'B')=>{
   const prepared=validateSessionPack(pack);
@@ -36,6 +36,10 @@ export function SettingsPage(){
    </button>)}</div>
   {ready&&<section className="station-ready"><div><Check size={19}/><strong>{s.offline?.post==='AB'?'iPad A + B prêt':`Tablette ${s.offline?.post} prête`}</strong><span>{s.offline?.studentIds.length} élèves · leçon reçue</span></div>
    <button className="button primary" onClick={()=>{s.setSessionId(s.offline!.sessionId);s.go('departures');}}><Timer size={18}/>Ouvrir les chronos<ArrowRight size={17}/></button></section>}
+  {s.offline?.post==='C'&&s.data.runs.some(r=>r.sessionId===s.offline?.sessionId)&&<details className="station-backup station-recovery"><summary><Shield size={17}/>Secours : récupérer les chronos d’une tablette bloquée</summary>
+   <p>À utiliser uniquement si cet iPad était une tablette A ou B et qu’une ancienne version l’a fait passer en « Poste C ». La récupération conserve tous les chronos, sans effacement.</p>
+   <div className="offline-send-row"><button className="button" onClick={()=>setRecovery('A')}>Retrouver les chronos A</button><button className="button" onClick={()=>setRecovery('B')}>Retrouver les chronos B</button></div>
+  </details>}
   <details className="station-backup"><summary><FileUp size={17}/>Transfert par fichier (secours AirDrop)</summary>
    <p>En cas de difficulté avec la caméra, vous pouvez toujours ajouter les préparations JSON par Fichiers.</p>
    <div className="offline-send-row">{(['A','B'] as const).map(role=><label key={role} className="button offline-file-button"><FileUp size={17}/>Préparation {role}<input className="sr-only" aria-label={`Importer préparation ${role}`} type="file" accept=".json,application/json" onChange={e=>void importFile(e,role)}/></label>)}</div>
@@ -46,6 +50,7 @@ export function SettingsPage(){
    <button className="button" onClick={()=>{download(`ORun_sauvegarde_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(s.data),'application/json');s.notify('Copie locale enregistrée.');}}><Download size={17}/>Sauvegarde locale</button>
   </details>
   {scanner&&<QRScanDialog title={`Préparer la tablette ${scanner}`} kind="P" onPayload={async payload=>{await loadPack(decodePreparationQR(payload),scanner);}} onClose={()=>setScanner(null)}/>}
+  {recovery&&<Dialog title={`Récupérer la tablette ${recovery} ?`} onClose={()=>setRecovery(null)}><p>Confirmez uniquement sur la tablette contenant les chronos d’origine. Les passages restent intacts et les QR des chronos seront à nouveau accessibles.</p><div className="dialog-actions"><button type="button" className="button primary" disabled={busy} onClick={async()=>{setBusy(true);try{await storage.recoverTabletPost(recovery);await s.refresh();s.notify(`Chronos de la tablette ${recovery} récupérés. Accès aux QR restauré.`);setRecovery(null);}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}>Conserver les chronos et restaurer {recovery}</button></div></Dialog>}
   {protect&&<Dialog title="Chiffrer les données locales" onClose={()=>setProtect(false)}><form onSubmit={async e=>{e.preventDefault();if(busy)return;setBusy(true);try{if(password!==confirmPassword)throw new Error('Les phrases secrètes sont différentes.');await storage.protect(password);setProtect(false);setPassword('');setConfirmPassword('');await s.refresh();s.notify('Protection locale activée.');}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}><Field label="Phrase secrète (12 caractères minimum)"><input required type="password" minLength={12} value={password} onChange={e=>setPassword(e.target.value)}/></Field><Field label="Confirmer"><input required type="password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)}/></Field><div className="dialog-actions"><button className="button primary" disabled={busy}>Activer le chiffrement</button></div></form></Dialog>}
  </div>;
 }

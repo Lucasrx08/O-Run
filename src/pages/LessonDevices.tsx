@@ -44,7 +44,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
   }catch(e){setError((e as Error).message);}
  };
  return <div className="lesson-devices">
-  <div className="device-intro"><span className="eyebrow">ORGANISATION DE LA LEÇON</span><h2>Combien d’appareils aujourd’hui ?</h2><p>Choisissez votre organisation. O’Run n’affiche ensuite que les fonctions utiles à chaque appareil.</p></div>
+  <div className="device-intro"><span className="eyebrow">CARTES PRÊTES · ORGANISATION</span><h2>Combien d’appareils aujourd’hui ?</h2><p>Les cartes sont déjà configurées. Choisissez maintenant les postes de la séance.</p></div>
   <div className="device-mode-grid">{options.map(o=><button type="button" key={o.mode} className={chosen===o.mode?'device-mode-card active':'device-mode-card'} aria-pressed={chosen===o.mode} onClick={()=>{setChosen(o.mode);setSelectedA(null);setError('');}}>
    <span className="device-mode-icon"><o.Icon size={30}/></span><strong>{o.title}</strong><small>{o.detail}</small><span className="device-mode-check">{chosen===o.mode?<CheckCircle2 size={23}/>:null}</span>
   </button>)}</div>
@@ -56,10 +56,10 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
    </section>)}</div>
   </div>}
   {error&&<p role="alert" className="form-error">{error}</p>}
-  <div className="device-actions"><button type="button" className="button primary" disabled={busy} onClick={async()=>{if(chosen>1&&configured&&!selectedA){onContinue(chosen);return;}if(await configure()&&chosen===1)onContinue(chosen);}}><Check size={19}/>{chosen===1?'Ouvrir ma leçon':configured&&!selectedA?'Configurer les cartes':'Enregistrer la répartition'}</button>
+  <div className="device-actions"><button type="button" className="button primary" disabled={busy} onClick={async()=>{if(chosen>1&&configured&&!selectedA){onContinue(chosen);return;}if(await configure())onContinue(chosen);}}><Check size={19}/>{chosen===1?'Ouvrir ma leçon':configured&&!selectedA?'Ouvrir la correction':'Enregistrer et ouvrir la correction'}</button>
    {chosen>1&&!configured&&<span className="muted compact">Enregistrez ce mode avant d’envoyer les préparations.</span>}</div>
   {chosen>1&&configured&&<section className="device-send">
-   <div><h3><ScanLine size={21}/>Préparer les iPads par QR code</h3><p>Après avoir réglé les cartes dans la leçon, affichez ces QR codes pour les transférer aux tablettes. Aucun AirDrop nécessaire.</p></div>
+   <div><h3><ScanLine size={21}/>Préparer les iPads par QR code</h3><p>Flashez ces QR codes avec les tablettes A et B. Elles s’ouvriront directement dans leur vue élèves protégée, sans AirDrop.</p></div>
    <div className="device-send-buttons"><button className="button primary" onClick={()=>showQR('A')}><ScanLine size={18}/>QR Tablette A</button>
     {chosen===3&&<button className="button primary" onClick={()=>showQR('B')}><ScanLine size={18}/>QR Tablette B</button>}</div>
   </section>}

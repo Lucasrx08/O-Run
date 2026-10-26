@@ -4,7 +4,9 @@ import type {Data,OfflineConfig} from '../domain/types';
 
 type Kind='P'|'T';
 export interface QRFrame {kind:Kind;index:number;total:number;part:string;}
-const MAX_PART=1450;
+// Une trame courte se lit nettement plus vite avec la caméra d'un iPad.
+// Plusieurs trames défilent automatiquement à l'écran et sont reconstituées côté C.
+const MAX_PART=850;
 const textEncode=(s:string)=>strToU8(s);
 const toB64=(a:Uint8Array)=>btoa(Array.from(a,b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const fromB64=(s:string)=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4)),c=>c.charCodeAt(0));
