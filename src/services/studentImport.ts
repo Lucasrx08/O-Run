@@ -32,10 +32,25 @@ export function inspectStudents(text:string,existing:Student[],className:string)
 export async function studentFileText(file:File){
  if(file.size>5*1024*1024)throw new Error('Fichier limité à 5 Mo.');
  if(/\.xlsx?$/i.test(file.name)){
-  const XLSX=await import('@e965/xlsx');const book=XLSX.read(await file.arrayBuffer(),{type:'array',cellFormula:false,cellHTML:false,sheetRows:2002});
-  const sheet=book.SheetNames.map(n=>book.Sheets[n]).find(s=>XLSX.utils.sheet_to_json(s,{header:1,blankrows:false}).length>1);
+  const buffer=await file.arrayBuffer();
+  if(typeof Worker!=='undefined'){
+   try{
+    const worker=new Worker(new URL('./studentImport.worker.ts',import.meta.url),{type:'module'});
+    return await new Promise<string>((resolve,reject)=>{
+     const timeout=setTimeout(()=>{worker.terminate();reject(new Error('La lecture Excel est trop longue. Exportez cette liste au format CSV puis réessayez.'));},20000);
+     const finish=()=>{clearTimeout(timeout);worker.terminate();};
+     worker.onmessage=(event:MessageEvent<{ok:boolean;text?:string;error?:string}>)=>{
+      finish();if(event.data.ok&&event.data.text)resolve(event.data.text);else reject(new Error(event.data.error||'Classeur Excel illisible.'));
+     };
+     worker.onerror=()=>{finish();reject(new Error('Lecture Excel interrompue. Essayez le format CSV.'));};
+     worker.postMessage(buffer,[buffer]);
+    });
+   }catch(e){throw new Error(`${(e as Error).message} Aucun élève n’a été effacé.`);}
+  }
+  const XLSX=await import('@e965/xlsx');const book=XLSX.read(buffer,{type:'array',dense:true,cellFormula:false,cellHTML:false,sheetRows:2002});
+  const sheet=book.SheetNames.map(n=>book.Sheets[n]).find(s=>XLSX.utils.sheet_to_csv(s,{FS:';',blankrows:false}).trim().split(/\r?\n/).length>1);
   if(!sheet)throw new Error('Aucune liste d’élèves trouvée dans ce classeur.');
-  return XLSX.utils.sheet_to_csv(sheet,{FS:';'});
+  return XLSX.utils.sheet_to_csv(sheet,{FS:';',blankrows:false});
  }
  return file.text();
 }

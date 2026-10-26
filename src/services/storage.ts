@@ -17,7 +17,32 @@ export async function mutate(fn:(w:Workspace)=>Workspace):Promise<Workspace>{for
 export async function loadWorkspace(){const r=await readRecord();return r?decode(r):mutate(w=>w);}
 export async function execute(command:Command,role:Role='teacher'){return mutate(w=>{const next=apply(w.data,command,role);return {...w,data:next,room:null,pending:w.pending};});}
 export async function setOfflineConfig(offline:OfflineConfig){
- return mutate(w=>({...w,room:null,offline}));
+ return mutate(w=>{
+  const original=w.offline;
+  if(original&&['A','B','AB'].includes(original.post)&&
+   (offline.sessionId!==original.sessionId||!['A','B','AB'].includes(offline.post))&&
+   w.data.runs.some(r=>r.sessionId===original.sessionId))
+   throw new Error('Tablette A/B protégée : des chronos sont déjà enregistrés. Exportez-les avant de modifier le rôle de cet appareil.');
+  return {...w,room:null,offline};
+ });
+}
+/** Secours après une ancienne version qui a écrasé le rôle de la tablette par C.
+ * Ne touche jamais aux passages, à leur heure de départ ou à leur correction. */
+export async function recoverTabletPost(post:'A'|'B'){
+ return mutate(w=>{
+  if(w.offline?.post!=='C')throw new Error('Cette récupération concerne uniquement un ancien poste A/B passé accidentellement en C.');
+  const session=w.data.sessions.find(s=>s.id===w.offline!.sessionId);
+  if(!session?.deviceKey)throw new Error('Clé de transfert introuvable. Ne supprimez pas cette leçon.');
+  const runs=w.data.runs.filter(r=>r.sessionId===session.id);
+  if(!runs.length)throw new Error('Aucun chrono à récupérer dans cette leçon.');
+  const ids=session.studentIds.filter(id=>w.data.students.some(student=>student.id===id)).sort((a,b)=>{
+   const pa=w.data.students.find(s=>s.id===a)!,pb=w.data.students.find(s=>s.id===b)!;
+   return pa.lastName.localeCompare(pb.lastName,'fr',{sensitivity:'base'})||pa.firstName.localeCompare(pb.firstName,'fr',{sensitivity:'base'});
+  });
+  if(runs.some(r=>!ids.includes(r.studentId)))throw new Error('Un chrono concerne un élève absent de la répartition actuelle.');
+  const offline:OfflineConfig={post,sessionId:session.id,studentIds:ids,groupA:post==='A'?ids:[],groupB:post==='B'?ids:[],transferKey:session.deviceKey,devices:session.deviceMode===2?2:3};
+  return {...w,offline,room:null};
+ });
 }
 export async function importOfflineSession(pack:unknown){
  return mutate(w=>{const result=combineSession(w.data,pack,w.offline);return {...w,data:result.data,room:null,offline:result.config};});

@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,Camera,Check,FileUp,ScanLine} from 'lucide-react';
+import {ArrowLeft,ArrowRight,Camera,Check,FileUp,Pause,Play,ScanLine} from 'lucide-react';
 import QRCode from 'qrcode';
 import jsQR from 'jsqr';
 import {parseQRFrame,type QRFrame} from '../services/qrTransfer';
@@ -7,7 +7,8 @@ import {Dialog} from './ui';
 
 /** All QR operations take place in the installed PWA, without network requests. */
 export function QRShowDialog({title,frames,onClose}:{title:string;frames:string[];onClose:()=>void}){
- const [index,setIndex]=useState(0),[src,setSrc]=useState(''),[error,setError]=useState('');
+ const [index,setIndex]=useState(0),[src,setSrc]=useState(''),[error,setError]=useState(''),[autoplay,setAutoplay]=useState(frames.length>1);
+ useEffect(()=>{if(!autoplay||frames.length<2)return;const id=window.setInterval(()=>setIndex(i=>(i+1)%frames.length),2000);return()=>window.clearInterval(id);},[autoplay,frames.length]);
  useEffect(()=>{let alive=true;setSrc('');QRCode.toDataURL(frames[index],{width:620,margin:3,errorCorrectionLevel:frames[index].length>1000?'L':'M'})
   .then(url=>{if(alive)setSrc(url);}).catch(()=>{if(alive)setError('Impossible de dessiner ce QR code. Utilisez le fichier de secours.');});
   return()=>{alive=false;};},[frames,index]);
@@ -17,7 +18,7 @@ export function QRShowDialog({title,frames,onClose}:{title:string;frames:string[
   <div className="qr-pager"><button type="button" className="button" disabled={index===0} onClick={()=>setIndex(i=>i-1)}><ArrowLeft size={17}/>Précédent</button>
    <strong>QR {index+1} / {frames.length}</strong>
    <button type="button" className="button primary" disabled={index===frames.length-1} onClick={()=>setIndex(i=>i+1)}>Suivant<ArrowRight size={17}/></button></div>
-  {frames.length>1&&<p className="muted compact">Scannez tous les QR codes pour récupérer la préparation complète.</p>}
+  {frames.length>1&&<div className="qr-auto"><button type="button" className="button" aria-pressed={autoplay} onClick={()=>setAutoplay(v=>!v)}>{autoplay?<><Pause size={16}/>Mettre en pause</>:<><Play size={16}/>Faire défiler les QR</>}</button><p className="muted compact">Laissez l’écran devant la caméra : les QR défilent automatiquement toutes les 2 secondes.</p></div>}
  </div></Dialog>;
 }
 
@@ -43,17 +44,27 @@ export function QRScanDialog({title,kind,onPayload,onClose}:{title:string;kind:'
  };
  processRef.current=s=>{void accept(s);};
  useEffect(()=>{
-  let closed=false,stream:MediaStream|undefined,frame=0,raf=0;
+  let closed=false,stream:MediaStream|undefined,frame=0,raf=0,detecting=false;
+  let detector:{detect:(input:HTMLVideoElement)=>Promise<Array<{rawValue?:string}>>}|null=null;
+  try{const Native=(window as unknown as {BarcodeDetector?:new(options:{formats:string[]})=>typeof detector}).BarcodeDetector;if(Native)detector=new Native({formats:['qr_code']});}catch{/* Use the offline JS decoder. */}
   const loop=()=>{
    if(closed)return;
    const v=video.current,c=canvas.current;
    if(v&&c&&v.readyState>=2&&v.videoWidth&&++frame%5===0&&!processing.current){
-    const w=Math.min(900,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);
-    c.width=w;c.height=h;const ctx=c.getContext('2d',{willReadFrequently:true});
-    if(ctx){ctx.drawImage(v,0,0,w,h);const image=ctx.getImageData(0,0,w,h);
-     const code=jsQR(image.data,w,h,{inversionAttempts:'attemptBoth'});
-     if(code&&code.data!==previous.current){previous.current=code.data;processRef.current(code.data);}
-     if(!code)previous.current='';
+    if(detector&&frame%10===0){
+     if(!detecting){detecting=true;const native=detector;
+      void native.detect(v).then(codes=>{if(closed)return;const value=codes[0]?.rawValue;if(value&&value!==previous.current){previous.current=value;processRef.current(value);}if(!value)previous.current='';})
+       .catch(()=>{detector=null;}).finally(()=>{detecting=false;});
+     }
+    }else{
+     const w=Math.min(960,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);
+     if(c.width!==w)c.width=w;if(c.height!==h)c.height=h;
+     const ctx=c.getContext('2d',{willReadFrequently:true});
+     if(ctx){ctx.drawImage(v,0,0,w,h);const image=ctx.getImageData(0,0,w,h);
+      const code=jsQR(image.data,w,h,{inversionAttempts:'dontInvert'});
+      if(code&&code.data!==previous.current){previous.current=code.data;processRef.current(code.data);}
+      if(!code)previous.current='';
+     }
     }
    }
    raf=requestAnimationFrame(loop);
