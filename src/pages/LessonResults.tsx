@@ -1,5 +1,5 @@
-import {useState,type CSSProperties} from 'react';
-import {Award,Check,Download,FileText,History,Minus,Plus,Printer,Search,Trophy,Users,Map} from 'lucide-react';
+import {useState,type CSSProperties,type ChangeEvent} from 'react';
+import {Award,Check,Download,FileText,FileUp,History,Minus,Plus,Printer,ScanLine,Search,Trophy,Users,Map} from 'lucide-react';
 import {useStore} from '../store';
 import {elapsed,formatTime,level,parseTime,studentLabels} from '../domain/engine';
 import {rankRoute,routeKey,successPercent} from '../domain/successRanking';
@@ -11,6 +11,10 @@ import {now} from '../services/clock';
 import {ResultTable} from '../components/ResultTable';
 import {CourseTag,Dialog,Empty,Field,LevelBadge} from '../components/ui';
 import {OfflineCorrectionBoard} from './OfflineCorrectionBoard';
+import {QRScanDialog} from '../components/QRTransfer';
+import {decodeTimingQR} from '../services/qrTransfer';
+import {openTimes} from '../services/offlineTransfer';
+import * as storage from '../services/storage';
 
 export function LessonResults({session,className,correctionOnly=false}:{session:Session;className:string;correctionOnly?:boolean}){
  const s=useStore(),labels=studentLabels(s.data.students);
@@ -18,7 +22,24 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
  const [search,setSearch]=useState(''),[queueView,setQueueView]=useState<'pending'|'corrected'|'all'>('pending'),[edit,setEdit]=useState<Run|null>(null),[errors,setErrors]=useState(0),[editTime,setEditTime]=useState(false),[timeText,setTimeText]=useState(''),[history,setHistory]=useState(false),[reopen,setReopen]=useState(false),[reason,setReason]=useState(''),[busy,setBusy]=useState(false),[exporting,setExporting]=useState(false),[wideExport,setWideExport]=useState(true);
  const [sorts,setSorts]=useState<Record<string,TableSort>>({});
  const [selectedCorrectionCard,setSelectedCorrectionCard]=useState(''),[selectedRankingCard,setSelectedRankingCard]=useState(''),[selectedRankingStudent,setSelectedRankingStudent]=useState('');
+ const [qrScanner,setQRScanner]=useState(false),[merging,setMerging]=useState(false);
  const rankingMode=lessonView==='rankings';
+ const isCentral=s.offline?.post==='C'&&s.offline.sessionId===session.id;
+ const importTimings=async(pack:Parameters<typeof storage.mergeOfflineTimes>[0])=>{
+  if(merging)return;setMerging(true);
+  try{const outcome=await storage.mergeOfflineTimes(pack);await s.refresh();s.notify(`Chronos ${pack.post} reçus : ${outcome.added} nouveau(x), ${outcome.matched} correction(s) associée(s).`);}
+  finally{setMerging(false);}
+ };
+ const importTimingFile=async(event:ChangeEvent<HTMLInputElement>)=>{
+  const file=event.target.files?.[0];event.target.value='';if(!file||!s.offline)return;
+  try{if(file.size>3*1024*1024)throw new Error('Fichier de chronos trop volumineux.');await importTimings(await openTimes(await file.text(),s.offline));}
+  catch(e){s.notify((e as Error).message);}
+ };
+ const scanControls=<div className="results-qr-actions"><button className="button primary" type="button" disabled={merging} onClick={()=>setQRScanner(true)}><ScanLine size={19}/>Scanner les chronos A / B</button>
+  <details className="results-timing-backup"><summary><FileUp size={17}/>Fichier de secours</summary><label className="button offline-file-button"><FileUp size={16}/>Importer les chronos (AirDrop)<input className="sr-only" type="file" aria-label="Importer les chronos par fichier" accept=".json,.oruntimes,application/json" onChange={e=>void importTimingFile(e)}/></label></details></div>;
+ const qrControl=isCentral&&qrScanner&&<QRScanDialog title="Récupérer les chronos A / B" kind="T" onPayload={async payload=>{
+  if(!s.offline)throw new Error('Configurez le poste C.');await importTimings(await decodeTimingQR(payload,s.offline,s.data));
+ }} onClose={()=>setQRScanner(false)}/>;
 
  const classLessons=s.data.sessions.filter(l=>l.className===className||l.studentIds.some(id=>s.data.students.some(p=>p.id===id&&p.className===className))).slice().sort((a,b)=>a.date.localeCompare(b.date)||s.data.sessions.indexOf(a)-s.data.sessions.indexOf(b));
  const lessonNumber=Math.max(1,classLessons.findIndex(l=>l.id===session.id)+1);
@@ -49,14 +70,15 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
  const save=async(next=false)=>{if(!edit||busy)return;let milliseconds:number|undefined;try{if(editTime)milliseconds=parseTime(timeText);}catch(e){s.notify((e as Error).message);return;}setBusy(true);if(await s.command({kind:'correct',id:uid(),at:now(),runId:edit.id,errors,expectedRevision:edit.revision,milliseconds})){const another=next?profileRows.find(r=>r.id!==edit.id&&r.errors===null):null;if(another)choose(another);else setEdit(null);}setBusy(false);};
  const card=(r:Run)=><button className={`correction-profile ${r.errors===null?'uncorrected':'corrected'}`} key={r.id} aria-label={`Corriger ${labels.get(r.studentId)} · ${r.courseSnapshot.name}`} onClick={()=>choose(r)}><span className="profile-top"><span className="pupil-initial">{s.data.students.find(p=>p.id===r.studentId)?.firstName[0]}</span><span className="profile-state">{r.errors===null?'À CORRIGER':r.errors===0?'SANS FAUTE':'CORRIGÉ'}</span></span><strong className="profile-name">{labels.get(r.studentId)}</strong><span className="profile-course"><i style={{background:r.courseSnapshot.color}}/>{r.courseSnapshot.name}</span><span className="profile-result"><b>{formatTime(elapsed(r),true)}</b><span>{r.errors===null?'Valider les balises':`${r.errors} balise${r.errors>1?'s':''} fausse${r.errors>1?'s':''}`}</span></span><span className="profile-foot">{r.errors!==null&&routeBest(r)?<span className="personal-best"><Award size={14}/>Record de la carte</span>:<span>{r.errors===null?'Toucher pour corriger':'Toucher pour ajuster'}</span>}<LevelBadge value={level(r)}/></span></button>;
  const podium=(ranking:ReturnType<typeof rankRoute>)=><div className="podium-grid compact-podium">{ranking.filter(t=>t.rank<=3).slice(0,3).map(t=><div className={`podium-card podium-${t.rank}`} key={t.run.id}><span><Trophy size={16}/>TOP {t.rank}</span><strong>{labels.get(t.run.studentId)}</strong><p>{t.run.errors} balise(s) fausse(s) · {formatTime(elapsed(t.run),true)}</p></div>)}</div>;
- if(s.offline?.post==='C'&&s.offline.sessionId===session.id&&!rankingMode)return <div className="results-page page-enter c-results">
-  <div className="results-commandbar"><div className="results-views workspace-switch primary-results-tabs" role="tablist" aria-label="Espace résultats"><button role="tab" aria-selected="true" className="active">Correction</button><button role="tab" aria-selected="false" onClick={()=>setLessonView('rankings')}>Classement</button></div></div>
+ if(isCentral&&!rankingMode)return <div className="results-page page-enter c-results">
+  <div className="results-commandbar"><div className="results-views workspace-switch primary-results-tabs" role="tablist" aria-label="Espace résultats"><button role="tab" aria-selected="true" className="active">Correction</button><button role="tab" aria-selected="false" onClick={()=>setLessonView('rankings')}>Classement</button></div>{scanControls}</div>
   <OfflineCorrectionBoard session={session}/>
+  {qrControl}
  </div>;
  return <div className="results-page page-enter"><div className="print-banner"><strong>{className}</strong><span>{makeReport().subtitle}</span></div>
 <div className="results-commandbar"><div className="results-views workspace-switch primary-results-tabs" role="tablist" aria-label="Espace résultats"><button role="tab" aria-selected={!rankingMode} className={!rankingMode?'active':''} onClick={()=>{setLessonView('corrections');setSearch('');}}>Correction <span>{classRuns.filter(r=>r.sessionId===session.id&&r.end!==undefined&&r.errors===null).length}</span></button><button role="tab" aria-selected={rankingMode} className={rankingMode?'active':''} onClick={()=>{setLessonView('rankings');setSearch('');}}>Classement</button></div>
 
- <div className="list-toolbar"><div className="head-actions"><button className="icon-button" aria-label="Historique des modifications" onClick={()=>setHistory(true)}><History size={20}/></button><button className="icon-button" aria-label="Imprimer les résultats" disabled={!visibleRows.length} onClick={async()=>{setBusy(true);try{await exportResultPDF(makeReport(),`ORun_impression_${session.date}.pdf`);s.notify('PDF prêt à imprimer, sans en-tête ni pied de page du navigateur.');}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}><Printer size={20}/></button><button className="button" disabled={!visibleRows.length||busy} onClick={async()=>{setBusy(true);try{await exportResultPDF(makeReport(),`ORun_${scope}_${session.date}.pdf`);}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}><FileText size={18}/>PDF</button><button className="button primary" disabled={!visibleRows.length} onClick={()=>setExporting(true)}><Download size={18}/>iDoceo</button></div></div></div>
+ <div className="list-toolbar"><div className="head-actions">{isCentral&&scanControls}<button className="icon-button" aria-label="Historique des modifications" onClick={()=>setHistory(true)}><History size={20}/></button><button className="icon-button" aria-label="Imprimer les résultats" disabled={!visibleRows.length} onClick={async()=>{setBusy(true);try{await exportResultPDF(makeReport(),`ORun_impression_${session.date}.pdf`);s.notify('PDF prêt à imprimer, sans en-tête ni pied de page du navigateur.');}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}><Printer size={20}/></button><button className="button" disabled={!visibleRows.length||busy} onClick={async()=>{setBusy(true);try{await exportResultPDF(makeReport(),`ORun_${scope}_${session.date}.pdf`);}catch(e){s.notify((e as Error).message);}finally{setBusy(false);}}}><FileText size={18}/>PDF</button><button className="button primary" disabled={!visibleRows.length} onClick={()=>setExporting(true)}><Download size={18}/>iDoceo</button></div></div></div>
  {!rankingMode?<><div className="results-filterbar"><div className="results-views filter-modes" role="tablist" aria-label="Organisation des résultats"><button role="tab" aria-selected={group==='courses'} className={group==='courses'?'active':''} onClick={()=>{setGroup('courses');setSearch('');}}><Map size={17}/>Par carte</button><button role="tab" aria-selected={group==='students'} className={group==='students'?'active':''} onClick={()=>{setGroup('students');setSearch('');}}><Users size={17}/>Par élève</button></div><div className="queue-tabs" role="tablist" aria-label="File de correction">{([['pending','À corriger',pending],['corrected','Corrigés',rows.length-pending],['all','Tous',rows.length]] as const).map(([id,title,count])=><button key={id} role="tab" aria-selected={queueView===id} className={queueView===id?'active':''} onClick={()=>setQueueView(id)}>{title}<span>{count}</span></button>)}</div></div>
  {group==='courses'&&availableCorrectionGroups.length>0&&<div className="results-card-rail" role="group" aria-label="Cartes à corriger"><span className="rail-caption">Cartes</span>{availableCorrectionGroups.map(g=><button type="button" key={g.key} aria-pressed={activeCorrectionKey===g.key} className={activeCorrectionKey===g.key?'active':''} style={{'--card-color':g.course.color} as CSSProperties} onClick={()=>setSelectedCorrectionCard(g.key)}><i aria-hidden="true"/>{g.course.name}<small>{g.runs.filter(inQueue).length}</small></button>)}</div>}
  {group==='students'&&<div className="results-student-toolbar"><label className="search"><Search size={17}/><input aria-label="Rechercher un résultat" placeholder="Rechercher un élève…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>}
@@ -80,5 +102,6 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
  </Dialog>}
  {exporting&&<Dialog title="Exporter vers iDoceo" onClose={()=>setExporting(false)}><p>{scope==='general'?'Cumul de toutes les leçons disponibles':'Résultats de cette leçon'} · {className}</p><div className="export-options"><button className={wideExport?'active':''} onClick={()=>setWideExport(true)}><Users size={23}/><strong>Une ligne par élève</strong><small>Fautes, temps et niveau par carte.</small></button><button className={!wideExport?'active':''} onClick={()=>setWideExport(false)}><Map size={23}/><strong>Détail des cartes</strong><small>Une ligne par carte effectuée.</small></button></div><p className="muted compact">Les niveaux 1 à 4 proviennent de vos barèmes. Sans barème, le niveau reste vide : aucune évaluation n’est inventée.</p><div className="dialog-actions"><button className="button primary" onClick={()=>{download(`ORun_iDoceo_${scope}_${session.date}.csv`,gradebookCSV(s.data,visibleRows,wideExport),'text/csv;charset=utf-8');setExporting(false);s.notify('Fichier iDoceo téléchargé. Associez les colonnes lors de l’import.');}}><Download size={17}/>Télécharger pour iDoceo</button></div></Dialog>}
  {history&&<Dialog wide title="Historique des modifications" onClose={()=>setHistory(false)}><div className="audit-list">{s.data.audit.filter(a=>a.runId&&all.some(r=>r.id===a.runId)).slice().reverse().map(a=><div key={a.id}><strong>{labels.get(all.find(r=>r.id===a.runId)!.studentId)}</strong><p>{a.detail}</p><small>{new Date(a.at).toLocaleString('fr-FR')} · {a.actor}</small></div>)}</div></Dialog>}
+ {qrControl}
  </div>;
 }

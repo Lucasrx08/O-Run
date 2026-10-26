@@ -5,13 +5,13 @@ export interface Student {id:string; firstName:string; lastName:string; classNam
 export interface Rubric {enabled:boolean; useTime?:boolean; useControls?:boolean; thresholds:[number,number,number]; maxErrors:[number,number,number];}
 export interface Course {id:string;familyId?:string; name:string; color:string; distance:number; controls:number; penalty:number; difficulty:string; rubric:Rubric; map?:{name:string;type:string;data:string};}
 export interface Sequence {id:string;color?:string;name:string;period:string;objectives:string;classes:string[];archived:boolean;}
-export interface Session {id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;}
+export interface Session {id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;deviceMode?:1|2|3;deviceKey?:string;deviceGroupA?:string[];deviceGroupB?:string[];}
 export interface Pause {start:number;end?:number;}
 export interface Run {id:string;studentId:string;sessionId:string;courseId:string;start:number;end?:number;pauses:Pause[];errors:number|null;manualLevel:Level|null;revision:number; courseSnapshot:Course; manualTimeMs?:number;}
 export interface Audit {id:string;at:number;action:string;runId?:string;actor:string;detail:string;}
 export interface OfflineCorrection {id:string;at:number;sessionId:string;studentId:string;courseId:string;attempt:number;errors:number;}
 export type OfflinePost = 'solo'|'A'|'B'|'AB'|'C';
-export interface OfflineConfig {post:OfflinePost;sessionId:string;studentIds:string[];groupA?:string[];groupB?:string[];transferKey?:string;importedPosts?:Array<'A'|'B'>;}
+export interface OfflineConfig {post:OfflinePost;sessionId:string;studentIds:string[];groupA?:string[];groupB?:string[];transferKey?:string;importedPosts?:Array<'A'|'B'>;devices?:2|3;}
 export interface Data {schema:1;version:number;students:Student[];sequences:Sequence[];sessions:Session[];courses:Course[];runs:Run[];audit:Audit[];applied:string[];updatedAt:number;offlineCorrections?:OfflineCorrection[];}
 export type Command =
  | {kind:'start';id:string;at:number;sessionId:string;courseId:string;students:string[];runIds:string[]}

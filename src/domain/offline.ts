@@ -20,6 +20,29 @@ export function splitAlphabetical(data:Data,sessionId:string,selectedA?:string[]
  if(!unique(a)||a.some(id=>!ids.includes(id)))throw new Error('Répartition inconnue ou répétée.');
  return {A:ids.filter(id=>a.includes(id)),B:ids.filter(id=>!a.includes(id))};
 }
+/** Per-lesson organization stays in the lesson, so a return to an older lesson
+ * does not lose the key needed to read the QR codes from that lesson. */
+export function planLessonDevices(data:Data,sessionId:string,mode:1|2|3,selectedA?:string[],newKey?:()=>string):
+ {data:Data;config:OfflineConfig}{
+ const session=data.sessions.find(s=>s.id===sessionId);
+ if(!session)throw new Error('Leçon introuvable.');
+ if(![1,2,3].includes(mode))throw new Error('Nombre d’appareils invalide.');
+ if(data.runs.some(r=>r.sessionId===sessionId)&&session.deviceMode&&mode!==session.deviceMode)
+  throw new Error('Cette leçon contient déjà des chronos. Conservez son mode pour ne pas mélanger les résultats.');
+ const all=alphabeticalStudents(data,sessionId).map(s=>s.id);
+ if(mode>1&&!all.length)throw new Error('Ajoutez les élèves à la classe avant de préparer les tablettes.');
+ const saved=session.deviceGroupA;
+ const isValid=!!saved&&saved.length>0&&saved.length<all.length&&new Set(saved).size===saved.length&&saved.every(id=>all.includes(id));
+ const groups=mode===3?splitAlphabetical(data,sessionId,selectedA??(isValid?saved:undefined)):
+  {A:all,B:[] as string[]};
+ if(mode===3&&(!groups.A.length||!groups.B.length))throw new Error('La répartition doit contenir des élèves dans chaque groupe.');
+ const key=mode===1?session.deviceKey:session.deviceKey||(newKey?newKey():crypto.randomUUID().replace(/-/g,'').repeat(2));
+ if(mode>1&&(!key||!/^([a-f0-9]{64})$/.test(key)))throw new Error('Clé de transfert invalide.');
+ const updated:Session={...session,deviceMode:mode,deviceKey:key,deviceGroupA:groups.A,deviceGroupB:groups.B};
+ return {data:{...data,sessions:data.sessions.map(s=>s.id===sessionId?updated:s)},
+  config:mode===1?{post:'solo',sessionId,studentIds:[]}:
+   {post:'C',sessionId,studentIds:all,groupA:groups.A,groupB:groups.B,devices:mode,transferKey:key,importedPosts:[]}};
+}
 export function createSessionPack(data:Data,sessionId:string,post:'A'|'B',studentIds:string[],transferKey:string):SessionPack{
  const session=data.sessions.find(s=>s.id===sessionId),sequence=data.sequences.find(q=>q.id===session?.sequenceId);
  if(!session||!sequence||!studentIds.length||!transferKey||!unique(studentIds)||studentIds.some(id=>!session.studentIds.includes(id)))throw new Error('Préparation de séance invalide.');
@@ -65,7 +88,7 @@ export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig)
  };
  const next={...data,students:byId(data.students,p.students),sequences:byId(data.sequences,[p.sequence]),
   sessions:byId(data.sessions,[{...p.session,studentIds}]),courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
- return {data:next,config:{post:nextA.length&&nextB.length?'AB':p.post,sessionId:p.sessionId,studentIds,groupA:nextA,groupB:nextB,transferKey:p.transferKey}};
+ return {data:next,config:{post:nextA.length&&nextB.length?'AB':p.post,sessionId:p.sessionId,studentIds,groupA:nextA,groupB:nextB,transferKey:p.transferKey,devices:p.session.deviceMode===2?2:3}};
 }
 export function exportTimes(data:Data,config:OfflineConfig,post?:'A'|'B'):TimesPack{
  const source=post??(config.post==='A'||config.post==='B'?config.post:undefined);
@@ -94,8 +117,11 @@ export function mergeTimes(data:Data,config:OfflineConfig,input:unknown):{data:D
   if(existing&&(existing.studentId!==r.studentId||existing.courseId!==r.courseId||existing.start!==r.start||
    existing.end!==r.end||JSON.stringify(existing.pauses)!==JSON.stringify(r.pauses)))
    throw new Error('Conflit entre deux versions du même chrono. Import annulé.');
+  const sameRoute=data.runs.find(x=>x.sessionId===p.sessionId&&x.studentId===r.studentId&&x.courseId===r.courseId&&x.end!==undefined);
+  if(sameRoute&&sameRoute.id!==r.id&&(sameRoute.start!==r.start||sameRoute.end!==r.end||JSON.stringify(sameRoute.pauses)!==JSON.stringify(r.pauses)))
+   throw new Error('Un chrono différent existe déjà pour cette carte et cet élève. Import annulé : vérifiez la séance.');
  }
- const addedRuns:Run[]=p.runs.filter(r=>!data.runs.some(x=>x.id===r.id)).map(r=>{
+ const addedRuns:Run[]=p.runs.filter(r=>!data.runs.some(x=>x.id===r.id||x.sessionId===p.sessionId&&x.studentId===r.studentId&&x.courseId===r.courseId&&x.start===r.start&&x.end===r.end)).map(r=>{
   const course=data.courses.find(c=>c.id===r.courseId)!;
   return {...r,sessionId:p.sessionId,courseSnapshot:structuredClone(course),errors:null,manualLevel:null,revision:0};
  });
