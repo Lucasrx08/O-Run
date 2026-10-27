@@ -1456,3 +1456,91 @@ body { background:#f5f5f5; color:#191919; }
 .app .results-page .results-table th { background:#efefef; color:#777; }
 .app .results-page .results-table td { color:#444; }
 .app .app-footer { color:#aaa; }
+
+/* Palette fournie : conversion de la référence Display P3 vers sRGB.
+   #EBE5DE #FFA74B #F68710 #FEE4A7 #EEC95F #FFFFFF #333333 */
+@font-face { font-family:'Barlow Sport'; src:url('/fonts/barlow-condensed-800-italic.woff2') format('woff2'); font-style:italic; font-weight:800; font-display:swap; }
+:root { --orange:#f68710; --ink:#333333; --muted:#969087; --bg:#f7f4ef; --line:#e8e2d8; --green:#333333; --green-ink:#333333; }
+body { background:#f7f4ef; color:#333; }
+.app .app-header,.app.terrain-mode .app-header { background:#fff; border-color:#ebe5de; }
+.app .brand strong,.app.terrain-mode .brand strong { color:#333; font-style:normal; letter-spacing:-1.4px; }
+.app .brand strong>span { color:#f68710; }
+.app .brand small { color:#b1a89c; }
+.app .header-actions .icon-button,.app.terrain-mode .header-actions .icon-button { color:#8f8679; }
+.app .demo-tag,.app.terrain-mode .header-actions .demo-tag { background:#f2eee8; color:#999083; }
+.app .live-pill,.app.terrain-mode .live-pill { background:#fee4a7; color:#6b4e20; }
+.app .main-content,.app .field-content { color:#333; }
+.app .page-heading h1,.app .device-intro h2,.app.terrain-mode .lesson-heading-stable h1 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#333; letter-spacing:-.025em; }
+.app.terrain-mode .lesson-heading-stable h1 { font-size:34px; }
+.app .page-intro,.app .breadcrumbs,.app .breadcrumbs button { color:#a09687; }
+.app .button { border-radius:11px; background:#fff; border-color:#e8e2d8; color:#5a5145; }
+.app .button.primary { background:#ffa74b; border-color:#ffa74b; color:#333; }
+.app .button.primary:hover:not(:disabled) { background:#f68710; border-color:#f68710; }
+.app .lesson-heading-controls .lesson-mode-shortcut { border-color:#e8e2d8; border-radius:10px; color:#8c806f; }
+.app .lesson-heading-controls .lesson-mode-shortcut.active { border-color:#eec95f; background:#fff6db; color:#7b6326; box-shadow:none; }
+.app .main-content .lesson-heading-stable .lesson-tabs { background:#ebe5de; border-radius:11px; }
+.app .main-content .lesson-heading-stable .lesson-tabs button { color:#9d907d; border-radius:8px; font-weight:700; }
+.app .main-content .lesson-heading-stable .lesson-tabs button.active { background:#333; color:#fff; box-shadow:none; }
+.app .section-tabs,.app .results-views { background:#ebe5de; }
+.app .section-tabs button.active,.app .results-views button.active,.app .queue-tabs button.active,.app .results-scope button.active { background:#333; color:#fff; border-color:#333; box-shadow:none; }
+.app .class-card,.app .lesson-card,.app .map-card { border-color:#e5ded3; border-radius:17px; }
+.app .class-card h2,.app .lesson-card h2,.app .map-main h3 { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#333; }
+.app .class-map { background:#fee4a7; filter:none; color:#bd963b; }
+.app .class-symbol,.app .round-open { background:#fff5de; color:#c29c4c; }
+.app .lesson-card-illustrated::before { height:5px; background:linear-gradient(90deg,#ffa74b 0 38%,#f68710 38% 70%,#eec95f 70%); }
+.app .lesson-card-illustrated .lesson-card-decor { opacity:.2; }
+.app .lesson-ready { background:#fee4a7; border-color:#f0daa5; border-radius:13px; }
+.app .lesson-ready p { color:#947a43; }
+.app .device-intro .eyebrow { color:#bda679; }
+.app .device-intro h2 { font-size:39px; }
+.app .device-intro p { color:#a49782; }
+.app .device-mode-card { border-color:#e5ded3; border-radius:17px; background:#fff; }
+.app .device-mode-card.active { background:#fff8ee; border-color:#f68710; }
+.app .device-mode-card strong { font-family:'Barlow Sport',sans-serif; text-transform:uppercase; font-style:italic; font-weight:800; font-size:28px; color:#333; }
+.app .device-mode-card small { color:#9c907b; }
+.app .device-mode-icon { background:#fff4d9; color:#cda443; }
+.app .device-mode-card.active .device-mode-icon { color:#f68710; background:#ffebd2; }
+.app .device-mode-check { color:#f68710; }
+.app .start-toolbar { border-color:#e9e2d7; border-radius:13px; background:#fff; }
+.app .start-toolbar .segmented { background:#f4efe7; }
+.app .start-toolbar .segmented button { color:#ae9b7e; }
+.app .start-toolbar .segmented button.active { background:#fee4a7; color:#7a622d; }
+.app .start-map>span { color:#b3a58c; }
+.app .start-map select { color:#72654f; }
+.app .board-counts,.app .board-tools>.text-button { color:#b1a38c; }
+.app .board-counts>span:first-child { color:#c88632; }
+.app .search { background:#fff; border-color:#e9e2d8; color:#b6ab98; }
+.app.terrain-mode .run-tile { border-color:#e4ddd2; border-radius:16px; box-shadow:0 2px 0 #ece5db; }
+.app.terrain-mode .run-tile::after { right:-8px; width:80px; background:linear-gradient(120deg,transparent 40%,#eec95f16 40%,#eec95f16 45%,transparent 45%,transparent 51%,#eec95f16 51%,#eec95f16 56%,transparent 56%); }
+.app.terrain-mode .run-tile::before { height:4px; background:#ebe5de; }
+.app.terrain-mode .runner-number { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; color:#d6cbb8; }
+.app.terrain-mode .run-status { color:#beae93; letter-spacing:.1em; }
+.app.terrain-mode .run-tile-main h2 { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#333; letter-spacing:-.01em; font-size:clamp(19px,calc(var(--tile-height)*.18),39px)!important; }
+.app.terrain-mode .run-tile-main .run-time { font-family:'Outfit Variable',sans-serif; font-style:normal; color:#bea67d; font-weight:550; font-size:clamp(19px,calc(var(--tile-height)*.21),45px); letter-spacing:-.045em; }
+.app.terrain-mode .run-tile.picked { background:#fff; border-color:#e8d6b3; }
+.app.terrain-mode .run-tile.picked::before { background:#ffa74b; }
+.app.terrain-mode .run-tile.running { background:linear-gradient(135deg,#fff 58%,#fff7e9); border-color:#f2c68d; }
+.app.terrain-mode .run-tile.running::before { background:#ffa74b; width:100%; }
+.app.terrain-mode .run-tile.running .run-time { color:#f68710; }
+.app.terrain-mode .run-tile.running .run-tile-bottom { background:#ffa74b; border-color:#ffa74b; }
+.app.terrain-mode .run-tile.running .run-map-label { color:#815320; }
+.app.terrain-mode .run-tile.finished { background:#fee4a7; border-color:#eec95f; }
+.app.terrain-mode .run-tile.finished::before { background:#eec95f; width:100%; }
+.app.terrain-mode .run-tile.finished::after { opacity:.5; }
+.app.terrain-mode .run-tile.finished h2,.app.terrain-mode .run-tile.finished .run-time { color:#665229; }
+.app.terrain-mode .run-tile.finished .runner-number { color:#d4b66c; }
+.app.terrain-mode .run-tile.finished .run-status { color:#b89b58; }
+.app.terrain-mode .run-tile.finished .finished-check { color:#ad8731; background:transparent; }
+.app.terrain-mode .run-tile-bottom { background:#faf7f2; border-color:#eee6d9; }
+.app.terrain-mode .run-map-choice,.app.terrain-mode .run-map-label { color:#baaa8c; }
+.app.terrain-mode .run-tile.finished .run-tile-bottom { background:#eec95f; border-color:#eec95f; }
+.app.terrain-mode .run-tile.finished .run-map-label { color:#8a6a1a; }
+.app.terrain-mode .run-tile.finished .run-map-label i { background:#b08525; }
+.app.terrain-mode .selection-check { background:#fff6e4; border-color:#ead7ae; color:#c89a48; }
+.app.terrain-mode .stop-square { background:#f68710; }
+.app .results-page .podium-card { background:#faf4e9; border-color:#e8ddca; }
+.app .results-page .podium-card strong { font-family:'Barlow Sport',sans-serif; font-style:italic; font-size:24px; font-weight:800; text-transform:uppercase; color:#67553a; }
+.app .results-page .podium-1 { background:#fee4a7; border-color:#eec95f; }
+.app .results-page .podium-1>span { color:#b78f2d; }
+.app .results-page .results-table th { background:#f2ece2; color:#ab9a7c; }
+@media(max-width:699px) { .app.terrain-mode .run-tile-main h2 { font-size:26px!important; } .app.terrain-mode .run-tile-main .run-time { font-size:27px; } .app.terrain-mode .lesson-heading-stable h1 { font-size:29px; } }
