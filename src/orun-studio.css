@@ -1358,3 +1358,101 @@ body { background:#f8faf8; }
 .app.terrain-mode .run-map-label { font-size:11px; text-transform:uppercase; letter-spacing:.12em; }
 .app.terrain-mode .run-tile-bottom { min-height:27px; height:27px; flex-basis:27px; }
 @media(max-width:699px) { .app.terrain-mode .run-tile-main h2 { font-size:19px!important; } .app.terrain-mode .run-tile-main .run-time { font-size:28px; } }
+
+/* Proposition orange / blanc / noir. Les couleurs décrivent l'action,
+   l'arrivée se distingue par un contraste noir et blanc. */
+:root { --orange:#ff6418; --ink:#191919; --muted:#808080; --green:#191919; --green-ink:#191919; --bg:#f5f5f5; --line:#e1e1e1; }
+body { background:#f5f5f5; color:#191919; }
+.app .app-header,.app.terrain-mode .app-header { background:#161616; border-color:#161616; }
+.app .brand strong,.app.terrain-mode .brand strong { color:#fff; font-style:italic; font-weight:700; }
+.app .brand strong>span { color:#ff6418; }
+.app .brand small { color:#929292; }
+.app .header-actions .icon-button,.app.terrain-mode .header-actions .icon-button { color:#bfbfbf; }
+.app .demo-tag,.app.terrain-mode .header-actions .demo-tag { background:#2c2c2c; color:#bdbdbd; }
+.app .live-pill,.app.terrain-mode .live-pill { background:#ff6418; color:#191919; font-weight:700; }
+.app .main-content,.app .field-content { color:#191919; }
+.app .page-heading h1,.app.terrain-mode .lesson-heading-stable h1,.app .device-intro h2 { color:#191919; }
+.app .page-intro,.app .breadcrumbs,.app .breadcrumbs button { color:#818181; }
+.app .breadcrumbs>span:last-child { color:#353535; }
+.app .button { border-color:#dedede; background:#fff; color:#262626; border-radius:8px; box-shadow:none; }
+.app .button.primary { background:#ff6418; border-color:#ff6418; color:#191919; box-shadow:none; }
+.app .button.primary:hover:not(:disabled) { background:#ff7b38; border-color:#ff7b38; }
+.app .button:disabled { opacity:.35; }
+.app .icon-button { color:#888; }
+.app .lesson-heading-controls .lesson-mode-shortcut { border-color:#dedede; color:#666; background:#fff; }
+.app .lesson-heading-controls .lesson-mode-shortcut.active { background:#fff; border-color:#ff6418; color:#191919; box-shadow:inset 0 -2px #ff6418; }
+.app .main-content .lesson-heading-stable .lesson-tabs { background:#eaeaea; }
+.app .main-content .lesson-heading-stable .lesson-tabs button { color:#777; }
+.app .main-content .lesson-heading-stable .lesson-tabs button.active { color:#fff; background:#222; box-shadow:inset 0 -3px #ff6418; }
+.app .class-card,.app .lesson-card,.app .map-card { border-color:#e0e0e0; background-color:#fff; box-shadow:none; }
+.app .class-card h2,.app .lesson-card h2,.app .map-main h3 { color:#232323; }
+.app .class-card-bottom p,.app .lesson-card p,.app .lesson-card-bottom { color:#8a8a8a; }
+.app .class-map { background:#eee; color:#888; filter:grayscale(1); }
+.app .class-symbol,.app .round-open { background:#f0f0f0; color:#555; }
+.app .lesson-number,.app .lesson-card-copy { color:#666; }
+.app .lesson-card-illustrated::before { background:linear-gradient(90deg,#ff6418 0 75%,#202020 75%); }
+.app .lesson-card-copy { background:#f3f3f3; border-color:#e0e0e0; }
+.app .lesson-card-illustrated .lesson-card-decor { filter:grayscale(1); }
+.app .main-content:has(.map-grid) .map-grid .map-main h3 { color:#252525; }
+.app .main-content:has(.map-grid) .map-grid .map-main p { color:#828282; }
+.app .map-symbol { background:#fafafa; }
+.app .map-number { color:#dedede; }
+.app .lesson-ready { background:#ececec; border-color:#e0e0e0; }
+.app .lesson-ready p { color:#707070; }
+.app .section-tabs,.app .results-views { background:#eaeaea; }
+.app .section-tabs button,.app .results-views button,.app .queue-tabs button,.app .results-scope button { color:#777; }
+.app .section-tabs button.active,.app .results-views button.active,.app .queue-tabs button.active,.app .results-scope button.active { background:#222; color:#fff; box-shadow:inset 0 -2px #ff6418; border-color:#222; }
+.app .device-intro .eyebrow { color:#ff6418; }
+.app .device-intro p { color:#888; }
+.app .device-mode-card { border-color:#ddd; background:#fff; }
+.app .device-mode-card.active { border-color:#ff6418; background:#fff9f5; }
+.app .device-mode-card strong { color:#252525; }
+.app .device-mode-card small { color:#858585; }
+.app .device-mode-icon { color:#666; background:#f1f1f1; }
+.app .device-mode-card.active .device-mode-icon { color:#ff6418; background:#ffebe0; }
+.app .device-preview,.app .device-send { border-color:#e0e0e0; color:#333; }
+.app .device-preview-head strong,.app .device-preview-group h3 { color:#333; }
+.app .device-preview-head span { color:#888; }
+.app .device-preview-students button { background:#f5f5f5; color:#666; border-color:#e5e5e5; }
+.app .start-toolbar { border-color:#e2e2e2; background:#fff; }
+.app .start-toolbar .segmented { background:#efefef; }
+.app .start-toolbar .segmented button { color:#888; }
+.app .start-toolbar .segmented button.active { background:#222; color:#fff; box-shadow:none; }
+.app .start-map select { color:#363636; }
+.app .board-counts,.app .board-tools>.text-button { color:#777; }
+.app .board-counts>span:first-child { color:#c6571b; }
+.app .search { border-color:#e2e2e2; background:#fff; color:#aaa; }
+.app.terrain-mode .run-tile { background:#fff; border:1px solid #dedede; box-shadow:none; }
+.app.terrain-mode .run-tile::after { background:linear-gradient(120deg,transparent 43%,#d9d9d926 43%,#d9d9d926 48%,transparent 48%,transparent 53%,#d9d9d926 53%,#d9d9d926 58%,transparent 58%); }
+.app.terrain-mode .run-tile::before,.app.terrain-mode .run-tile.picked::before { background:#bfbfbf; }
+.app.terrain-mode .run-tile.picked { background:#fff; border-color:#ccc; }
+.app.terrain-mode .runner-number { color:#bdbdbd; }
+.app.terrain-mode .run-status { color:#9b9b9b; }
+.app.terrain-mode .run-tile-main h2 { color:#252525; }
+.app.terrain-mode .run-tile-main .run-time { color:#969696; }
+.app.terrain-mode .run-tile.running { background:linear-gradient(140deg,#fff 65%,#fff4eb); border-color:#ffc19f; }
+.app.terrain-mode .run-tile.running::before { background:#ff6418; }
+.app.terrain-mode .run-tile.running .run-time { color:#161616; }
+.app.terrain-mode .run-tile.running .run-tile-bottom { background:#ff6418; border-color:#ff6418; }
+.app.terrain-mode .run-tile.running .run-map-label { color:#191919; }
+.app.terrain-mode .run-tile.finished { background:#242424; border-color:#242424; }
+.app.terrain-mode .run-tile.finished::before { background:#ff6418; }
+.app.terrain-mode .run-tile.finished::after { opacity:.15; }
+.app.terrain-mode .run-tile.finished h2,.app.terrain-mode .run-tile.finished .run-time { color:#fff; }
+.app.terrain-mode .run-tile.finished .runner-number { color:#626262; }
+.app.terrain-mode .run-tile.finished .run-status { color:#b7b7b7; }
+.app.terrain-mode .run-tile.finished .finished-check { color:#ff6418; background:transparent; }
+.app.terrain-mode .run-tile-bottom { background:#fafafa; border-color:#ededed; }
+.app.terrain-mode .run-map-choice,.app.terrain-mode .run-map-label { color:#999; }
+.app.terrain-mode .run-tile.finished .run-tile-bottom { background:#303030; border-color:#383838; }
+.app.terrain-mode .run-tile.finished .run-map-label { color:#bfbfbf; }
+.app.terrain-mode .run-tile.finished .run-map-label i { background:#ff6418; }
+.app.terrain-mode .selection-check { background:#f2f2f2; border-color:#ccc; color:#333; }
+.app .results-page .podium-card { background:#f0f0f0; border-color:#e1e1e1; color:#555; }
+.app .results-page .podium-card strong { color:#333; }
+.app .results-page .podium-card>span,.app .results-page .podium-card p { color:#888; }
+.app .results-page .podium-1 { background:#fff0e5; border-color:#ffd6b9; }
+.app .results-page .podium-1>span { color:#d65e1d; }
+.app .results-page .results-table th { background:#efefef; color:#777; }
+.app .results-page .results-table td { color:#444; }
+.app .app-footer { color:#aaa; }
