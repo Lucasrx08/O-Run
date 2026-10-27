@@ -187,3 +187,50 @@ it('crée une nouvelle leçon avec le nombre de cartes et de balises choisi',asy
  expect(screen.queryByRole('button',{name:'Configurer Carte 5'})).toBeNull();
  expect(screen.getAllByText('8 balises')).toHaveLength(4);
 });
+
+it('limite le nouveau code enseignant à quatre chiffres et exige sa confirmation',async()=>{
+ const session=await prepared();localStorage.setItem('orun-session',session.id);
+ await mutate(w=>({...w,offline:{post:'A',sessionId:session.id,studentIds:session.studentIds,groupA:session.studentIds,groupB:[],transferKey:'ab'.repeat(32)}}));
+ render(<Provider><App/></Provider>);
+ const dialog=await screen.findByRole('dialog',{name:'Protéger la tablette'});
+ const digit=(n:string)=>fireEvent.click(within(dialog).getByRole('button',{name:`Chiffre ${n}`}));
+ ['1','2','3'].forEach(digit);
+ expect(within(dialog).getByRole('button',{name:'Suivant'}).hasAttribute('disabled')).toBe(true);
+ ['4','5'].forEach(digit);
+ expect(within(dialog).getByRole('status').getAttribute('aria-label')).toBe('4 chiffres saisis sur 4');
+ fireEvent.click(within(dialog).getByRole('button',{name:'Suivant'}));
+ ['1','2','3','4'].forEach(digit);
+ fireEvent.click(within(dialog).getByRole('button',{name:'Activer la vue élèves'}));
+ await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());
+ expect(localStorage.getItem('orun-teacher-pin-format')).toBe('4');
+ fireEvent.click(screen.getByRole('button',{name:'Accès enseignant protégé'}));
+ const unlock=await screen.findByRole('dialog',{name:'Accès enseignant'});
+ for(const n of ['1','2','3','4'])fireEvent.click(within(unlock).getByRole('button',{name:`Chiffre ${n}`}));
+ fireEvent.click(within(unlock).getByRole('button',{name:'Déverrouiller'}));
+ await screen.findByRole('button',{name:'Verrouiller la vue élèves'});
+ expect(screen.queryByRole('tab',{name:'Résultats'})).toBeNull();
+});
+
+it('vérifie un ancien code à six chiffres avant de demander un nouveau code à quatre chiffres',async()=>{
+ const session=await prepared();localStorage.setItem('orun-session',session.id);
+ const salt='migration-test';
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${salt}:123456`));
+ localStorage.setItem('orun-teacher-pin-salt-v1',salt);
+ localStorage.setItem('orun-teacher-pin-v1',Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join(''));
+ await mutate(w=>({...w,offline:{post:'A',sessionId:session.id,studentIds:session.studentIds,groupA:session.studentIds,groupB:[],transferKey:'ab'.repeat(32)}}));
+ render(<Provider><App/></Provider>);
+ fireEvent.click(await screen.findByRole('button',{name:'Accès enseignant protégé'}));
+ let dialog=await screen.findByRole('dialog',{name:'Accès enseignant'});
+ for(const n of ['1','2','3','4','5','6'])fireEvent.click(within(dialog).getByRole('button',{name:`Chiffre ${n}`}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Déverrouiller'}));
+ dialog=await screen.findByRole('dialog',{name:'Protéger la tablette'});
+ expect(screen.queryByRole('button',{name:'Verrouiller la vue élèves'})).toBeNull();
+ expect(within(dialog).getByRole('status').getAttribute('aria-label')).toBe('0 chiffres saisis sur 4');
+ for(const n of ['7','8','9','0'])fireEvent.click(within(dialog).getByRole('button',{name:`Chiffre ${n}`}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Suivant'}));
+ for(const n of ['7','8','9','0'])fireEvent.click(within(dialog).getByRole('button',{name:`Chiffre ${n}`}));
+ fireEvent.click(within(dialog).getByRole('button',{name:'Activer la vue élèves'}));
+ await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());
+ expect(localStorage.getItem('orun-teacher-pin-format')).toBe('4');
+ expect(localStorage.getItem('orun-teacher-pin-salt-v1')).not.toBe(salt);
+});
