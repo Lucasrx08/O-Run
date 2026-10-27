@@ -240,3 +240,121 @@ body,button,input,textarea,select { font-family:'Nunito Sans Variable',sans-seri
 @media(min-width:700px) and (min-height:500px) {
  .lesson-workspace .lesson-cards-page .map-grid { flex:0 1 auto; align-content:start; grid-template-rows:repeat(var(--map-rows),clamp(115px,calc((100dvh - 330px)/2),200px)); }
 }
+
+/* Échelle de lecture : les commandes et données priment sur la densité. */
+:root { --read-body:16px; --read-control:14px; --read-meta:13px; }
+body { font-size:var(--read-body); }
+.app .page-intro,.app .device-intro p,.app .device-mode-card small,.app .station-choice small,.app .settings-panel p { font-size:15px; line-height:1.5; color:#696052; }
+.app .overline,.app .eyebrow,.app .device-intro .eyebrow { font-size:12px; }
+.app .breadcrumbs,.app .breadcrumbs button { font-size:13px; min-height:30px; color:#696052; }
+.app .button,.app .text-button,.app .back-link,.dialog .button,.tablet-kiosk .kiosk-teacher { font-size:14px; min-height:44px; }
+.app .head-actions .button { font-size:14px; }
+.app .icon-button,.dialog .icon-button { width:44px; height:44px; min-width:44px; min-height:44px; }
+.app .class-card-bottom p,.app .lesson-card p,.app .lesson-card-bottom { font-size:14px; color:#696052; }
+.app .lesson-number { font-size:13px; }
+.app .lesson-card-copy { min-height:44px; font-size:14px; }
+.app .pupil-row strong { font-size:17px; }
+.app .pupil-row small { font-size:14px; color:#696052; }
+.app .demo-tag,.app .post-badge,.app .live-pill,.app .pending-pill { font-size:13px; }
+.app .main-content .lesson-heading-stable .page-intro { font-size:14px; line-height:1.3; }
+.app .lesson-heading-controls .lesson-mode-shortcut,.app .main-content .lesson-heading-stable .lesson-tabs button { min-height:44px; font-size:14px; }
+.app .section-tabs button,.app .results-views button,.app .results-scope button,.app .queue-tabs button { font-size:14px; min-height:44px; }
+.app .main-content:has(.map-grid) .map-grid .map-main h3 { font-size:30px; }
+.app .main-content:has(.map-grid) .map-grid .map-main p { font-size:15px; color:#696052; }
+.app .main-content:has(.map-grid) .map-actions .icon-button { width:44px; height:44px; min-width:44px; min-height:44px; }
+.app .lesson-cards-page .content-heading .button,.app .lesson-cards-page .head-actions .button { min-height:44px; font-size:14px; }
+.app .lesson-ready p { font-size:14px; }
+.app .lesson-ready .button { font-size:14px; min-height:44px; }
+.app .search,.app .board-search { min-height:44px; }
+.app .search input,.app .board-search input,.dialog input,.dialog select,.dialog textarea { font-size:16px; }
+.app .device-preview-head strong,.app .device-preview-group h3 { font-size:16px; }
+.app .device-preview-head span,.app .device-preview-students button,.app .device-send p { font-size:14px; }
+.app .device-preview-students button { min-height:44px; }
+.app .station-choice-foot,.app .station-ready span { font-size:14px; }
+.app .start-toolbar .segmented button,.app .start-toolbar .launch-button,.tablet-kiosk .start-toolbar .segmented button,.tablet-kiosk .launch-button { font-size:14px; min-height:44px; }
+.app .start-map>span,.tablet-kiosk .start-map>span { font-size:12px; color:#696052; }
+.app .start-map select,.tablet-kiosk .start-map select { font-size:16px; min-height:32px; }
+.app .board-counts,.app.terrain-mode .board-counts,.tablet-kiosk .board-counts,.app.terrain-mode .board-tools>.text-button { font-size:14px; }
+.app.terrain-mode .board-tools>.text-button { min-height:44px; }
+.app.terrain-mode .run-tile-top,.tablet-kiosk .run-tile-top { top:5px; line-height:1; }
+.app.terrain-mode .run-status,.tablet-kiosk .run-status { font-size:12px; letter-spacing:0; line-height:1; color:#696052; }
+.app.terrain-mode .runner-number,.tablet-kiosk .runner-number { font-size:14px; }
+.app.terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding:18px 4px 1px; gap:0; }
+.app.terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile-main h2 { font-size:clamp(19px,calc(var(--tile-height)*.18),39px)!important; line-height:1; margin:0 0 2px; flex:0 0 auto; }
+.app.terrain-mode .run-tile-main .run-time,.tablet-kiosk .run-tile-main .run-time { font-size:clamp(22px,calc(var(--tile-height)*.21),45px); line-height:1; flex:0 0 auto; }
+.app.terrain-mode .run-map-choice,.app.terrain-mode .run-map-label,.tablet-kiosk .run-map-label { font-size:13px; letter-spacing:0; }
+.app.terrain-mode .run-tile-bottom,.tablet-kiosk .run-tile-bottom { min-height:28px; height:28px; flex-basis:28px; }
+.tablet-kiosk .kiosk-identity>span,.tablet-kiosk .kiosk-subtitle { font-size:14px; }
+.app .results-page .results-commandbar .button,.app .results-page .primary-results-tabs button,.app .results-page .results-filterbar button { min-height:42px; font-size:14px; }
+.app .results-page .results-card-rail button { min-height:42px; font-size:14px; }
+.app .results-page .results-table th,.app .results-page .ranking-two-columns .results-table th { font-size:13px!important; padding:6px!important; line-height:1.25; }
+.app .results-page .results-table td,.app .results-page .ranking-two-columns .results-table td { font-size:14px!important; padding:6px!important; line-height:1.25; }
+.app .results-page .results-table .column-sort { font-size:13px; min-height:30px; white-space:normal; line-height:1.2; text-align:left; }
+.app .results-page .results-table th[aria-sort="none"] .column-sort span { display:none; }
+.app .results-page .results-table th { overflow:visible; white-space:normal; }
+.app .results-page .results-table th .column-sort { max-width:100%; }
+.app .results-page .podium-card p,.app .results-page .compact-podium p,.app .results-page .route-ranking .compact-podium p { font-size:13px; color:#696052; }
+.app .results-page .podium-card>span,.app .results-page .compact-podium span { font-size:12px; }
+.app .profile-name,.app .c-student-tile>strong { font-size:26px; }
+.app .profile-state { font-size:12px; }
+.app .profile-course,.app .profile-result>span,.app .profile-foot,.app .c-student-progress { font-size:14px; }
+.app .profile-result>b { font-size:24px; }
+.app .c-correction-filters button,.app .c-correction-toolbar,.app .c-transfer-status span { font-size:14px; }
+.app .c-sheet-buttons button { min-width:44px; min-height:44px; font-size:17px; }
+.app .history-student span,.app .history-audit,.app .history-edit { font-size:14px; }
+.app .pending-summary,.app .c-pending-hint,.app .history-intro { font-size:14px; }
+.dialog p,.dialog .field>span,.dialog .consent,.dialog summary,.dialog .rubric-tip,.dialog .criterion-switch { font-size:14px; line-height:1.5; }
+.dialog small,.dialog .compact,.dialog .map-upload small { font-size:13px; }
+.dialog .kiosk-keypad button { font-size:26px; min-height:60px; }
+.dialog .c-student-sheet>p,.dialog .c-student-progress { font-size:14px; }
+.app .app-footer { font-size:12px; }
+.run-pagination span { font-size:14px; }
+.run-pagination .button { font-size:14px; min-height:44px; }
+@media(min-width:700px) and (min-height:500px) {
+ .app .main-content .lesson-heading-stable { min-height:53px; }
+ .app .lesson-heading-meta .icon-button { width:36px; height:36px; min-height:36px; min-width:36px; }
+ .app .lesson-workspace .lesson-cards-page .map-grid { grid-template-rows:repeat(var(--map-rows),clamp(125px,calc((100dvh - 350px)/2),200px)); }
+}
+@media(max-width:699px) {
+ .app .lesson-workspace .lesson-heading-controls { width:100%; }
+ .app.lesson-workspace .lesson-heading-stable .lesson-heading-controls { grid-template-columns:102px minmax(0,1fr); }
+ .app.lesson-workspace .lesson-heading-controls .lesson-mode-shortcut { font-size:14px; min-height:48px; }
+ .app.lesson-workspace .main-content .lesson-heading-stable .lesson-tabs button { font-size:14px; min-height:44px; padding:5px 2px!important; }
+ .app.lesson-workspace .main-content:has(.map-grid) .map-grid .map-card { height:128px; }
+ .app.lesson-workspace .main-content:has(.map-grid) .map-grid .map-main h3 { font-size:27px; }
+ .app.lesson-workspace .main-content:has(.map-grid) .map-grid .map-main p { font-size:14px; }
+ .app.lesson-workspace .lesson-ready { flex-wrap:wrap; }
+ .app.lesson-workspace .lesson-ready p { font-size:14px; }
+ .app.lesson-workspace .lesson-ready .button { font-size:14px; }
+ .app.terrain-mode .run-grid,.tablet-kiosk .run-grid { grid-auto-rows:124px; }
+ .app.terrain-mode .run-tile,.tablet-kiosk .run-tile { min-height:124px; }
+ .app.terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile-main h2 { font-size:28px!important; }
+ .app.terrain-mode .run-tile-main .run-time,.tablet-kiosk .run-tile-main .run-time { font-size:29px; }
+ .app.terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding-top:20px; }
+ .app.terrain-mode .run-tile-bottom,.tablet-kiosk .run-tile-bottom { min-height:30px; flex-basis:30px; }
+ .app.terrain-mode .board-tools { width:100%; }
+ .app.terrain-mode .board-search { max-width:160px; }
+ .app .results-page .podium-card { display:block; }
+ .app .results-page .podium-card p { font-size:13px; }
+ .app .results-page .results-table table { min-width:650px; }
+ .app .station-choice { padding:16px; }
+}
+.app .lesson-tabs button>span,.app .soft-count,.app .section-tabs button>span,.app .workspace-switch span,.app .queue-tabs span { font-size:12px; }
+@media(min-width:700px) {
+ .app.terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile-main h2 { font-size:clamp(19px,calc(var(--tile-height)*.16),39px)!important; }
+ .app.terrain-mode .run-tile-main .run-time,.tablet-kiosk .run-tile-main .run-time { font-size:clamp(22px,calc(var(--tile-height)*.19),45px); }
+ .app.terrain-mode .compact-grid .run-tile-top,.tablet-kiosk .compact-grid .run-tile-top { display:none; }
+ .app.terrain-mode .compact-grid .run-tile-main,.tablet-kiosk .compact-grid .run-tile-main { padding:3px 4px 1px; }
+ .app.terrain-mode .compact-grid .run-tile-main h2,.tablet-kiosk .compact-grid .run-tile-main h2 { font-size:19px!important; line-height:1; margin-bottom:1px; }
+ .app.terrain-mode .compact-grid .run-tile-main .run-time,.tablet-kiosk .compact-grid .run-tile-main .run-time { font-size:22px; }
+ .app.terrain-mode .compact-grid .run-tile-bottom,.tablet-kiosk .compact-grid .run-tile-bottom { min-height:24px; height:24px; flex-basis:24px; }
+}
+/* Sur téléphone, le prénom et le chrono priment sur les repères décoratifs. */
+@media(max-width:699px){
+ .app.terrain-mode .run-tile-top{display:none;}
+ .app.terrain-mode .run-tile-main{padding:5px 6px 2px;}
+ .app.terrain-mode .run-tile-main h2{line-height:1;margin:0 0 2px;}
+ .app.terrain-mode .run-time{line-height:1;}
+}
+
+.app.terrain-mode .chrono-idle,.tablet-kiosk .chrono-idle{color:#766645;}

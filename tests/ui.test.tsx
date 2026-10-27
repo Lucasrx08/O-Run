@@ -244,7 +244,7 @@ it('affiche les élèves par pages sur téléphone sans modifier la sélection d
   const ui=render(<Provider><App/></Provider>);await openBoard();
   expect(ui.container.querySelectorAll('.run-tile')).toHaveLength(6);
   expect(screen.getByRole('button',{name:'Lancer 9 élèves'})).toBeTruthy();
-  fireEvent.click(screen.getByRole('button',{name:'Suivants'}));
+  await userEvent.click(screen.getByRole('button',{name:'Suivants'}));
   expect(ui.container.querySelectorAll('.run-tile')).toHaveLength(3);
   expect(screen.getByRole('button',{name:'Lancer 9 élèves'})).toBeTruthy();
   fireEvent.change(screen.getByRole('textbox',{name:'Rechercher un élève en course'}),{target:{value:'Alice'}});

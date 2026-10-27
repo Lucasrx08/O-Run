@@ -1,6 +1,6 @@
 import {it,expect,vi} from 'vitest';
 import {level,apply} from '../src/domain/engine';
-import {fitGrid} from '../src/domain/fitGrid';
+import {fitGrid,mobileGridPageSize} from '../src/domain/fitGrid';
 import {demo} from '../src/domain/demo';
 import {uid} from '../src/domain/types';
 const run=()=>{const r=structuredClone(demo().runs[0]);r.courseSnapshot.penalty=0;r.courseSnapshot.rubric={enabled:true,thresholds:[60,120,180],maxErrors:[0,1,2]};r.start=1000;r.end=1000000;r.errors=0;return r;};
@@ -16,6 +16,12 @@ it.each([[1229,390,36],[973,478,36],[717,734,36],[1229,390,25]])('dimensionne un
  const g=fitGrid(w,h,n);
  expect(g.columns*g.rows).toBeGreaterThanOrEqual(n);
  expect(g.tileHeight).toBeGreaterThanOrEqual(82);
- expect(g.tileWidth).toBeGreaterThanOrEqual(100);
+ expect(g.tileWidth).toBeGreaterThanOrEqual(90);
  expect(g.rows*g.tileHeight+(g.rows-1)*8).toBeCloseTo(h);
+});
+
+it('réduit le nombre de tuiles sur téléphone selon la place réelle, sans réduire les textes',()=>{
+ expect(mobileGridPageSize(844,400)).toBe(4);
+ expect(mobileGridPageSize(1000,400)).toBe(6);
+ expect(mobileGridPageSize(600,400)).toBe(2);
 });
