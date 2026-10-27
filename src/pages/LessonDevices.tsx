@@ -44,7 +44,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
   }catch(e){setError((e as Error).message);}
  };
  return <div className="lesson-devices">
-  <div className="device-intro"><span className="eyebrow">CARTES PRÊTES · ORGANISATION</span><h2>Combien d’appareils aujourd’hui ?</h2><p>Les cartes sont déjà configurées. Choisissez maintenant les postes de la séance.</p></div>
+  <div className="device-intro"><span className="eyebrow">PRÉPARER LE TERRAIN</span><h2>À chaque poste, son rôle.</h2><p>Choisissez votre configuration pour lancer la séance.</p></div>
   <div className="device-mode-grid">{options.map(o=><button type="button" key={o.mode} className={chosen===o.mode?'device-mode-card active':'device-mode-card'} aria-pressed={chosen===o.mode} onClick={()=>{setChosen(o.mode);setSelectedA(null);setError('');}}>
    <span className="device-mode-icon"><o.Icon size={30}/></span><strong>{o.title}</strong><small>{o.detail}</small><span className="device-mode-check">{chosen===o.mode?<CheckCircle2 size={23}/>:null}</span>
   </button>)}</div>

@@ -1267,3 +1267,94 @@ h1,h2,h3,strong {
  .lesson-workspace .lesson-ready .button { min-height:40px; padding:8px 10px; font-size:11px; }
  .lesson-workspace .lesson-ready .button svg { width:14px; }
 }
+
+/* Proposition terrain : identité sportive, contraste net, orange balise. */
+:root { --orange:#ff6418; --green:#168353; --green-ink:#126341; --ink:#202925; --muted:#77837a; --bg:#f8faf8; --line:#dfe7e1; }
+body { background:#f8faf8; }
+.app .brand strong,.tablet-kiosk .kiosk-identity strong { font-family:'Outfit Variable',sans-serif; color:#183d2a; font-weight:700; letter-spacing:-1.2px; }
+.app .brand small { color:#849587; letter-spacing:1.8px; }
+.app .page-heading h1,.app .device-intro h2 { font-family:'Outfit Variable',sans-serif; font-weight:650; letter-spacing:-.045em; color:#20382a; }
+.app .page-intro,.app .breadcrumbs button { color:#7b8d7f; font-weight:500; }
+.app .button { border-radius:9px; box-shadow:none; font-weight:750; }
+.app .button.primary,.tablet-kiosk .launch-button { background:var(--orange); color:#fff; border-color:var(--orange); box-shadow:none; font-weight:750; }
+.app .button.primary:hover:not(:disabled) { background:#ee5911; border-color:#ee5911; }
+.app .main-content .lesson-heading-stable .lesson-tabs { background:#eaf0eb; border-radius:10px; }
+.app .main-content .lesson-heading-stable .lesson-tabs button { color:#6e8374; font-weight:700; border-radius:7px; }
+.app .main-content .lesson-heading-stable .lesson-tabs button.active { background:#1d6845; color:#fff; box-shadow:none; }
+.app .lesson-heading-controls .lesson-mode-shortcut { border-radius:9px; color:#526d5c; }
+.app .lesson-heading-controls .lesson-mode-shortcut.active { background:#e6f4eb; color:#216c45; box-shadow:none; }
+.app .class-card,.app .lesson-card,.app .map-card { border-radius:15px; box-shadow:none; border-color:#dfe8e1; }
+.app .class-card h2,.app .lesson-card h2 { font-weight:650; }
+.app .lesson-card-illustrated::before { background:linear-gradient(90deg,#ff6418 0 72%,#168353 72%); height:4px; }
+.app .lesson-card-illustrated .lesson-card-decor { opacity:.25; }
+.app .main-content:has(.map-grid) .map-grid .map-card { border-radius:13px; background:#fff url('/contours.svg') center/450px; }
+.app .main-content:has(.map-grid) .map-grid .map-main h3 { font-weight:650; }
+.app .lesson-ready { background:#f0f8f2; border-color:#d5e9db; border-radius:11px; }
+.app .lesson-devices { width:100%; max-width:1140px; margin:0 auto; padding:24px 0; overflow:auto; min-height:0; }
+.app .device-intro { margin:0 0 22px; }
+.app .device-intro .eyebrow { color:#168353; font-weight:800; font-size:10px; letter-spacing:.16em; }
+.app .device-intro h2 { font-size:34px; margin:0; line-height:1.12; }
+.app .device-intro p { color:#87958a; font-size:14px; margin-top:10px; }
+.app .device-mode-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.app .device-mode-card { min-height:190px; padding:22px; border:1px solid #dce7de; border-radius:14px; background:#fff; box-shadow:none; gap:14px; }
+.app .device-mode-card.active { border:2px solid #ff6418; background:#fff9f4; box-shadow:none; }
+.app .device-mode-icon { background:#eaf5ee; color:#38895b; border-radius:10px; width:43px; height:43px; }
+.app .device-mode-card.active .device-mode-icon { background:#ffede0; color:#ff6418; }
+.app .device-mode-card strong { color:#294a35; font-size:23px; font-weight:650; }
+.app .device-mode-card small { color:#839588; font-size:13px; font-weight:450; line-height:1.5; }
+.app .device-mode-check { color:#ff6418; }
+.app .device-actions { justify-content:flex-end; margin-top:22px; }
+.app .device-preview,.app .device-send { border-radius:13px; box-shadow:none; background:white; }
+.app .start-toolbar,.tablet-kiosk .start-toolbar { border:1px solid #e0e9e2; border-radius:11px; background:#fff; box-shadow:none; }
+.app .start-toolbar .segmented,.tablet-kiosk .start-toolbar .segmented { background:#eff4f0; border-radius:7px; }
+.app .start-toolbar .segmented button,.tablet-kiosk .segmented button { border-radius:5px; color:#6d8475; }
+.app .start-toolbar .segmented button.active,.tablet-kiosk .segmented button.active { color:#1d6845; background:#fff; box-shadow:0 1px 3px #21472c0b; }
+.app .launch-button { letter-spacing:.02em; }
+.app .board-counts { font-size:12px; font-weight:650; color:#5e7b68; }
+.runner-number { font-family:'Outfit Variable',sans-serif; font-size:15px; font-weight:650; font-style:italic; color:#b5c7ba; line-height:1; }
+.app.terrain-mode .run-tile,.tablet-kiosk .run-tile { position:relative; border:1px solid #dce7df; border-radius:11px; background:#fff; box-shadow:0 2px 5px #233a2904; overflow:hidden; }
+.app.terrain-mode .run-tile::before,.tablet-kiosk .run-tile::before { content:''; position:absolute; z-index:1; top:0; left:0; width:38%; height:3px; background:#b8d9c4; }
+.app.terrain-mode .run-tile.picked,.tablet-kiosk .run-tile.picked { background:#fff; border-color:#c5dece; }
+.app.terrain-mode .run-tile.picked::before,.tablet-kiosk .run-tile.picked::before { background:#168353; }
+.app.terrain-mode .run-tile.running,.tablet-kiosk .run-tile.running { background:linear-gradient(140deg,#fff 55%,#fff3e9); border-color:#ffb58b; }
+.app.terrain-mode .run-tile.running::before,.tablet-kiosk .run-tile.running::before { width:100%; background:#ff6418; }
+.app.terrain-mode .run-tile.finished,.tablet-kiosk .run-tile.finished { background:linear-gradient(140deg,#fff 55%,#eef8f1); border-color:#b6d9c2; }
+.app.terrain-mode .run-tile.finished::before,.tablet-kiosk .run-tile.finished::before { background:#168353; width:100%; }
+.app.terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding-top:15px; }
+.app.terrain-mode .run-tile h2,.tablet-kiosk .run-tile h2 { font-family:'Outfit Variable',sans-serif; color:#2b4b35; font-weight:600; letter-spacing:-.035em; line-height:1.08; }
+.app.terrain-mode .run-tile .run-time,.tablet-kiosk .run-tile .run-time { font-family:'Outfit Variable',sans-serif; font-weight:600; color:#799e86; letter-spacing:-.025em; }
+.app.terrain-mode .run-tile.running .run-time,.tablet-kiosk .run-tile.running .run-time { color:#ff6418; }
+.app.terrain-mode .run-tile.finished .run-time,.tablet-kiosk .run-tile.finished .run-time { color:#168353; }
+.app.terrain-mode .run-tile-top,.tablet-kiosk .run-tile-top { display:flex; align-items:center; justify-content:space-between; top:8px; inset-inline:8px; width:calc(100% - 16px); }
+.app.terrain-mode .run-status,.tablet-kiosk .run-status { display:block; margin-left:auto; margin-right:5px; font-size:8px; letter-spacing:.06em; text-transform:uppercase; color:#94aa9b; font-weight:800; }
+.app.terrain-mode .selection-check,.tablet-kiosk .selection-check { width:12px; height:12px; border-radius:3px; background:#edf7f1; border-color:#a8cfb7; color:#168353; }
+.app.terrain-mode .selection-check svg { width:10px; height:10px; }
+.app.terrain-mode .run-tile-bottom,.tablet-kiosk .run-tile-bottom { border-top:1px solid #edf2ee; background:#f8fbf9; }
+.app.terrain-mode .run-map-choice,.app.terrain-mode .run-map-label,.tablet-kiosk .run-map-label { color:#7c9686; font-size:10px; font-weight:650; }
+.app.terrain-mode .run-tile.running .run-tile-bottom,.tablet-kiosk .run-tile.running .run-tile-bottom { background:#ff6418; border-color:#ff6418; }
+.app.terrain-mode .run-tile.running .run-map-label,.tablet-kiosk .run-tile.running .run-map-label { color:#fff; }
+.app.terrain-mode .stop-square,.tablet-kiosk .stop-square { background:#ff6418; color:#fff; border-radius:4px; width:16px; height:16px; }
+.app .results-page .podium-card { border-radius:11px; background:#eef7f1; border-color:#d4e8db; box-shadow:none; }
+.app .results-page .podium-1 { background:#fff2e7; border-color:#ffddc0; }
+.app .results-page .podium-card strong { font-weight:600; }
+.app .results-page .results-table { border-radius:11px; }
+.app .results-page .results-table th { background:#f0f6f2; color:#769081; }
+.app .results-views button.active,.app .results-scope button.active,.app .queue-tabs button.active { background:#216c49; color:#fff; box-shadow:none; }
+@media(min-width:700px) { .app.terrain-mode .run-tile .runner-number,.tablet-kiosk .run-tile .runner-number { font-size:clamp(10px,calc(var(--tile-height)*.11),16px); } .app.terrain-mode .run-status,.tablet-kiosk .run-status { font-size:7px; } }
+@media(max-width:699px) { .app .device-mode-grid { grid-template-columns:1fr; gap:10px; } .app .device-mode-card { min-height:0; display:grid; grid-template-columns:40px 1fr; padding:15px; column-gap:12px; row-gap:5px; } .app .device-mode-icon { grid-row:span 2; width:36px; height:36px; } .app .device-mode-card strong { font-size:19px; } .app .device-mode-card small { font-size:12px; } .app .device-intro h2 { font-size:28px; } .app .device-actions .button { width:100%; justify-content:center; } }
+/* Terrain élève : tableau sportif, titres nets et chronos de premier plan. */
+.app.terrain-mode .app-header { background:#123f2d; border-color:#123f2d; }
+.app.terrain-mode .brand strong { color:#fff; font-style:italic; }
+.app.terrain-mode .header-actions .icon-button { color:#b6d6c2; }
+.app.terrain-mode .header-actions .demo-tag { background:#22533e; color:#b8d9c5; }
+.app.terrain-mode .live-pill { background:#fff0e5; color:#c45c1d; }
+.app.terrain-mode .lesson-heading-stable h1 { font-family:Arial,sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#183b2b; font-size:26px; letter-spacing:-1px; }
+.app.terrain-mode .run-tile { border-radius:9px; }
+.app.terrain-mode .run-tile::after { content:''; position:absolute; pointer-events:none; right:-15px; top:0; width:60px; height:100%; background:linear-gradient(120deg,transparent 43%,#eaf2ed50 43%,#eaf2ed50 48%,transparent 48%,transparent 53%,#eaf2ed50 53%,#eaf2ed50 58%,transparent 58%); }
+.app.terrain-mode .run-tile-top { z-index:2; }
+.app.terrain-mode .runner-number { font-size:18px; font-weight:750; font-style:italic; color:#9db8a8; }
+.app.terrain-mode .run-tile-main h2 { font-family:Arial,sans-serif; font-weight:750; text-transform:uppercase; color:#263d30; letter-spacing:-.05em; font-size:clamp(16px,calc(var(--tile-height)*.14),30px)!important; }
+.app.terrain-mode .run-tile-main .run-time { font-family:'Outfit Variable',sans-serif; font-weight:650; font-size:clamp(20px,calc(var(--tile-height)*.23),48px); letter-spacing:-.05em; line-height:1.05; }
+.app.terrain-mode .run-map-label { font-size:11px; text-transform:uppercase; letter-spacing:.12em; }
+.app.terrain-mode .run-tile-bottom { min-height:27px; height:27px; flex-basis:27px; }
+@media(max-width:699px) { .app.terrain-mode .run-tile-main h2 { font-size:19px!important; } .app.terrain-mode .run-tile-main .run-time { font-size:28px; } }
