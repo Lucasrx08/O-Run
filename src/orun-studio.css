@@ -1267,3 +1267,97 @@ h1,h2,h3,strong {
  .lesson-workspace .lesson-ready .button { min-height:40px; padding:8px 10px; font-size:11px; }
  .lesson-workspace .lesson-ready .button svg { width:14px; }
 }
+
+/* Direction de présentation en cours de revue : surfaces neutres, couleurs
+   limitées aux actions et aux états, typographie sans arrondis décoratifs. */
+:root { --ui-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; --ink:#252b2f; --muted:#727a80; --orange:#ff6b18; --green:#65ad82; --green-ink:#316746; --line:#e4e7e9; --bg:#f7f8f9; }
+body { font-family:var(--ui-font); color:var(--ink); background:#f7f8f9; }
+.app :is(h1,h2,h3,strong,small,span,p,button,input,select,textarea,th,td),.tablet-kiosk :is(h1,h2,h3,strong,small,span,p,button,input,select,textarea) { font-family:var(--ui-font)!important; }
+.app h1,.app h2,.app h3 { color:var(--ink); font-weight:650; letter-spacing:-.035em; }
+.app .page-heading h1 { font-size:30px; }
+.app .page-intro,.app .breadcrumbs,.app .breadcrumbs button { color:var(--muted); }
+.app .brand strong { color:#222b28; font-size:27px; font-weight:750; letter-spacing:-1.3px; }
+.app .brand small { color:#90979b; font-size:8px; letter-spacing:1.4px; }
+.app .brand strong>span { color:var(--orange); }
+.app .demo-tag { background:#f3f5f4; color:#78827b; font-size:11px; font-weight:600; }
+.app .icon-button { color:#6e7975; }
+.app .app-header { background:#fff; border-bottom:1px solid #e8ebed; backdrop-filter:none; }
+.app .header-inner { max-width:none; }
+.app .button { border-color:#e0e4e6; color:#41494c; border-radius:9px; box-shadow:none; font-weight:600; }
+.app .button.primary { background:var(--orange); border-color:var(--orange); color:#202623; box-shadow:none; }
+.app .button.primary:hover:not(:disabled) { background:#ff7d35; border-color:#ff7d35; box-shadow:none; }
+.app .button.primary:active:not(:disabled) { transform:none; box-shadow:none; }
+.app .button:disabled { opacity:.45; }
+.app .lesson-heading-meta .title-with-action h1 { color:#252b2f; font-size:25px; font-weight:650; }
+.app .lesson-heading-controls .lesson-mode-shortcut { border:0; border-radius:8px; background:transparent; color:#798187; box-shadow:none; font-weight:550; }
+.app .lesson-heading-controls .lesson-mode-shortcut.active { background:#fff; color:#30373b; box-shadow:0 1px 5px #22312b0c; }
+.app .main-content .lesson-heading-stable .lesson-tabs { background:#f0f2f3; border-radius:9px; padding:3px!important; }
+.app .main-content .lesson-heading-stable .lesson-tabs button { color:#7d8489; font-weight:550; border-radius:7px; }
+.app .main-content .lesson-heading-stable .lesson-tabs button.active { background:#fff; color:#272f32; box-shadow:0 1px 4px #23352d10; }
+.app .section-tabs,.app .results-views { background:#f0f2f3; border-radius:9px; }
+.app .section-tabs button,.app .results-views button,.app .results-scope button,.app .queue-tabs button { color:#747c81; font-weight:550; }
+.app .section-tabs button.active,.app .results-views button.active,.app .results-scope button.active,.app .queue-tabs button.active { background:#fff; color:#272f32; box-shadow:0 1px 4px #23352d10; border-color:#e5e8e9; }
+.app .class-card,.app .lesson-card,.app .map-card { border-color:#e3e7e8; box-shadow:none; background-color:#fff; }
+.app .class-card:hover,.app .lesson-card:hover { transform:none; box-shadow:0 4px 14px #1e2e2507; }
+.app .class-card h2,.app .lesson-card h2 { color:#2e3638; font-weight:650; }
+.app .class-card-bottom p,.app .lesson-card p,.app .lesson-card-bottom { color:#838c8d; font-weight:450; }
+.app .class-map { background:#f2f5f3; opacity:.7; }
+.app .class-symbol,.app .round-open { background:#f3f6f4; color:#6c8b78; }
+.app .lesson-card-illustrated::before { background:var(--orange); height:3px; }
+.app .lesson-card-illustrated .lesson-card-decor { opacity:.1; }
+.app .lesson-number { color:#737e77; font-weight:500; }
+.app .lesson-number svg { color:var(--orange); }
+.app .lesson-card-copy { background:#f5f7f6; color:#646f69; font-weight:550; box-shadow:none; border-color:#e4e8e5; }
+.app .main-content:has(.map-grid) .map-grid .map-main h3 { color:#293234; font-weight:650; font-size:24px; }
+.app .main-content:has(.map-grid) .map-grid .map-main p { color:#828b8b; font-weight:450; }
+.app .map-number { color:#e3e9e5; opacity:.35; }
+.app .lesson-ready { border-color:#e4ebe6; background:#f3f8f5; box-shadow:none; }
+.app .lesson-ready p { color:#7b8e81; font-weight:500; }
+.app .overline,.app .eyebrow { color:#8b9490; font-weight:600; font-size:10px; letter-spacing:.13em; }
+.app .lesson-devices { width:100%; max-width:1100px; margin:0 auto; padding:32px 0 16px; overflow:auto; min-height:0; }
+.app .device-intro { margin:0 0 26px; text-align:left; }
+.app .device-intro .eyebrow { display:block; margin:0 0 10px; color:#9aa29e; font-size:10px; font-weight:600; letter-spacing:.15em; }
+.app .device-intro h2 { margin:0; font-size:32px; line-height:1.2; font-weight:650; color:#252d30; letter-spacing:-.045em; }
+.app .device-intro p { margin:10px 0 0; font-size:14px; line-height:1.5; color:#8a9293; }
+.app .device-mode-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.app .device-mode-card { min-height:204px; padding:23px; border:1px solid #e0e5e6; border-radius:13px; background:#fff; box-shadow:none; gap:15px; color:#303a3b; }
+.app .device-mode-card:hover { border-color:#b9c6bf; background:#fff; box-shadow:none; transform:none; }
+.app .device-mode-card.active { border:1.5px solid #ff6b18; background:#fffaf7; box-shadow:none; }
+.app .device-mode-icon { width:42px; height:42px; background:#f2f5f3; color:#6f8375; border-radius:10px; }
+.app .device-mode-icon svg { width:23px; height:23px; stroke-width:1.6; }
+.app .device-mode-card.active .device-mode-icon { background:#ffede1; color:#ed6826; }
+.app .device-mode-card strong { display:block; font-size:20px; font-weight:600; color:#293336; letter-spacing:-.025em; line-height:1.2; }
+.app .device-mode-card small { padding-right:0; font-size:13px; font-weight:400; color:#7e8887; line-height:1.65; }
+.app .device-mode-check { top:22px; right:20px; color:#ff6b18; }
+.app .device-mode-check svg { width:19px; height:19px; stroke-width:1.8; }
+.app .device-actions { margin-top:26px; padding-top:0; display:flex; justify-content:flex-end; gap:16px; align-items:center; }
+.app .device-actions .button { min-height:44px; padding:10px 18px; font-size:13px; font-weight:600; }
+.app .device-actions .button svg { width:16px; height:16px; }
+.app .device-preview,.app .device-send { background:#fff; border:1px solid #e3e7e5; box-shadow:none; border-radius:13px; padding:18px 20px; }
+.app .device-preview-head strong { color:#3b4740; font-size:14px; font-weight:600; }
+.app .device-preview-head span { color:#8c9690; font-size:12px; }
+.app .device-preview-group h3 { color:#46574b; font-size:14px; font-weight:550; }
+.app .device-preview-students button { min-height:32px; border:1px solid #e5ebe7; background:#f7faf8; color:#657a6c; font-size:12px; font-weight:450; border-radius:6px; }
+.app .device-send h3 { font-size:16px; color:#35453b; font-weight:600; }
+.app .device-send p { color:#88958c; font-size:12px; }
+.app .station-choice { border-color:#e4e8e5; box-shadow:none; background:#fff; color:#46594c; border-radius:13px; }
+.app .station-choice strong { color:#35453b; font-size:21px; font-weight:600; }
+.app .station-choice small { color:#8a978f; font-weight:400; }
+.app .results-commandbar,.app .results-filterbar { border-color:#e5e9e6; background:#fff; box-shadow:none; }
+.app .results-page .podium-card { background:#f4f8f5; border-color:#e0ebe3; color:#506f5b; }
+.app .results-page .podium-card strong { color:#32483b; font-weight:600; }
+.app .results-page .podium-1 { background:#fff5ec; border-color:#f4dfcd; }
+.app .results-page .podium-1 strong { color:#8c5a33; }
+.app .results-page .results-table th { background:#f4f6f5; color:#7a8880; font-weight:550; }
+.app .results-page .results-table td { color:#45594b; font-weight:450; }
+.app .terrain-mode .run-tile h2,.app.terrain-mode .run-tile h2 { color:#35483c; font-weight:600; letter-spacing:-.02em; }
+.app .run-tile { border-color:#e1e9e3; box-shadow:none; }
+.app .run-tile.picked { background:#f6faf7; border-color:#b9d3c1; }
+.app .run-tile.finished { background:#f0f7f2; border-color:#c8ddcf; }
+.app .run-tile.running { background:#fff7f0; border-color:#ff9b63; }
+.app .run-time { font-weight:550; color:#6f9c7e; }
+.app .run-status,.app .board-counts { color:#929e96; font-weight:450; }
+.app .search { border-color:#e5e9e6; background:#fff; border-radius:8px; }
+.app .app-footer { color:#a1aaa4; }
+@media(min-width:700px) and (max-width:1100px) { .app .lesson-devices { padding-top:22px; } .app .device-mode-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .app .device-mode-card { padding:18px; min-height:195px; } }
+@media(max-width:699px) { .app .lesson-devices { padding:16px 0; } .app .device-intro { margin-bottom:18px; } .app .device-intro h2 { font-size:26px; } .app .device-intro p { font-size:13px; } .app .device-mode-grid { grid-template-columns:1fr; gap:10px; } .app .device-mode-card { min-height:0; display:grid; grid-template-columns:38px 1fr; column-gap:13px; row-gap:5px; padding:15px; } .app .device-mode-icon { grid-row:span 2; width:36px; height:36px; } .app .device-mode-card strong { font-size:17px; padding-right:24px; } .app .device-mode-card small { font-size:12px; line-height:1.5; } .app .device-mode-check { top:17px; right:15px; } .app .device-actions { margin-top:18px; } .app .device-actions .button { width:100%; justify-content:center; } }

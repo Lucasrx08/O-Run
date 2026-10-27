@@ -7,9 +7,9 @@ import {encodePreparationQR} from '../services/qrTransfer';
 import {QRShowDialog} from '../components/QRTransfer';
 import type {Session} from '../domain/types';
 
-const options=[{mode:1 as const,title:'1 appareil',detail:'Tout sur le même appareil : départs, arrivées, corrections et résultats.',Icon:Monitor},
- {mode:2 as const,title:'2 appareils',detail:'Un iPad A pour tous les chronos. Le poste C pour corriger.',Icon:Tablet},
- {mode:3 as const,title:'3 appareils',detail:'Deux iPads A/B, avec répartition alphabétique. Le poste C pour corriger.',Icon:Users}];
+const options=[{mode:1 as const,title:'1 appareil',detail:'Départs, arrivées et correction réunis sur un seul écran.',Icon:Monitor},
+ {mode:2 as const,title:'2 appareils',detail:'Une tablette pour les chronos, un poste pour la correction.',Icon:Tablet},
+ {mode:3 as const,title:'3 appareils',detail:'Deux tablettes pour les élèves, un poste pour la correction.',Icon:Users}];
 
 export function LessonDevices({session,onContinue}:{session:Session;onContinue:(mode:1|2|3)=>void}){
  const s=useStore(),students=alphabeticalStudents(s.data,session.id);
@@ -44,7 +44,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
   }catch(e){setError((e as Error).message);}
  };
  return <div className="lesson-devices">
-  <div className="device-intro"><span className="eyebrow">CARTES PRÊTES · ORGANISATION</span><h2>Combien d’appareils aujourd’hui ?</h2><p>Les cartes sont déjà configurées. Choisissez maintenant les postes de la séance.</p></div>
+  <div className="device-intro"><span className="eyebrow">CONFIGURATION DE LA SÉANCE</span><h2>Organiser la séance</h2><p>Choisissez le nombre d’appareils utilisés sur le terrain.</p></div>
   <div className="device-mode-grid">{options.map(o=><button type="button" key={o.mode} className={chosen===o.mode?'device-mode-card active':'device-mode-card'} aria-pressed={chosen===o.mode} onClick={()=>{setChosen(o.mode);setSelectedA(null);setError('');}}>
    <span className="device-mode-icon"><o.Icon size={30}/></span><strong>{o.title}</strong><small>{o.detail}</small><span className="device-mode-check">{chosen===o.mode?<CheckCircle2 size={23}/>:null}</span>
   </button>)}</div>
