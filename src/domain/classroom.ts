@@ -1,5 +1,5 @@
 import {uid,type Course,type Data,type Session,type Student,type Command} from './types';
-export const mapColors=['#ef702c','#568d72','#5d87b1','#a789b6','#d48e97','#b7a365'];
+export const mapColors=['#f68710','#ffa74b','#eec95f','#fee4a7','#ebe5de','#333333'];
 export function classNames(d:Data){return [...new Set([...d.sequences.flatMap(s=>s.classes),...d.students.map(s=>s.className),...d.sessions.flatMap(s=>s.className?[s.className]:[])])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'fr',{numeric:true}));}
 export function lessonsForClass(d:Data,name:string){return d.sessions.filter(s=>s.className?s.className===name:d.sequences.find(q=>q.id===s.sequenceId)?.classes.includes(name)||s.studentIds.some(id=>d.students.some(p=>p.id===id&&p.className===name)));}
 export function lessonStudents(d:Data,s:Session,name:string){return d.students.filter(p=>p.className===name&&s.studentIds.includes(p.id));}

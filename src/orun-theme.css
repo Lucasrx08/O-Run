@@ -1,0 +1,242 @@
+/* Palette fournie : conversion de la référence Display P3 vers sRGB.
+   #EBE5DE #FFA74B #F68710 #FEE4A7 #EEC95F #FFFFFF #333333 */
+@font-face { font-family:'Barlow Sport'; src:url('/fonts/barlow-condensed-800-italic.woff2') format('woff2'); font-style:italic; font-weight:800; font-display:swap; }
+:root { --orange:#f68710; --ink:#333333; --muted:#969087; --bg:#f7f4ef; --line:#e8e2d8; --green:#333333; --green-ink:#333333; }
+body { background:#f7f4ef; color:#333; }
+.app .app-header,.app.terrain-mode .app-header { background:#fff; border-color:#ebe5de; }
+.app .brand strong,.app.terrain-mode .brand strong { color:#333; font-style:normal; letter-spacing:-1.4px; }
+.app .brand strong>span { color:#f68710; }
+.app .brand small { color:#b1a89c; }
+.app .header-actions .icon-button,.app.terrain-mode .header-actions .icon-button { color:#8f8679; }
+.app .demo-tag,.app.terrain-mode .header-actions .demo-tag { background:#f2eee8; color:#999083; }
+.app .live-pill,.app.terrain-mode .live-pill { background:#fee4a7; color:#6b4e20; }
+.app .main-content,.app .field-content { color:#333; }
+.app .page-heading h1,.app .device-intro h2,.app.terrain-mode .lesson-heading-stable h1 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#333; letter-spacing:-.025em; }
+.app.terrain-mode .lesson-heading-stable h1 { font-size:34px; }
+.app .page-intro,.app .breadcrumbs,.app .breadcrumbs button { color:#a09687; }
+.app .button { border-radius:11px; background:#fff; border-color:#e8e2d8; color:#5a5145; }
+.app .button.primary { background:#ffa74b; border-color:#ffa74b; color:#333; }
+.app .button.primary:hover:not(:disabled) { background:#f68710; border-color:#f68710; }
+.app .lesson-heading-controls .lesson-mode-shortcut { border-color:#e8e2d8; border-radius:10px; color:#8c806f; }
+.app .lesson-heading-controls .lesson-mode-shortcut.active { border-color:#eec95f; background:#fff6db; color:#7b6326; box-shadow:none; }
+.app .main-content .lesson-heading-stable .lesson-tabs { background:#ebe5de; border-radius:11px; }
+.app .main-content .lesson-heading-stable .lesson-tabs button { color:#9d907d; border-radius:8px; font-weight:700; }
+.app .main-content .lesson-heading-stable .lesson-tabs button.active { background:#333; color:#fff; box-shadow:none; }
+.app .section-tabs,.app .results-views { background:#ebe5de; }
+.app .section-tabs button.active,.app .results-views button.active,.app .queue-tabs button.active,.app .results-scope button.active { background:#333; color:#fff; border-color:#333; box-shadow:none; }
+.app .class-card,.app .lesson-card,.app .map-card { border-color:#e5ded3; border-radius:17px; }
+.app .class-card h2,.app .lesson-card h2,.app .map-main h3 { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#333; }
+.app .class-map { background:#fee4a7; filter:none; color:#bd963b; }
+.app .class-symbol,.app .round-open { background:#fff5de; color:#c29c4c; }
+.app .lesson-card-illustrated::before { height:5px; background:linear-gradient(90deg,#ffa74b 0 38%,#f68710 38% 70%,#eec95f 70%); }
+.app .lesson-card-illustrated .lesson-card-decor { opacity:.2; }
+.app .lesson-ready { background:#fee4a7; border-color:#f0daa5; border-radius:13px; }
+.app .lesson-ready p { color:#947a43; }
+.app .device-intro .eyebrow { color:#bda679; }
+.app .device-intro h2 { font-size:39px; }
+.app .device-intro p { color:#a49782; }
+.app .device-mode-card { border-color:#e5ded3; border-radius:17px; background:#fff; }
+.app .device-mode-card.active { background:#fff8ee; border-color:#f68710; }
+.app .device-mode-card strong { font-family:'Barlow Sport',sans-serif; text-transform:uppercase; font-style:italic; font-weight:800; font-size:28px; color:#333; }
+.app .device-mode-card small { color:#9c907b; }
+.app .device-mode-icon { background:#fff4d9; color:#cda443; }
+.app .device-mode-card.active .device-mode-icon { color:#f68710; background:#ffebd2; }
+.app .device-mode-check { color:#f68710; }
+.app .start-toolbar { border-color:#e9e2d7; border-radius:13px; background:#fff; }
+.app .start-toolbar .segmented { background:#f4efe7; }
+.app .start-toolbar .segmented button { color:#ae9b7e; }
+.app .start-toolbar .segmented button.active { background:#fee4a7; color:#7a622d; }
+.app .start-map>span { color:#b3a58c; }
+.app .start-map select { color:#72654f; }
+.app .board-counts,.app .board-tools>.text-button { color:#b1a38c; }
+.app .board-counts>span:first-child { color:#c88632; }
+.app .search { background:#fff; border-color:#e9e2d8; color:#b6ab98; }
+.app.terrain-mode .run-tile { border-color:#e4ddd2; border-radius:16px; box-shadow:0 2px 0 #ece5db; }
+.app.terrain-mode .run-tile::after { right:-8px; width:80px; background:linear-gradient(120deg,transparent 40%,#eec95f16 40%,#eec95f16 45%,transparent 45%,transparent 51%,#eec95f16 51%,#eec95f16 56%,transparent 56%); }
+.app.terrain-mode .run-tile::before { height:4px; background:#ebe5de; }
+.app.terrain-mode .runner-number { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; color:#d6cbb8; }
+.app.terrain-mode .run-status { color:#beae93; letter-spacing:.1em; }
+.app.terrain-mode .run-tile-main h2 { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#333; letter-spacing:-.01em; font-size:clamp(19px,calc(var(--tile-height)*.18),39px)!important; }
+.app.terrain-mode .run-tile-main .run-time { font-family:'Outfit Variable',sans-serif; font-style:normal; color:#bea67d; font-weight:550; font-size:clamp(19px,calc(var(--tile-height)*.21),45px); letter-spacing:-.045em; }
+.app.terrain-mode .run-tile.picked { background:#fff; border-color:#e8d6b3; }
+.app.terrain-mode .run-tile.picked::before { background:#ffa74b; }
+.app.terrain-mode .run-tile.running { background:linear-gradient(135deg,#fff 58%,#fff7e9); border-color:#f2c68d; }
+.app.terrain-mode .run-tile.running::before { background:#ffa74b; width:100%; }
+.app.terrain-mode .run-tile.running .run-time { color:#f68710; }
+.app.terrain-mode .run-tile.running .run-tile-bottom { background:#ffa74b; border-color:#ffa74b; }
+.app.terrain-mode .run-tile.running .run-map-label { color:#815320; }
+.app.terrain-mode .run-tile.finished { background:#fee4a7; border-color:#eec95f; }
+.app.terrain-mode .run-tile.finished::before { background:#eec95f; width:100%; }
+.app.terrain-mode .run-tile.finished::after { opacity:.5; }
+.app.terrain-mode .run-tile.finished h2,.app.terrain-mode .run-tile.finished .run-time { color:#665229; }
+.app.terrain-mode .run-tile.finished .runner-number { color:#d4b66c; }
+.app.terrain-mode .run-tile.finished .run-status { color:#b89b58; }
+.app.terrain-mode .run-tile.finished .finished-check { color:#ad8731; background:transparent; }
+.app.terrain-mode .run-tile-bottom { background:#faf7f2; border-color:#eee6d9; }
+.app.terrain-mode .run-map-choice,.app.terrain-mode .run-map-label { color:#baaa8c; }
+.app.terrain-mode .run-tile.finished .run-tile-bottom { background:#eec95f; border-color:#eec95f; }
+.app.terrain-mode .run-tile.finished .run-map-label { color:#8a6a1a; }
+.app.terrain-mode .run-tile.finished .run-map-label i { background:#b08525; }
+.app.terrain-mode .selection-check { background:#fff6e4; border-color:#ead7ae; color:#c89a48; }
+.app.terrain-mode .stop-square { background:#f68710; }
+.app .results-page .podium-card { background:#faf4e9; border-color:#e8ddca; }
+.app .results-page .podium-card strong { font-family:'Barlow Sport',sans-serif; font-style:italic; font-size:24px; font-weight:800; text-transform:uppercase; color:#67553a; }
+.app .results-page .podium-1 { background:#fee4a7; border-color:#eec95f; }
+.app .results-page .podium-1>span { color:#b78f2d; }
+.app .results-page .results-table th { background:#f2ece2; color:#ab9a7c; }
+@media(max-width:699px) { .app.terrain-mode .run-tile-main h2 { font-size:26px!important; } .app.terrain-mode .run-tile-main .run-time { font-size:27px; } .app.terrain-mode .lesson-heading-stable h1 { font-size:29px; } }
+
+/* Composants partagés de la charte validée. */
+body,button,input,textarea,select { font-family:'Nunito Sans Variable',sans-serif; }
+:root { --orun-ink:#333333; --surface:#fff; --soft:#f7f4ef; --focus:#f68710; }
+:where(.app,.tablet-kiosk,.dialog) :is(h1,h2,h3) { color:#333; }
+.app .brand strong,.tablet-kiosk .kiosk-identity strong { color:#333; font-family:'Outfit Variable',sans-serif; font-weight:700; letter-spacing:-1px; }
+.app .class-card,.app .lesson-card,.app .map-card { box-shadow:0 2px 0 #ece5db; }
+.app .class-card:hover,.app .lesson-card:hover { border-color:#ecc99c; box-shadow:0 4px 14px #a7782b0a; transform:translateY(-2px); }
+.app .class-card h2,.app .lesson-card h2 { line-height:1.1; letter-spacing:-.01em; }
+.app .main-content:has(.map-grid) .map-grid .map-main h3 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; font-size:28px; color:#333; }
+.app .map-number { color:#e6d8c1; font-family:'Barlow Sport',sans-serif; font-style:italic; font-size:66px; }
+.app .overline,.app .eyebrow { color:#c7a563; letter-spacing:.12em; }
+.app .section-tabs,.app .results-views { background:#ebe5de; border-radius:11px; }
+.app .section-tabs button,.app .results-views button,.app .results-scope button,.app .queue-tabs button { color:#97866b; }
+.app .device-intro h2 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; font-size:38px; }
+.app .device-intro { margin-bottom:22px; }
+.app .lesson-devices { width:100%; max-width:1140px; padding:24px 0; margin-inline:auto; min-height:0; overflow:auto; }
+.app .device-mode-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.app .device-mode-card { min-height:188px; padding:22px; box-shadow:none; gap:12px; border-width:1px; }
+.app .device-mode-card.active { border-width:2px; box-shadow:none; }
+.app .device-mode-card strong { line-height:1.15; }
+.app .device-preview,.app .device-send { border:1px solid #e7dece; border-radius:15px; box-shadow:none; background:#fff; }
+.app .device-preview-head strong,.app .device-preview-group h3,.app .device-send h3 { color:#7a6543; }
+.app .device-preview-head span,.app .device-send p { color:#a39277; }
+.app .device-preview-students button { border:1px solid #e7ddcc; background:#faf6ef; color:#8d7a5c; border-radius:7px; }
+.app .device-actions { justify-content:flex-end; margin-top:20px; }
+.app .station-choice { border:1px solid #e5ded3; background:#fff; border-radius:16px; box-shadow:0 2px 0 #ece5db; }
+.app .station-choice strong { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; font-size:28px; text-transform:uppercase; color:#333; }
+.app .station-choice small,.app .station-choice-foot { color:#a28d6b; }
+.app .station-choice-icon { background:#fff2d4; color:#cca350; }
+.app .station-choice.active { background:#fff8ec; border-color:#ffa74b; }
+.app .station-ready,.app .station-backup,.app .settings-panel { background:#fff; border-color:#e6dece; border-radius:14px; color:#8b795c; box-shadow:none; }
+.app .station-ready strong { color:#8b6b2b; }
+.app .pupil-row { border-color:#eee7db; background:#fff; }
+.app .pupil-row strong { color:#574c3b; }
+.app .pupil-row small { color:#b1a38d; }
+.app .pupil-initial { color:#b29257; background:#fff2d4; }
+.app .empty { background:#faf7f2; border-color:#e7dac4; }
+.app .empty h3 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; font-size:26px; text-transform:uppercase; color:#987f50; }
+.app .empty p { color:#b3a38a; }
+.app .empty>svg { color:#deccaa; }
+.app .text-button,.app .back-link { color:#a5844c; }
+.app .c-correction-new { background:#fff; border-color:#e7ddca; }
+.app .c-correction-new h2 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; font-size:29px; color:#665535; }
+.app .c-student-tile { background:#fff; border-color:#e6d8c1; box-shadow:none; border-radius:12px; }
+.app .c-student-tile>strong { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#685431; font-size:25px; }
+.app .c-student-tile.complete { background:#fee4a7; border-color:#eec95f; }
+.app .c-student-progress,.app .c-correction-toolbar { color:#aa936c; }
+.app .c-correction-filters button { color:#ac966c; border-color:#e7dbc3; background:#faf6ee; }
+.app .c-correction-filters button.active { color:#775b25; background:#fee4a7; border-color:#eec95f; }
+.app .c-transfer-status span { background:#f4eee3; color:#a28a60; }
+.app .c-transfer-status .attention { background:#ffebd2; color:#b8813f; }
+.app .correction-profile { background:#fff; border-color:#e6dcc9; border-radius:14px; box-shadow:none; }
+.app .correction-profile.uncorrected { background:#fff9f1; border-color:#f2d6ac; }
+.app .profile-name { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#574b36; }
+.app .profile-state,.app .profile-course,.app .profile-foot { color:#b49d77; }
+.app .profile-result>b { color:#d18d33; }
+.app .profile-result>span { color:#bfa36e; }
+.app .corrected .profile-state,.app .personal-best { color:#b18b32; }
+.app .results-commandbar,.app .results-filterbar { border-color:#e7dece; box-shadow:none; }
+.app .results-card-rail button { background:#fff; border-color:#e5dbc8; color:#a38a61; box-shadow:none; }
+.app .results-card-rail button.active { background:#fff0dc; border-color:#ffa74b; color:#97703c; }
+.app .results-page .podium-card strong { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; }
+.app .route-title h2,.app .route-title .course-tag,.app .student-ranking h2 { color:#8c7349; }
+.app .results-table td { color:#61553f; font-weight:600; }
+.app .results-table tbody tr:hover { background:#fff9ed; }
+.app .c-sheet-card,.app .correction-preview { background:#faf6ed; border-color:#e8ddc7; color:#a88c59; }
+.app .c-sheet-buttons button { color:#9c7b3c; border-color:#e5d6b6; background:#fff; }
+.app .c-sheet-buttons button.active { background:#fee4a7; border-color:#eec95f; color:#785e29; }
+.app .history-row { background:#fffaf2; border-color:#e9deca; }
+.app .history-student strong { color:#8e7548; }
+.app .history-student span,.app .history-audit { color:#b09a75; }
+.dialog { border:1px solid #e7decf; background:#fff; color:#78654a; }
+.dialog-head h2 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#4b402f; font-size:29px; }
+.dialog .button { border-color:#e7ddca; color:#a08557; background:#fff; border-radius:10px; box-shadow:none; }
+.dialog .button.primary { background:#ffa74b; color:#5b4324; border-color:#ffa74b; }
+.dialog .field>span,.dialog .control-count>span { color:#a18a65; }
+.dialog .field input,.dialog .field textarea,.dialog .field select { border-color:#e6dcc9; color:#62513a; }
+.dialog .icon-button { color:#b49b72; }
+.dialog .advanced-settings { border-color:#e8dec9; }
+.dialog .advanced-settings summary,.dialog .consent { color:#a08b62; }
+.dialog .rubric-level { border-color:#e8ddc7; background:#fffaf1; }
+.dialog .criterion-switch { background:#f9f3e7; border-color:#e8dcc5; color:#a18a5d; }
+.dialog .criterion-switch:has(input:checked) { background:#fee4a7; border-color:#eec95f; }
+.dialog .map-upload { background:#fff8eb; border-color:#e9d7b3; color:#b19054; }
+.dialog .control-dots span { background:#fff0d3; color:#b18e48; border-color:#eddbb4; }
+.dialog .stepper { border-color:#e6dac0; background:#faf6ee; }
+.dialog .stepper button { color:#b99a5e; background:#fff; }
+.dialog .stepper input { color:#846a3c; }
+.dialog .error-shortcuts button { color:#ad8b45; background:#fff8e9; border-color:#e9d8b2; }
+.dialog .error-shortcuts button.active { background:#ffa74b; color:#6b461f; border-color:#ffa74b; box-shadow:none; }
+.dialog .export-options button { background:#faf6ed; border-color:#e9ddc6; color:#a48a5a; }
+.dialog .export-options button.active { background:#fff0dc; border-color:#ffa74b; }
+.dialog .export-options strong { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; color:#9a7a40; }
+.dialog .kiosk-pin-lock { background:#fff0d5; color:#d09940; }
+.dialog .kiosk-keypad button { background:#faf5ea; border-color:#e8ddc7; color:#9d7e43; }
+.dialog .kiosk-keypad button:active { background:#fee4a7; }
+.dialog .kiosk-code-dots span.filled { background:#f68710; }
+.toast,.orun-update-notice { background:#333; color:#fff; border-color:#333; }
+.toast svg { color:#ffa74b; }
+.orun-update-notice button { background:#ffa74b; color:#333; }
+
+/* Les postes élèves A/B reprennent exactement les mêmes tuiles. */
+.tablet-kiosk { background:#f7f4ef; background-image:none; color:#333; }
+.tablet-kiosk .kiosk-bar { border-color:#ebe5de; }
+.tablet-kiosk .kiosk-identity>span,.tablet-kiosk .kiosk-subtitle { color:#b09f82; }
+.tablet-kiosk .kiosk-teacher { color:#a38b60; background:#fff; border-color:#e5dac5; border-radius:10px; }
+.tablet-kiosk .start-toolbar { background:#fff; border-color:#e8dfce; }
+.tablet-kiosk .segmented { background:#f5eee2; }
+.tablet-kiosk .segmented button { color:#b09b75; }
+.tablet-kiosk .segmented button.active { background:#fee4a7; color:#8c7137; }
+.tablet-kiosk .launch-button { background:#ffa74b; border-color:#ffa74b; color:#6f4b20; }
+.tablet-kiosk .start-map select { color:#8b7450; }
+.tablet-kiosk .board-counts { color:#ae9a74; }
+.app.terrain-mode .run-tile,.tablet-kiosk .run-tile { position:relative; overflow:hidden; border-radius:16px; }
+.app.terrain-mode .run-tile::before,.tablet-kiosk .run-tile::before { content:''; position:absolute; z-index:1; top:0; left:0; width:100%; height:4px; background:#ebe5de; }
+.app.terrain-mode .run-tile::after,.tablet-kiosk .run-tile::after { content:''; position:absolute; pointer-events:none; right:-8px; top:0; width:80px; height:100%; background:linear-gradient(120deg,transparent 40%,#eec95f16 40%,#eec95f16 45%,transparent 45%,transparent 51%,#eec95f16 51%,#eec95f16 56%,transparent 56%); }
+.runner-number { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; line-height:1; }
+.app.terrain-mode .run-tile-top,.tablet-kiosk .run-tile-top { z-index:2; display:flex; align-items:center; justify-content:space-between; top:8px; inset-inline:8px; width:calc(100% - 16px); }
+.app.terrain-mode .run-status,.tablet-kiosk .run-status { display:block; margin-left:auto; margin-right:5px; font-size:8px; letter-spacing:.1em; text-transform:uppercase; font-weight:800; }
+.app.terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding-top:15px; }
+.tablet-kiosk .run-tile { border:1px solid #e4ddd2; background:#fff; box-shadow:0 2px 0 #ece5db; }
+.tablet-kiosk .run-tile.picked { background:#fff; border-color:#e8d6b3; }
+.tablet-kiosk .run-tile.picked::before { background:#ffa74b; }
+.tablet-kiosk .runner-number { color:#d6cbb8; }
+.tablet-kiosk .run-status { color:#beae93; }
+.tablet-kiosk .run-tile h2 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; color:#333; font-size:clamp(19px,calc(var(--tile-height)*.18),39px)!important; letter-spacing:-.01em; }
+.tablet-kiosk .run-tile .run-time { font-family:'Outfit Variable',sans-serif; font-weight:550; color:#bea67d; font-size:clamp(19px,calc(var(--tile-height)*.21),45px); letter-spacing:-.045em; }
+.tablet-kiosk .run-tile.running { background:linear-gradient(135deg,#fff 58%,#fff7e9); border-color:#f2c68d; }
+.tablet-kiosk .run-tile.running::before { background:#ffa74b; }
+.tablet-kiosk .run-tile.running .run-time { color:#f68710; }
+.tablet-kiosk .run-tile.running .run-tile-bottom { background:#ffa74b; border-color:#ffa74b; }
+.tablet-kiosk .run-tile.running .run-map-label { color:#815320; }
+.tablet-kiosk .run-tile.finished { background:#fee4a7; border-color:#eec95f; }
+.tablet-kiosk .run-tile.finished::before { background:#eec95f; }
+.tablet-kiosk .run-tile.finished h2,.tablet-kiosk .run-tile.finished .run-time { color:#665229; }
+.tablet-kiosk .run-tile.finished .runner-number { color:#d4b66c; }
+.tablet-kiosk .run-tile.finished .run-status { color:#b89b58; }
+.tablet-kiosk .finished-check { color:#ad8731; }
+.tablet-kiosk .run-tile-bottom { background:#faf7f2; border-color:#eee6d9; min-height:27px; flex-basis:27px; }
+.tablet-kiosk .run-map-label { color:#baaa8c; font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+.tablet-kiosk .run-tile.finished .run-tile-bottom { background:#eec95f; border-color:#eec95f; }
+.tablet-kiosk .run-tile.finished .run-map-label { color:#8a6a1a; }
+.tablet-kiosk .stop-square { background:#f68710; color:#fff; border-radius:4px; width:16px; height:16px; }
+.tablet-kiosk .selection-check { background:#fff6e4; border-color:#ead7ae; color:#c89a48; }
+@media(min-width:700px) { .runner-number { font-size:clamp(10px,calc(var(--tile-height)*.11),18px); } .app.terrain-mode .run-status,.tablet-kiosk .run-status { font-size:7px; } }
+@media(max-width:699px) { .app .device-mode-grid { grid-template-columns:1fr; gap:10px; } .app .device-mode-card { min-height:0; display:grid; grid-template-columns:40px 1fr; padding:15px; column-gap:12px; row-gap:5px; } .app .device-mode-icon { grid-row:span 2; width:36px; height:36px; } .app .device-mode-card strong { font-size:23px; } .app .device-mode-card small { font-size:12px; } .app .device-intro h2 { font-size:30px; } .app .device-actions .button { width:100%; justify-content:center; } .tablet-kiosk .run-tile h2 { font-size:26px!important; } .tablet-kiosk .run-tile .run-time { font-size:27px; } }
+.gate { background:#f7f4ef; color:#333; }
+.gate h1 { font-family:'Barlow Sport',sans-serif; font-weight:800; font-style:italic; text-transform:uppercase; }
+.gate p { color:#a28d6a; }
+.gate .button.primary { background:#ffa74b; color:#654b25; border-color:#ffa74b; }
+.gate input { border:1px solid #e8d9bd; color:#75603d; background:#fff; }
+@media(min-width:700px) and (min-height:500px) {
+ .lesson-workspace .lesson-cards-page .map-grid { flex:0 1 auto; align-content:start; grid-template-rows:repeat(var(--map-rows),clamp(115px,calc((100dvh - 330px)/2),200px)); }
+}
