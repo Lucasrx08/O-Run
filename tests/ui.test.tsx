@@ -234,3 +234,21 @@ it('vérifie un ancien code à six chiffres avant de demander un nouveau code à
  expect(localStorage.getItem('orun-teacher-pin-format')).toBe('4');
  expect(localStorage.getItem('orun-teacher-pin-salt-v1')).not.toBe(salt);
 });
+
+it('affiche les élèves par pages sur téléphone sans modifier la sélection de toute la classe',async()=>{
+ vi.stubGlobal('matchMedia',()=>({matches:true,addEventListener:vi.fn(),removeEventListener:vi.fn()}));
+ try{
+  const session=await prepared();
+  const extra=Array.from({length:6},(_,i)=>({id:`mobile-${i}`,firstName:`Mobile${i}`,lastName:'Exemple',className:'3e Vagues'}));
+  await mutate(w=>({...w,data:{...w.data,students:[...w.data.students,...extra],sessions:w.data.sessions.map(l=>l.id===session.id?{...l,studentIds:[...l.studentIds,...extra.map(p=>p.id)]}:l)}}));
+  const ui=render(<Provider><App/></Provider>);await openBoard();
+  expect(ui.container.querySelectorAll('.run-tile')).toHaveLength(6);
+  expect(screen.getByRole('button',{name:'Lancer 9 élèves'})).toBeTruthy();
+  fireEvent.click(screen.getByRole('button',{name:'Suivants'}));
+  expect(ui.container.querySelectorAll('.run-tile')).toHaveLength(3);
+  expect(screen.getByRole('button',{name:'Lancer 9 élèves'})).toBeTruthy();
+  fireEvent.change(screen.getByRole('textbox',{name:'Rechercher un élève en course'}),{target:{value:'Alice'}});
+  expect(ui.container.querySelectorAll('.run-tile')).toHaveLength(1);
+  expect(screen.getByRole('button',{name:'Sélectionner Alice E.'})).toBeTruthy();
+ }finally{vi.unstubAllGlobals();}
+});

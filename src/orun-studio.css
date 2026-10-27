@@ -1,11 +1,11 @@
 /* O’Run · système adaptatif. Chargé après les structures historiques. */
 :root {
-  --orange:#c94e0c;
+  --orange:#ff7900;
   --orange-pale:#fff0e5;
-  --green:#216348;
-  --ink:#173c30;
+  --green:#58b58a;
+  --ink:#163c30;
   --muted:#586d63;
-  --bg:#f4f7f4;
+  --bg:#f7f9f8;
   --line:#dce5df;
   --surface:#fff;
   --focus:#b6470b;
@@ -63,7 +63,7 @@ h1,h2,h3,strong {
   box-shadow:none
 }
 .button.primary:hover:not(:disabled) {
-  background:#a93e07
+  background:#ed6900
 }
 .icon-button {
   min-width:44px;
@@ -221,7 +221,7 @@ h1,h2,h3,strong {
 /* Grilles fluides, mêmes proportions sur ordinateur et tablette. */
 .class-grid,.lesson-grid,.main-content:has(.map-grid) .map-grid {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));
   gap:20px
 }
 .class-shell,.lesson-card,.map-card {
@@ -234,7 +234,7 @@ h1,h2,h3,strong {
   border:1px solid var(--line);
   border-radius:20px;
   background:white;
-  box-shadow:0 5px 18px #173c3006
+  box-shadow:0 5px 18px #163c3006
 }
 .class-map {
   height:95px;
@@ -453,7 +453,7 @@ h1,h2,h3,strong {
 }
 .results-table th,.results-table td,.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td {
   display:table-cell!important;
-  width:auto!important;
+  width:auto;
   font-size:14px!important;
   padding:13px 12px!important;
   white-space:nowrap;
@@ -1015,4 +1015,255 @@ h1,h2,h3,strong {
     height:auto;
     overflow:visible
   }
+}
+
+/* Poste de travail : les commandes restent visibles, l'espace utile se partage
+   entre le contenu et ses propres zones de défilement. */
+:root { --orange:#ff7900; --green:#58b58a; --green-ink:#18583c; --line:#dfe8e3; --muted:#61756c; }
+.button.primary,.launch-button { background:var(--orange); border-color:var(--orange); color:#18392b; box-shadow:none; }
+.button.primary:hover:not(:disabled) { background:#ff8b24; border-color:#ff8b24; }
+.section-tabs button.active,.main-content .lesson-heading-controls .lesson-tabs button.active,.lesson-heading-controls .lesson-mode-shortcut.active { background:#dcf4e8; color:var(--green-ink); box-shadow:inset 0 0 0 1px #87cfa9; }
+.results-views button.active,.results-scope button.active,.queue-tabs button.active { background:#dcf4e8; color:var(--green-ink); box-shadow:inset 0 0 0 1px #87cfa9; }
+.main-content .lesson-heading-stable .lesson-tabs { background:#edf3ef; }
+.app-header,.header-inner { min-height:60px; }
+.brand strong { font-size:27px; }
+.brand img { width:36px; height:36px; }
+.main-content,.main-content:has(.results-page) { padding:18px clamp(16px,2.3vw,34px) 24px; }
+.breadcrumbs { min-height:28px; margin:0 0 8px; }
+.breadcrumbs button { min-height:28px; font-size:12px; }
+.page-heading { margin-bottom:18px; }
+.page-heading h1 { font-size:clamp(27px,2.7vw,36px); }
+.lesson-heading-stable,.terrain-mode .lesson-heading-stable { margin-bottom:10px; min-height:48px; align-items:center; }
+.lesson-heading-stable h1 { font-size:28px; }
+.lesson-heading-stable .page-intro { margin-top:3px; font-size:13px; }
+.lesson-heading-controls { flex-wrap:nowrap; }
+.lesson-heading-controls .lesson-mode-shortcut { min-height:40px; padding:8px 12px; font-size:13px; }
+.main-content .lesson-heading-stable .lesson-tabs button { min-height:40px; padding:8px 12px; font-size:13px; }
+.lesson-copy-line { position:absolute; right:clamp(16px,2.3vw,34px); top:0; margin:0; }
+.lesson-copy-line .button { min-height:38px; font-size:12px; padding:7px 12px; }
+.lesson-cards-page .content-heading { min-height:40px; margin:0 0 10px; padding-right:155px; }
+.lesson-cards-page .content-heading h2 { font-size:23px; }
+.lesson-cards-page .content-heading .button { min-height:38px; font-size:13px; }
+.main-content:has(.map-grid) .map-grid { gap:14px; }
+.main-content:has(.map-grid) .map-grid .map-card { height:160px; min-height:0; padding:14px 16px; border-radius:16px; background-image:none; box-shadow:none; }
+.main-content:has(.map-grid) .map-card-top { flex:0 0 38px; margin:0; }
+.main-content:has(.map-grid) .map-symbol { width:36px; height:36px; border-radius:10px; }
+.main-content:has(.map-grid) .map-symbol svg { width:21px; }
+.main-content:has(.map-grid) .map-actions .icon-button { width:38px; height:38px; min-width:38px; min-height:38px; }
+.main-content:has(.map-grid) .map-grid .map-main h3 { font-size:25px; margin:0 0 5px; }
+.main-content:has(.map-grid) .map-grid .map-main p { font-size:14px; color:var(--muted); }
+.map-number { font-size:68px; opacity:.12; }
+.lesson-cards-page .lesson-ready { margin-top:12px; min-height:52px; padding:8px 14px; border-radius:13px; background:#edfaf2; }
+.lesson-ready p { font-size:13px; }
+.lesson-ready .button { min-height:40px; font-size:13px; }
+.class-grid,.lesson-grid { grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),340px)); justify-content:start; }
+.lesson-card.lesson-card-illustrated { min-height:0; height:200px; padding:18px 20px; border-radius:17px; display:flex; flex-direction:column; }
+.lesson-card-illustrated .lesson-card-top { flex:0 0 28px; margin:0 0 12px; }
+.lesson-card-illustrated .lesson-card-link { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lesson-card-illustrated .lesson-card-open { flex:1; }
+.lesson-card-illustrated .lesson-card-open h2 { font-size:25px; max-width:78%; }
+.lesson-card-illustrated .lesson-card-open p { font-size:13px; margin-top:5px; }
+.lesson-card-illustrated .lesson-card-bottom { margin-top:10px; padding-top:10px; font-size:13px; }
+.lesson-card-illustrated .lesson-card-decor { top:35px; right:14px; opacity:.22; }
+.lesson-card-illustrated .lesson-card-decor span { font-size:64px; }
+.lesson-card-illustrated .lesson-card-decor svg { width:64px; height:64px; }
+.lesson-card-copy { min-height:38px; padding:7px 10px; }
+.lesson-card .lesson-delete { width:38px; min-width:38px; min-height:38px; height:38px; }
+.app-footer { padding:10px 24px; font-size:11px; }
+/* Sur le terrain, l'affichage est dimensionné par ResizeObserver. */
+.run-tile,.tablet-kiosk .run-tile { background:#fff; border-color:#d7e7dd; box-shadow:none; }
+.run-tile.picked,.tablet-kiosk .run-tile.picked { background:#edfaf2; border-color:#8bd3ab; }
+.run-tile.running,.tablet-kiosk .run-tile.running { background:#fff3e8; border-color:#ff7900; }
+.run-tile .chrono-idle,.tablet-kiosk .chrono-idle { color:#779b89; }
+.terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile h2 { font-weight:750; letter-spacing:-.025em; font-size:clamp(16px,calc(var(--tile-unit)*.20),28px)!important; line-height:1.08; margin:0 0 3px; }
+.terrain-mode .run-tile-main .run-time,.tablet-kiosk .run-time { font-size:clamp(15px,calc(var(--tile-unit)*.19),26px); font-weight:650; }
+.terrain-mode .run-map-choice,.terrain-mode .run-map-label,.tablet-kiosk .run-map-label { font-size:11px; }
+.terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding:16px 5px 3px; }
+.terrain-mode .run-tile-bottom,.tablet-kiosk .run-tile-bottom { flex:0 0 24px; height:24px; min-height:24px; }
+.terrain-mode .start-toolbar,.tablet-kiosk .start-toolbar { min-height:52px; padding:6px 10px; margin-bottom:6px; gap:10px; }
+.terrain-mode .start-toolbar .segmented button,.terrain-mode .launch-button,.tablet-kiosk .segmented button,.tablet-kiosk .launch-button { min-height:40px; padding:8px 12px; font-size:13px; }
+.terrain-mode .start-map select,.tablet-kiosk .start-map select { min-height:30px; font-size:14px; }
+.terrain-mode .board-toolbar,.tablet-kiosk .board-toolbar { min-height:38px; margin-bottom:6px; }
+.terrain-mode .board-counts,.terrain-mode .board-tools>.text-button { font-size:12px; }
+.terrain-mode .board-search,.terrain-mode .board-tools>.text-button { min-height:34px; }
+.terrain-mode .board-hint { display:none; }
+/* Classements : résumés courts et deux panneaux réellement côte à côte. */
+.results-page .results-commandbar { min-height:48px; padding:5px 8px; margin-bottom:8px; border-radius:12px; }
+.results-page .results-commandbar .list-toolbar { margin:0; }
+.results-page .results-commandbar .button,.results-page .primary-results-tabs button { min-height:38px; padding:7px 12px; font-size:13px; }
+.results-page .results-filterbar { min-height:46px; padding:4px 8px; margin-bottom:8px; border-radius:12px; gap:8px; }
+.results-page .results-filterbar button { min-height:36px; padding:7px 11px; font-size:12px; }
+.results-page .results-card-rail { margin:0 0 7px; padding-bottom:0; }
+.results-page .results-card-rail button { min-height:36px; padding:7px 12px; }
+.results-page .route-title { margin:0 0 7px; }
+.results-page .route-title h2 { font-size:21px; margin:0; }
+.results-page .podium-grid { gap:10px; margin:0 0 9px; }
+.results-page .podium-card { padding:9px 13px; min-height:0; border-radius:12px; background:#edfaf2; border-color:#d7ecdf; color:#285d43; }
+.results-page .podium-card>span { font-size:10px; letter-spacing:.05em; color:#55846a; }
+.results-page .podium-card>strong { font-size:21px; margin:3px 0; line-height:1.1; }
+.results-page .podium-card p { font-size:11px; margin:0; color:#5c7968; }
+.results-page .podium-1 { background:#fff0e0; border-color:#ffd4aa; color:#8a4708; }
+.results-page .podium-1>span,.results-page .podium-1 p { color:#97581d; }
+.ranking-two-columns { gap:12px; }
+.results-page .results-table { margin:0; border-radius:12px; box-shadow:none; }
+.results-page .results-table th,.results-page .results-table td,.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td { padding:6px 8px!important; font-size:12px!important; line-height:1.2; }
+.results-page .results-table th { background:#edf6f1; color:#466e58; }
+.results-table td.heat-1,.results-table td.heat-2 { background:#fff8f1; }
+@media(min-width:1100px) { .ranking-two-columns { grid-template-columns:repeat(2,minmax(0,1fr)); } .results-page .ranking-two-columns .results-table table { min-width:0; table-layout:auto!important; } }
+@media(min-width:700px) and (min-height:500px) {
+ .app.lesson-workspace,.app.terrain-mode { height:100dvh; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
+ .lesson-workspace .app-header,.terrain-mode .app-header { height:60px; min-height:60px; flex:0 0 60px; }
+ .lesson-workspace .header-inner,.terrain-mode .header-inner { min-height:60px; }
+ .lesson-workspace .app-footer { display:none; }
+ .lesson-workspace .main-content,.terrain-mode .main-content:has(.lesson-heading-stable) { flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:0; padding:8px clamp(14px,2vw,28px) 12px; }
+ .lesson-workspace .breadcrumbs { flex:0 0 25px; min-height:25px; margin:0 0 5px; }
+ .lesson-workspace .lesson-heading-stable { flex:0 0 auto; min-height:48px; margin:0 0 9px; }
+ .lesson-workspace .lesson-copy-line { top:0; }
+ .lesson-workspace .main-content { position:relative; }
+ .lesson-workspace .lesson-copy-line { top:96px; z-index:2; }
+ .lesson-workspace .lesson-cards-page { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+ .lesson-workspace .lesson-cards-page .content-heading { flex:0 0 40px; }
+ .lesson-workspace .lesson-cards-page .map-grid { flex:1; min-height:0; overflow:auto; align-content:start; grid-template-columns:repeat(3,minmax(0,1fr)); grid-auto-rows:clamp(118px,calc((100dvh - 285px)/2),200px); }
+ .lesson-workspace .main-content:has(.map-grid) .map-grid .map-card { height:100%; min-height:0; }
+ .lesson-workspace .lesson-ready { flex:0 0 auto; }
+ .lesson-workspace .run-board,.terrain-mode .run-board { flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+ .terrain-mode .run-grid { flex:1; min-height:0; overflow:hidden!important; grid-template-rows:repeat(var(--grid-rows),minmax(0,1fr)); }
+ .terrain-mode .run-tile { min-height:0; }
+ .lesson-workspace .results-page { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+ .results-page>.results-commandbar,.results-page>.results-filterbar,.results-page>.results-card-rail,.results-page>.podium-grid { flex:0 0 auto; }
+ .results-page .route-ranking,.results-page .student-ranking { flex:1; display:flex; flex-direction:column; min-height:0; margin:0; overflow:hidden; }
+ .results-page .ranking-two-columns,.results-page>.results-table,.results-page .route-ranking>.results-table,.results-page .student-ranking>.results-table { flex:1; min-height:0; overflow:auto!important; }
+ .results-page .ranking-two-columns .results-table { overflow:visible!important; }
+ .results-page .ranking-two-columns { align-items:start; }
+ .results-page .table-scroll { overflow:visible!important; }
+ .results-page .results-table thead { position:sticky; top:0; z-index:1; }
+ .results-page .route-correction,.results-page .pupil-correction-grid,.results-page .c-correction-new { flex:1; min-height:0; overflow:auto; }
+ .results-page .correction-grid { grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); }
+ .results-page .correction-profile { min-height:145px; padding:13px; }
+ .results-page .profile-name { font-size:22px; }
+ .results-page .profile-top { margin-bottom:7px; }
+ .results-page .profile-result { margin:9px 0; }
+ .results-page .profile-foot { padding-top:7px; }
+ .tablet-kiosk { height:100dvh; min-height:0; overflow:hidden; }
+ .tablet-kiosk .kiosk-bar { flex:0 0 54px; min-height:54px; height:54px; padding:6px 0; }
+ .tablet-kiosk .run-board { flex:1; min-height:0; overflow:hidden; }
+ .tablet-kiosk .run-grid { flex:1; min-height:0; overflow:hidden!important; grid-template-rows:repeat(var(--grid-rows),minmax(0,1fr)); }
+ .tablet-kiosk .run-tile { min-height:0; }
+}
+@media(min-width:700px) and (max-width:1100px) {
+ .lesson-workspace .lesson-heading-stable { display:flex; flex-wrap:nowrap; gap:10px; }
+ .lesson-workspace .lesson-heading-controls { width:auto; flex-wrap:nowrap; gap:6px; }
+ .lesson-heading-controls .lesson-mode-shortcut { font-size:12px; padding:7px 9px; }
+ .main-content .lesson-heading-stable .lesson-tabs button { font-size:12px; padding:7px 9px; }
+ .lesson-workspace .lesson-heading-stable h1 { font-size:25px; }
+}
+@media(max-width:699px) {
+ .lesson-copy-line { position:static; align-self:flex-end; margin-bottom:8px; }
+ .lesson-cards-page .content-heading { padding-right:0; }
+ .lesson-heading-controls { width:100%; }
+ .main-content:has(.map-grid) .map-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+ .main-content:has(.map-grid) .map-grid .map-card { height:145px; padding:10px; }
+ .main-content:has(.map-grid) .map-grid .map-main h3 { font-size:22px; }
+ .map-symbol { display:none; }
+ .map-card-top { justify-content:flex-end; }
+ .class-grid,.lesson-grid { grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),340px)); }
+ .results-page .podium-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+ .results-page .podium-card { padding:9px; }
+ .results-page .podium-card>strong { font-size:17px; }
+ .results-page .podium-card p { font-size:10px; }
+ .results-page .results-table { max-height:60dvh; }
+}
+.lesson-cards-page .content-heading { padding-right:0; }
+@media(min-width:700px) and (min-height:500px) {
+ .lesson-workspace .lesson-cards-page .map-grid { grid-template-rows:repeat(var(--map-rows),minmax(115px,1fr)); grid-auto-rows:minmax(115px,1fr); align-content:stretch; }
+}
+@media(min-width:700px) and (min-height:500px) {
+ .terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding:8px 4px 2px; gap:0; justify-content:center; }
+ .terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile h2 { flex:0 0 auto; font-size:clamp(14px,calc(var(--tile-height)*.19),26px)!important; margin:0 0 2px; max-height:none; }
+ .terrain-mode .run-tile-main .run-time,.tablet-kiosk .run-time { flex:0 0 auto; font-size:clamp(14px,calc(var(--tile-height)*.18),24px); }
+ .terrain-mode .run-map-choice { font-size:10px; }
+ .terrain-mode .run-action-hint,.tablet-kiosk .run-action-hint { display:none; }
+}
+.results-page .results-commandbar { padding:3px 6px; min-height:44px; }
+.results-page .primary-results-tabs { padding:3px; }
+.results-page .primary-results-tabs button,.results-page .results-commandbar .button { min-height:34px; padding:6px 11px; }
+.results-page .results-filterbar { min-height:42px; padding:3px 6px; }
+.results-page .results-filterbar button { min-height:34px; padding:6px 10px; }
+.results-page .podium-card { display:grid; grid-template-columns:auto 1fr; column-gap:10px; padding:8px 12px; align-items:center; }
+.results-page .podium-card>span { grid-row:span 2; }
+.results-page .podium-card>strong { font-size:19px; margin:0 0 2px; }
+.results-page .podium-card p { font-size:10px; }
+.results-page .results-table th,.results-page .results-table td,.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td { padding:4px 6px!important; }
+.results-page .results-table th,.results-page .ranking-two-columns .results-table th { font-size:11px!important; }
+@media(min-width:1100px) {
+ .results-page .ranking-two-columns .results-table { width:100%; min-width:0; }
+ .results-page .ranking-two-columns .results-table table { width:100%; min-width:0; table-layout:fixed!important; }
+ .results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td { overflow:hidden; text-overflow:ellipsis; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(1) { width:7%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(2) { width:24%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(3) { width:9%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(4) { width:20%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(5) { width:16%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(6) { width:13%; }
+ .results-page .ranking-two-columns table[data-columns="7"] th:nth-child(7) { width:11%; }
+ .results-page .ranking-two-columns table[data-columns="5"] th:nth-child(1) { width:7%; }
+ .results-page .ranking-two-columns table[data-columns="5"] th:nth-child(2) { width:29%; }
+ .results-page .ranking-two-columns table[data-columns="5"] th:nth-child(3) { width:26%; }
+ .results-page .ranking-two-columns table[data-columns="5"] th:nth-child(4) { width:23%; }
+ .results-page .ranking-two-columns table[data-columns="5"] th:nth-child(5) { width:15%; }
+}
+@media(max-width:699px) { .results-page .podium-card { display:block; } .results-page .podium-card>strong { font-size:16px; margin-top:4px; } }
+.run-pagination { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0 0; }
+.run-pagination span { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.run-pagination .button { min-height:42px; font-size:13px; padding:8px 12px; }
+@media(max-width:699px) {
+ .terrain-mode .run-grid,.tablet-kiosk .run-grid { grid-auto-rows:110px; }
+ .terrain-mode .run-tile,.tablet-kiosk .run-tile { min-height:110px; }
+ .terrain-mode .run-tile-main h2,.tablet-kiosk .run-tile h2 { font-size:20px!important; }
+ .terrain-mode .run-tile-main,.tablet-kiosk .run-tile-main { padding:9px 5px 2px; }
+ .terrain-mode .run-action-hint { display:none; }
+ .terrain-mode .board-toolbar { gap:5px; }
+ .terrain-mode .board-tools { width:100%; justify-content:space-between; }
+ .terrain-mode .start-toolbar { padding:8px; }
+ .terrain-mode .start-toolbar .start-map { flex:1; min-width:130px; padding-left:0; border:0; }
+ .terrain-mode .start-toolbar .segmented button { padding:8px 10px; }
+ .terrain-mode .lesson-heading-stable h1 { font-size:25px; }
+ .terrain-mode .lesson-heading-stable .page-intro { font-size:12px; }
+ .terrain-mode .main-content { padding-top:8px; }
+}
+@media(min-width:700px) and (min-height:500px) {
+ .lesson-workspace .main-content .breadcrumbs { margin:0 0 4px; }
+ .lesson-workspace .main-content .lesson-heading-stable { min-height:48px; margin:0 0 8px; padding:0; }
+ .lesson-workspace .main-content .lesson-heading-stable h1 { font-size:26px; line-height:1.1; margin:0; }
+ .lesson-workspace .main-content .lesson-heading-stable .page-intro { display:block; font-size:12px; line-height:1.2; margin:3px 0 0; }
+ .lesson-workspace .lesson-heading-meta .icon-button { min-height:32px; height:32px; min-width:32px; width:32px; }
+ .results-page .compact-podium .podium-card,.results-page .route-ranking .compact-podium .podium-card { padding:7px 11px; }
+ .results-page .compact-podium strong,.results-page .route-ranking .compact-podium strong { font-size:18px; margin:0 0 2px; }
+ .results-page .compact-podium p,.results-page .route-ranking .compact-podium p { font-size:10px; }
+ .results-page .compact-podium span { font-size:10px; }
+}
+@media(min-width:1100px) {
+ .results-page .results-table th,.results-page .results-table td,.results-page .ranking-two-columns .results-table th,.results-page .ranking-two-columns .results-table td { padding:3px 6px!important; }
+}
+@media(max-width:699px) {
+ .lesson-workspace .lesson-heading-stable .lesson-heading-controls { display:grid; grid-template-columns:88px minmax(0,1fr); gap:6px; width:100%; }
+ .lesson-workspace .lesson-heading-controls .lesson-mode-shortcut { min-height:48px; padding:6px; font-size:11px; }
+ .lesson-workspace .lesson-heading-controls .lesson-mode-shortcut svg { display:none; }
+ .lesson-workspace .main-content .lesson-heading-stable .lesson-tabs { display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%!important; min-width:0; overflow:visible; padding:3px!important; }
+ .lesson-workspace .main-content .lesson-heading-stable .lesson-tabs button { min-width:0; min-height:42px; padding:5px 3px!important; font-size:11px; white-space:normal; line-height:1.2; }
+ .lesson-workspace .lesson-heading-stable .page-intro { display:block; }
+ .board-counts { flex-shrink:0; white-space:nowrap; }
+ .terrain-mode .board-tools { min-width:0; }
+}
+.lesson-workspace .app-footer { display:none; }
+@media(max-width:699px) {
+ .lesson-workspace .main-content:has(.map-grid) { padding:10px 12px 12px; }
+ .lesson-workspace .main-content:has(.map-grid) .map-grid .map-card { height:110px; padding:8px 10px; }
+ .lesson-workspace .main-content:has(.map-grid) .map-grid .map-card-top { flex-basis:32px; }
+ .lesson-workspace .main-content:has(.map-grid) .map-grid .map-main h3 { font-size:21px; margin-bottom:3px; }
+ .lesson-workspace .main-content:has(.map-grid) .map-grid .map-main p { font-size:12px; }
+ .lesson-workspace .lesson-ready { flex-wrap:nowrap; gap:8px; }
+ .lesson-workspace .lesson-ready p { font-size:11px; white-space:nowrap; }
+ .lesson-workspace .lesson-ready .button { min-height:40px; padding:8px 10px; font-size:11px; }
+ .lesson-workspace .lesson-ready .button svg { width:14px; }
 }

@@ -1,5 +1,7 @@
 # Audit et refonte de l’interface O’Run — 27 octobre 2026
 
+> Cet audit décrit la première version. Les corrections demandées ensuite et leur validation sont détaillées dans [la refonte compacte](REFONTE_COMPACTE_2026-10-27.md).
+
 ## Périmètre
 
 Analyse du code de la branche main, des parcours de classe, de leçon, des cartes, de l’organisation des appareils, du terrain, de la correction, des classements, des réglages et du kiosque élève. Refonte du système visuel partagé en conservant les données et les fonctions métier existantes. L’application reste hébergée sur GitHub Pages ; aucune migration vers un nouvel hébergement n’est nécessaire.

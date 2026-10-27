@@ -12,3 +12,10 @@ it('refuse un barème activé sans aucun critère',()=>{const d=demo();d.courses
 it.each([[1315,510],[976,505],[720,760],[1600,700]])('fait tenir 24 à 36 élèves dans une zone %i × %i', (w,h)=>{for(const n of [24,30,32,36]){const g=fitGrid(w,h,n);expect(g.columns*g.rows).toBeGreaterThanOrEqual(n);expect(g.rows).toBe(Math.ceil(n/g.columns));const tw=(w-8*(g.columns-1))/g.columns,th=(h-8*(g.rows-1))/g.rows;expect(tw).toBeGreaterThan(85);expect(th).toBeGreaterThan(70);expect(Number.isFinite(g.unit)).toBe(true);}});
 it('affiche 25 élèves sur quatre lignes maximum sur un grand écran Mac',()=>{const g=fitGrid(1900,660,25);expect(g.columns).toBeGreaterThanOrEqual(8);expect(g.rows).toBeLessThanOrEqual(4);});
 it('génère un UUID v4 même en aperçu HTTP sans randomUUID',()=>{const old=crypto.randomUUID;Object.defineProperty(crypto,'randomUUID',{configurable:true,value:undefined});try{expect(uid()).toMatch(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/);}finally{Object.defineProperty(crypto,'randomUUID',{configurable:true,value:old});}});
+it.each([[1229,390,36],[973,478,36],[717,734,36],[1229,390,25]])('dimensionne une classe entière dans %i × %i (%i élèves)',(w,h,n)=>{
+ const g=fitGrid(w,h,n);
+ expect(g.columns*g.rows).toBeGreaterThanOrEqual(n);
+ expect(g.tileHeight).toBeGreaterThanOrEqual(82);
+ expect(g.tileWidth).toBeGreaterThanOrEqual(100);
+ expect(g.rows*g.tileHeight+(g.rows-1)*8).toBeCloseTo(h);
+});
