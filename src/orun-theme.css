@@ -591,3 +591,52 @@ body { font-size:var(--read-body); }
 @media(min-width:1200px){ .app.screen-workspace .lesson-heading-controls { z-index:40; } }
 .app.screen-workspace .viewport-grid { grid-template-rows:none!important; }
 @media(min-width:1200px){ .app.screen-workspace .lesson-heading-controls { top:1px; } }
+
+/* Vue d'ensemble : toute la classe, sans navigation par pages. */
+.app.screen-workspace .viewport-grid.overview-pupils { gap:6px; overflow:auto; }
+.app.screen-workspace .viewport-grid.overview-pupils .pupil-row { height:var(--overview-tile-height); min-height:0; padding:4px 7px; gap:7px; border:1px solid #e5ddd1; border-radius:10px; overflow:hidden; }
+.app.screen-workspace .overview-pupils .pupil-row>div:not(.row-actions) { flex:1; min-width:0; }
+.app.screen-workspace .overview-pupils .pupil-row strong { font-size:var(--overview-font); line-height:1.12; overflow-wrap:anywhere; }
+.app.screen-workspace .overview-pupils .pupil-row small { display:none; }
+.app.screen-workspace .overview-pupils .pupil-initial { width:28px; height:28px; flex:0 0 28px; font-size:14px; }
+.app.screen-workspace .overview-pupils .row-actions { flex:0 0 auto; gap:2px; }
+.app.screen-workspace .overview-pupils .row-actions .icon-button { width:30px; height:30px; min-width:30px; min-height:30px; }
+.app.screen-workspace .compact-overview .pupil-initial { display:none; }
+.app.screen-workspace .overview-ranking .viewport-tables { overflow:auto; }
+.app.screen-workspace .overview-ranking .results-table th { height:32px; padding:2px 4px!important; }
+.app.screen-workspace .overview-ranking .results-table .column-sort { min-height:26px; font-size:12px; }
+.app.screen-workspace .overview-ranking .results-table td { height:var(--ranking-row-height); padding:1px 4px!important; font-size:var(--ranking-font)!important; line-height:1.1; }
+.app.screen-workspace .overview-ranking .results-table { overflow:visible!important; }
+.app.screen-workspace .overview-ranking .mobile-ranking-cards { overflow:auto; }
+/* Un même gabarit pour les trois étapes de préparation. */
+:root { --hub-card-width:320px; --hub-card-height:184px; }
+.app.screen-workspace .hub-pages .viewport-grid { gap:10px; }
+.app.screen-workspace .viewport-grid.class-grid .class-shell,
+.app.screen-workspace .viewport-grid.class-grid .class-card,
+.app.screen-workspace .viewport-grid.lesson-grid .lesson-card,
+.app.screen-workspace .device-mode-grid .device-mode-card { width:100%; max-width:none; height:var(--hub-card-height); min-height:var(--hub-card-height); padding:16px; border-radius:16px; box-sizing:border-box; }
+.app.screen-workspace .class-card-top { min-height:32px; margin:0; }
+.app.screen-workspace .class-card .class-symbol { width:34px; height:34px; }
+.app.screen-workspace .class-card .class-symbol svg { width:24px; height:24px; }
+.app.screen-workspace .class-card h2 { font-size:28px; margin:8px 0; line-height:1.1; }
+.app.screen-workspace .class-card-bottom { margin-top:auto; }
+.app.screen-workspace .viewport-grid.class-grid .class-shell { padding:0; }
+.app.screen-workspace .viewport-grid.lesson-grid .lesson-card h2 { font-size:28px; }
+.app.screen-workspace .lesson-card-illustrated .lesson-card-top { flex-basis:26px; margin:0 0 5px; }
+.app.screen-workspace .lesson-card-illustrated .lesson-card-bottom { margin-top:6px; padding-top:6px; }
+.app.screen-workspace .device-mode-grid { display:grid; grid-template-columns:repeat(auto-fill,var(--hub-card-width)); gap:10px; max-width:none; width:100%; }
+.app.screen-workspace .device-mode-card { display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:8px; box-shadow:0 2px 0 #ece5db; }
+.app.screen-workspace .device-mode-icon { width:36px; height:36px; min-height:36px; border-radius:10px; }
+.app.screen-workspace .device-mode-icon svg { width:24px; height:24px; }
+.app.screen-workspace .device-mode-card strong { font-size:28px; line-height:1; }
+.app.screen-workspace .device-mode-card small { font-size:14px; line-height:1.35; }
+.app.screen-workspace .device-actions { justify-content:flex-start; }
+@media(max-width:699px){
+ .app.screen-workspace .viewport-grid.overview-pupils { overflow:auto; }
+ .app.screen-workspace .overview-pupils .row-actions .icon-button { width:40px; height:40px; min-width:40px; min-height:40px; }
+ .app.screen-workspace .overview-pupils .pupil-row strong { font-size:15px; }
+}
+@media(max-width:351px){ .app.screen-workspace .device-mode-grid { grid-template-columns:1fr; } }
+.app.screen-workspace .viewport-grid.overview-pupils .pupil-row strong { display:block; font-size:var(--overview-font); line-height:1.12; letter-spacing:-.01em; margin:0; }
+.app.screen-workspace .viewport-grid.overview-pupils .pupil-row>div:not(.row-actions) { line-height:1.12; }
+@media(max-width:699px){ .app.screen-workspace .viewport-grid.overview-pupils .pupil-row strong { font-size:15px; } }
