@@ -74,7 +74,7 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
   {!runs.length&&!corrections.length&&!manual&&<div className="c-pending-hint">Les chronos A / B ne sont pas encore arrivés. Scannez-les pour faire apparaître les passages, ou indiquez manuellement les cartes réellement effectuées. <button type="button" className="button" onClick={()=>setManual(true)}>Corriger un carton avant transfert</button></div>}
   {runs.length>0&&!manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(true)}>Corriger un carton avant réception de son chrono</button>}
   {manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(false)}>Afficher seulement les passages chronométrés</button>}
-  <ViewportGrid className="c-pupil-board" minWidth={180} rowHeight={140} label="Pages des cartons">{displayed.map(p=>{
+  <ViewportGrid className="c-pupil-board" overview minWidth={180} rowHeight={140} label="Pages des cartons">{displayed.map(p=>{
    const cards=cardsFor(p.id),done=cards.filter(c=>corrected.has(`${p.id}:${c.id}`)).length;
    return <button type="button" key={p.id} className={done===cards.length&&cards.length?'c-student-tile complete':'c-student-tile'} onClick={()=>choose(p.id)}
     aria-label={`Corriger ${labels.get(p.id)}`}>
