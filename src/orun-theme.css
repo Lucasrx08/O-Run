@@ -358,3 +358,71 @@ body { font-size:var(--read-body); }
 }
 
 .app.terrain-mode .chrono-idle,.tablet-kiosk .chrono-idle{color:#766645;}
+
+/* Correction et choix des cartes : même famille visuelle que les tuiles des chronos. */
+.app .results-page .results-filterbar { background:#ebe5de; border-color:#e5ddd1; }
+.app .results-page :is(.results-views,.results-scope,.queue-tabs) button { color:#655e54; background:#fff; border-color:#e5ddd1; }
+.app .results-page :is(.results-views,.results-scope,.queue-tabs) button.active { background:#333; border-color:#333; color:#fff; }
+.app .results-page .primary-results-tabs button { border-color:#e5ddd1; }
+.app .results-page .primary-results-tabs button.active { background:#333; border-color:#333; color:#fff; }
+.app .results-page .results-card-rail { color:#655e54; }
+.app .results-page .route-title :is(h2,span) { color:#514a40; }
+.app .results-page .correction-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr)); gap:12px; align-items:start; justify-content:start; }
+.app .results-page .correction-profile { position:relative; height:180px; min-height:180px; padding:12px 14px; gap:4px; overflow:hidden; border:1px solid #e4ddd2; border-radius:16px; background:#fff; color:#333; box-shadow:0 2px 0 #ece5db; }
+.app .results-page .correction-profile::before { content:''; position:absolute; inset:0 0 auto; height:4px; background:#ffa74b; }
+.app .results-page .correction-profile::after { content:''; position:absolute; inset:0 0 0 auto; width:80px; pointer-events:none; background:linear-gradient(120deg,transparent 40%,#eec95f18 40%,#eec95f18 45%,transparent 45%,transparent 51%,#eec95f18 51%,#eec95f18 56%,transparent 56%); }
+.app .results-page .correction-profile.corrected::before { background:#eec95f; }
+.app .results-page .profile-top { min-height:15px; margin:0; }
+.app .results-page .profile-top .pupil-initial { display:none; }
+.app .results-page .profile-state { color:#696052; font-size:12px; letter-spacing:.04em; }
+.app .results-page .profile-name { color:#333; font-size:28px; line-height:1; min-height:28px; max-height:56px; overflow:hidden; overflow-wrap:normal; }
+.app .results-page .profile-course { margin:0; color:#696052; font-size:13px; }
+.app .results-page .profile-result { display:flex; flex-direction:column; align-items:flex-start; justify-content:start; gap:2px; margin:3px 0; min-width:0; }
+.app .results-page .profile-result>b { display:block; flex:none; white-space:nowrap; overflow-wrap:normal; word-break:normal; font-family:'Outfit Variable',sans-serif; font-size:28px; line-height:1; font-variant-numeric:tabular-nums; color:#a95700; }
+.app .results-page .profile-result>span { color:#696052; font-size:13px; line-height:1.2; }
+.app .results-page .profile-foot { position:relative; z-index:1; flex-wrap:nowrap; padding-top:5px; margin-top:auto; border-color:#ebe5de; font-size:12px; color:#696052; }
+.app .results-page .profile-foot .level { font-size:12px; }
+.app .results-page .podium-card>span { color:#766344; }
+/* Les niveaux sont des données pédagogiques, distinctes des couleurs de navigation. */
+:is(.app,.dialog,.tablet-kiosk) .level-1 { background:#ff647c; color:#242424; border-color:#ff647c; }
+:is(.app,.dialog,.tablet-kiosk) .level-2 { background:#ffad47; color:#242424; border-color:#ffad47; }
+:is(.app,.dialog,.tablet-kiosk) .level-3 { background:#ffe066; color:#242424; border-color:#ffe066; }
+:is(.app,.dialog,.tablet-kiosk) .level-4 { background:#8bce65; color:#242424; border-color:#8bce65; }
+/* Fenêtres de départ et cartes de la leçon : fin du fond topographique historique. */
+:is(.app,.dialog) .map-card { position:relative; isolation:isolate; overflow:hidden; background:#fff!important; border:1px solid #e4ddd2; border-radius:16px; box-shadow:0 2px 0 #ece5db; }
+:is(.app,.dialog) .map-card::before { content:''; position:absolute; inset:0 0 auto; height:4px; width:100%; background:#ffa74b; }
+:is(.app,.dialog) .map-card::after { content:''; position:absolute; inset:0 0 0 auto; width:100px; z-index:-1; pointer-events:none; opacity:1; background:linear-gradient(120deg,transparent 40%,#eec95f18 40%,#eec95f18 45%,transparent 45%,transparent 51%,#eec95f18 51%,#eec95f18 56%,transparent 56%); }
+:is(.app,.dialog) .map-symbol { background:#fff4e4; color:#b96508; border-color:#ffdab1; }
+:is(.app,.dialog) .map-main { background:none; }
+.dialog .course-picker-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr))!important; gap:12px; }
+.dialog .picker-map-card { display:flex; flex-direction:column; align-items:stretch; text-align:left; height:172px!important; min-height:172px; padding:14px!important; }
+.dialog .picker-map-card .map-card-top { min-height:30px; }
+.dialog .picker-map-card .map-symbol { width:30px; height:30px; }
+.dialog .picker-map-card .map-symbol svg { width:20px; height:20px; }
+.dialog .picker-map-card .map-main { display:flex; flex:1; flex-direction:column; justify-content:center; align-items:flex-start; padding:5px 0; gap:2px; }
+.dialog .picker-map-card .map-number { display:none; }
+.dialog .picker-map-title { font-family:'Barlow Sport',sans-serif; font-style:italic; font-weight:800; text-transform:uppercase; font-size:30px; line-height:1; color:#333; }
+.dialog .picker-map-count { color:#696052; font-size:14px; }
+.dialog .picker-map-action { display:flex; align-items:center; justify-content:space-between; gap:8px; border-top:1px solid #ebe5de; padding-top:8px; color:#655e54; font-size:14px; }
+.dialog::backdrop { background:#33333370; }
+@media(max-width:699px){
+ .app .results-page .correction-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+ .app .results-page .correction-profile { height:180px; min-height:180px; padding:11px 10px; }
+ .app .results-page .profile-name { font-size:26px; }
+ .app .results-page .profile-result>b { font-size:26px; }
+ .app .results-page .profile-foot>span:first-child { font-size:12px; }
+ .dialog .course-picker-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+ .dialog .picker-map-card { height:164px!important; min-height:164px; padding:12px!important; }
+ .dialog .picker-map-title { font-size:28px; }
+ .dialog .picker-map-action { font-size:13px; }
+}
+@media(max-width:350px){ .app .results-page .correction-grid { grid-template-columns:1fr; } }
+.dialog:has(.picker-map-card)[open] { display:flex; flex-direction:column; width:min(1050px,calc(100vw - 28px)); height:auto; min-height:0; max-height:calc(100dvh - 24px); margin:auto; padding:22px; overflow:auto; border-radius:22px; }
+.dialog:has(.picker-map-card) .course-picker-grid { flex:0 0 auto; grid-auto-rows:auto; align-content:start; padding:0; margin-top:12px; overflow:visible; }
+.dialog:has(.picker-map-card) .dialog-head { flex:0 0 auto; margin-bottom:8px; }
+.dialog:has(.picker-map-card) .picker-intro { flex:0 0 auto; color:#696052; font-size:14px; }
+@media(max-width:699px){ .dialog:has(.picker-map-card)[open]{padding:14px; max-height:calc(100dvh - 16px);} }
+.dialog:has(.picker-map-card)[open] { height:fit-content; bottom:auto; top:50%; transform:translateY(-50%); }
+.dialog .picker-map-card .map-card-top { display:none; }
+.dialog .picker-map-card .map-main { min-height:0; }
+.dialog .picker-map-action { flex:0 0 auto; line-height:1.25; }
