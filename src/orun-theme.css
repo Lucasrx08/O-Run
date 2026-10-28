@@ -660,3 +660,8 @@ body { font-size:var(--read-body); }
 .app.screen-workspace .viewport-grid.correction-grid.compact-overview .profile-name { margin:0; }
 .app.screen-workspace .viewport-grid.correction-grid.compact-overview .profile-result { flex-direction:row; align-items:center; gap:7px; }
 .app.screen-workspace .viewport-grid.correction-grid.compact-overview .profile-result>span { line-height:1.1; }
+/* Le résultat reste sur une ligne aussi dans les tuiles de hauteur intermédiaire. */
+.app.screen-workspace .viewport-grid.correction-grid.overview-pupils .correction-profile { padding:5px 9px; }
+.app.screen-workspace .viewport-grid.correction-grid.overview-pupils .profile-name { margin:0; }
+.app.screen-workspace .viewport-grid.correction-grid.overview-pupils .profile-result { flex-direction:row; align-items:center; gap:7px; }
+.app.screen-workspace .viewport-grid.correction-grid.overview-pupils .profile-result>span { font-size:11px; line-height:1.1; }
