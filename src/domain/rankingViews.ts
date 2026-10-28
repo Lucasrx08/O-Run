@@ -15,7 +15,7 @@ export function rankPupils(runs:Run[],metric:RankingMetric='success'):PupilRanki
 }
 export const correctionQueue=(runs:Run[])=>runs.filter(r=>r.end!==undefined).slice().sort((a,b)=>Number(a.errors!==null)-Number(b.errors!==null)||(a.errors===null?(a.end!-b.end!):(b.end!-a.end!))||a.id.localeCompare(b.id));
 
-export const idoceoColors={1:'#ff647c',2:'#ffad47',3:'#ffe066',4:'#8bce65'} as const;
+export const idoceoColors={1:'#fb7c92',2:'#f6c48c',3:'#fee5a6',4:'#c7e0b9'} as const;
 export const courseCountLevel=(count:number):1|2|3|4=>count>=4?4:count===3?3:count===2?2:1;
 export const falseControlsLevel=(errors:number):1|2|3|4=>errors===0?4:errors<=2?3:errors<=4?2:1;
 /** One card per pupil and lesson. A repeat keeps the best corrected attempt. */

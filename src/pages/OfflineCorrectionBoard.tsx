@@ -1,3 +1,4 @@
+import {ViewportGrid} from '../components/ViewportPages';
 import {useState,type CSSProperties} from 'react';
 import {Check,CheckCircle2,Clock3,Map,Search,Users,Pencil} from 'lucide-react';
 import {useStore} from '../store';
@@ -73,7 +74,7 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
   {!runs.length&&!corrections.length&&!manual&&<div className="c-pending-hint">Les chronos A / B ne sont pas encore arrivés. Scannez-les pour faire apparaître les passages, ou indiquez manuellement les cartes réellement effectuées. <button type="button" className="button" onClick={()=>setManual(true)}>Corriger un carton avant transfert</button></div>}
   {runs.length>0&&!manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(true)}>Corriger un carton avant réception de son chrono</button>}
   {manual&&<button type="button" className="text-button c-manual-toggle" onClick={()=>setManual(false)}>Afficher seulement les passages chronométrés</button>}
-  <div className="c-pupil-board">{displayed.map(p=>{
+  <ViewportGrid className="c-pupil-board" minWidth={180} rowHeight={140} label="Pages des cartons">{displayed.map(p=>{
    const cards=cardsFor(p.id),done=cards.filter(c=>corrected.has(`${p.id}:${c.id}`)).length;
    return <button type="button" key={p.id} className={done===cards.length&&cards.length?'c-student-tile complete':'c-student-tile'} onClick={()=>choose(p.id)}
     aria-label={`Corriger ${labels.get(p.id)}`}>
@@ -81,7 +82,7 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
     <strong>{labels.get(p.id)}</strong>
     <span className="c-student-progress">{cards.length?`${done} / ${cards.length} carte(s)`:'Choisir les cartes'} <span><Map size={14}/></span></span>
    </button>;
-  })}</div>
+  })}</ViewportGrid>
   {chosen&&<Dialog wide title={`Cartons · ${labels.get(chosen.id)}`} onClose={()=>choose('')}>
    <div className="c-student-sheet"><p>Indiquez les <b>balises fausses</b> uniquement sur les cartes récupérées. Vous pouvez corriger plusieurs cartes avant d’enregistrer.</p>
     {manual&&<div className="c-attempt-picker"><span>Cartes réellement effectuées</span><div>{courses.map(course=>{const received=runs.some(r=>r.studentId===chosen.id&&r.courseId===course.id)||corrections.some(c=>c.studentId===chosen.id&&c.courseId===course.id);const picked=cardsFor(chosen.id).some(c=>c.id===course.id);return <button type="button" key={course.id} aria-pressed={picked} disabled={received} className={picked?'active':''} onClick={()=>setManualSelections(old=>{const current=old[chosen.id]||[];return {...old,[chosen.id]:current.includes(course.id)?current.filter(id=>id!==course.id):[...current,course.id]};})}><span style={{background:course.color}}/>{course.name}{picked?' ✓':''}</button>;})}</div></div>}

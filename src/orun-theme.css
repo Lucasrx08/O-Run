@@ -384,10 +384,10 @@ body { font-size:var(--read-body); }
 .app .results-page .profile-foot .level { font-size:12px; }
 .app .results-page .podium-card>span { color:#766344; }
 /* Les niveaux sont des données pédagogiques, distinctes des couleurs de navigation. */
-:is(.app,.dialog,.tablet-kiosk) .level-1 { background:#ff647c; color:#242424; border-color:#ff647c; }
-:is(.app,.dialog,.tablet-kiosk) .level-2 { background:#ffad47; color:#242424; border-color:#ffad47; }
-:is(.app,.dialog,.tablet-kiosk) .level-3 { background:#ffe066; color:#242424; border-color:#ffe066; }
-:is(.app,.dialog,.tablet-kiosk) .level-4 { background:#8bce65; color:#242424; border-color:#8bce65; }
+:is(.app,.dialog,.tablet-kiosk) .level-1 { background:#fb7c92; color:#242424; border-color:#fb7c92; }
+:is(.app,.dialog,.tablet-kiosk) .level-2 { background:#f6c48c; color:#242424; border-color:#f6c48c; }
+:is(.app,.dialog,.tablet-kiosk) .level-3 { background:#fee5a6; color:#242424; border-color:#fee5a6; }
+:is(.app,.dialog,.tablet-kiosk) .level-4 { background:#c7e0b9; color:#242424; border-color:#c7e0b9; }
 /* Fenêtres de départ et cartes de la leçon : fin du fond topographique historique. */
 :is(.app,.dialog) .map-card { position:relative; isolation:isolate; overflow:hidden; background:#fff!important; border:1px solid #e4ddd2; border-radius:16px; box-shadow:0 2px 0 #ece5db; }
 :is(.app,.dialog) .map-card::before { content:''; position:absolute; inset:0 0 auto; height:4px; width:100%; background:#ffa74b; }
@@ -426,3 +426,168 @@ body { font-size:var(--read-body); }
 .dialog .picker-map-card .map-card-top { display:none; }
 .dialog .picker-map-card .map-main { min-height:0; }
 .dialog .picker-map-action { flex:0 0 auto; line-height:1.25; }
+
+/* L'écran de travail réserve la hauteur aux données ; les listes se parcourent par pages. */
+.app.screen-workspace { height:100dvh; min-height:0; overflow:hidden; }
+.app.screen-workspace .app-header { height:54px; min-height:54px; flex:0 0 54px; }
+.app.screen-workspace .header-inner { max-width:none; min-height:54px; padding:0 16px; gap:18px; }
+.app.screen-workspace .brand img { width:32px; height:32px; }
+.app.screen-workspace .brand strong { font-size:25px; }
+.app.screen-workspace .brand small { display:none; }
+.app.screen-workspace .header-actions { margin-left:auto; gap:8px; }
+.app.screen-workspace .header-actions .demo-tag { display:none; }
+.app .header-context { display:flex; align-items:center; gap:8px; min-width:0; }
+.app .header-context>button:not(.icon-button) { border:0; background:none; font-size:15px; font-weight:750; padding:4px; max-width:230px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-height:44px; }
+.app .header-context h1 { font-family:'Barlow Sport',sans-serif; font-size:27px; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:0; }
+.app .header-context time { font-size:13px; white-space:nowrap; color:#696052; }
+.app.screen-workspace .app-footer { display:none; }
+.app.screen-workspace .main-content { flex:1; min-height:0; overflow:hidden; width:100%; max-width:none; padding:8px 16px; display:flex; flex-direction:column; gap:6px; }
+.app.screen-workspace .main-content>.page-enter { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+.app.screen-workspace .main-content>.breadcrumbs { flex:0 0 30px; margin:0; min-height:30px; }
+.app.screen-workspace .lesson-heading-stable { flex:0 0 auto; min-height:44px; margin:0; padding:0; justify-content:flex-start; }
+.app.screen-workspace .lesson-heading-controls { width:100%; justify-content:flex-start; gap:8px; }
+.app.screen-workspace .lesson-tabs { margin-left:0; }
+.app.screen-workspace .lesson-heading-controls button { min-height:42px; padding:7px 13px; }
+.app.screen-workspace .lesson-heading-controls .lesson-mode-shortcut { min-height:42px; }
+.app.screen-workspace .page-heading:not(.lesson-heading) { margin:0 0 10px; min-height:0; padding:0; }
+.app.screen-workspace .page-heading:not(.lesson-heading) h1 { font-size:32px; }
+.app.screen-workspace .page-heading .page-intro { margin-top:4px; }
+.app.screen-workspace .page-heading .overline { display:none; }
+.app.screen-workspace .section-tabs:not(.lesson-tabs) { margin-bottom:6px; flex:0 0 auto; align-self:flex-start; }
+.app.screen-workspace .list-toolbar { flex:0 0 auto; margin:0 0 6px; gap:8px; }
+.app.screen-workspace .results-page { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:6px; }
+.app.screen-workspace .results-commandbar,.app.screen-workspace .results-filterbar { flex:0 0 auto; min-height:44px; margin:0; padding:3px; gap:6px; }
+.app.screen-workspace .results-commandbar .list-toolbar { margin:0; }
+.app.screen-workspace .results-commandbar .button,.app.screen-workspace .results-filterbar button,.app.screen-workspace .primary-results-tabs button { min-height:40px; padding:7px 11px; }
+.app.screen-workspace .results-card-rail { flex:0 0 auto; margin:0; padding:0; gap:6px; }
+.app.screen-workspace .results-card-rail button { min-height:38px; padding:6px 11px; }
+.app.screen-workspace .route-correction,.app.screen-workspace .route-ranking,.app.screen-workspace .student-ranking { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; margin:0; gap:6px; }
+.app.screen-workspace .route-title { flex:0 0 auto; min-height:24px; margin:0; padding:0; justify-content:flex-start; gap:12px; }
+.app.screen-workspace .route-title h2 { font-size:20px; }
+.app.screen-workspace .route-title>span { font-size:13px; }
+.viewport-pages,.viewport-ranking { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; gap:6px; }
+.app.screen-workspace .viewport-grid { display:grid; flex:1; min-height:0; width:100%; margin:0; padding:0; gap:10px; align-content:start; justify-content:start; overflow:hidden; }
+.viewport-pager { flex:0 0 44px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.viewport-pager .button { min-height:40px; padding:6px 12px; font-size:14px; }
+.viewport-pager>span { display:flex; align-items:center; gap:12px; font-size:14px; font-variant-numeric:tabular-nums; }
+.viewport-pager small { font-size:12px; color:#696052; }
+.app.screen-workspace .results-page .correction-profile { min-height:0; height:164px; padding:10px 12px; gap:3px; }
+.app.screen-workspace .results-page .profile-name { font-size:27px; max-height:54px; }
+.app.screen-workspace .results-page .uncorrected .profile-result>span { display:none; }
+.app.screen-workspace .results-page .profile-result { margin:2px 0; }
+.app.screen-workspace .pupil-correction { padding:10px; height:180px; overflow:auto; }
+.app.screen-workspace .viewport-tables { flex:1; min-height:0; display:grid; gap:12px; align-content:start; overflow:hidden; }
+.app.screen-workspace .viewport-ranking .results-table { flex:none; overflow:hidden!important; min-height:0; margin:0; border-radius:10px; }
+.app.screen-workspace .viewport-ranking table { width:100%; min-width:0!important; table-layout:fixed!important; }
+.app.screen-workspace .viewport-ranking .results-table th { height:42px; padding:4px!important; font-size:13px!important; line-height:1.15; }
+.app.screen-workspace .viewport-ranking .results-table td { height:32px; padding:4px!important; font-size:14px!important; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.app.screen-workspace .viewport-ranking .results-table .column-sort { min-height:30px; font-size:13px; }
+.app.screen-workspace .viewport-ranking th:nth-child(1) { width:7%; }
+.app.screen-workspace .viewport-ranking th:nth-child(2) { width:25%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(3) { width:10%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(4) { width:18%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(5) { width:16%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(6) { width:15%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(7) { width:9%; }
+.app.screen-workspace .pending-summary { flex:0 0 auto; margin:0; padding:0; font-size:12px; line-height:1.25; }
+.app.screen-workspace .podium-grid { flex:0 0 auto; margin:0; gap:8px; }
+.app.screen-workspace .podium-card { padding:6px 10px; min-height:0; display:grid; grid-template-columns:auto 1fr; gap:2px 8px; }
+.app.screen-workspace .podium-card strong { font-size:21px; }
+.app.screen-workspace .podium-card p { grid-column:1/-1; font-size:12px; margin:0; }
+.app.screen-workspace .viewport-grid.class-grid .class-card { height:200px; min-height:0; padding:18px; }
+.app.screen-workspace .viewport-grid.lesson-grid .lesson-card { height:180px; min-height:0; padding:16px; }
+.app.screen-workspace .viewport-grid .lesson-card h2 { font-size:28px; }
+.app.screen-workspace .viewport-grid.pupil-list .pupil-row { height:74px; min-height:0; padding:6px 10px; }
+.app.screen-workspace .viewport-grid.pupil-list .pupil-row strong { font-size:16px; }
+.app.screen-workspace .lesson-devices { flex:1; width:100%; margin:0; padding:8px 0; }
+@media(max-width:699px){
+ .app.screen-workspace .app-header:has(.header-context) { flex-basis:94px; min-height:94px; height:94px; }
+ .app.screen-workspace .header-inner:has(.header-context) { display:grid; grid-template-columns:1fr auto; grid-template-rows:42px 44px; gap:0; padding:0 12px; }
+ .app.screen-workspace .header-context { grid-column:1/-1; grid-row:2; gap:5px; }
+ .app.screen-workspace .header-context>button:not(.icon-button) { font-size:14px; max-width:48%; }
+ .app.screen-workspace .header-context h1 { font-size:25px; }
+ .app.screen-workspace .header-context time { display:none; }
+ .app.screen-workspace .header-actions { grid-row:1; grid-column:2; }
+ .app.screen-workspace .main-content { padding:5px 8px; gap:5px; }
+ .app.screen-workspace .lesson-heading-controls { display:flex; flex-wrap:nowrap; gap:5px; }
+ .app.screen-workspace .lesson-heading-controls .lesson-mode-shortcut { padding:5px 7px; font-size:13px; }
+ .app.screen-workspace .lesson-heading-controls .lesson-mode-shortcut svg { display:none; }
+ .app.screen-workspace .lesson-heading-controls .lesson-tabs { flex:1; display:grid; grid-template-columns:.8fr 1.45fr .9fr; min-width:0; }
+ .app.screen-workspace .lesson-heading-controls .lesson-tabs button { font-size:13px; padding:5px 4px; line-height:1.1; }
+ .app.screen-workspace .lesson-tabs button>span { display:none; }
+ .app.screen-workspace .results-commandbar { display:flex; flex-wrap:wrap; }
+ .app.screen-workspace .results-commandbar>.list-toolbar { flex:1; }
+ .app.screen-workspace .results-commandbar .head-actions { flex-wrap:nowrap; gap:4px; }
+ .app.screen-workspace .results-commandbar .history-button { width:40px; min-width:40px; font-size:0; padding:6px; }
+ .app.screen-workspace .results-commandbar .button { font-size:13px; padding:5px 8px; }
+ .app.screen-workspace .results-commandbar .history-button { font-size:0; }
+ .app.screen-workspace .results-filterbar { flex-wrap:wrap; }
+ .app.screen-workspace .results-filterbar button { min-height:38px; font-size:13px; padding:5px 9px; }
+ .app.screen-workspace .viewport-pager small { display:none; }
+ .app.screen-workspace .podium-card { display:block; padding:5px; }
+ .app.screen-workspace .podium-card strong { display:block; font-size:18px; }
+ .app.screen-workspace .podium-card p { display:none; }
+ .app.screen-workspace .viewport-tables { overflow-x:auto; }
+ .app.screen-workspace .viewport-ranking table { min-width:640px!important; }
+ .app.screen-workspace .viewport-ranking .results-table { overflow-x:auto!important; }
+ .app.screen-workspace .run-board { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+ .app.screen-workspace .run-grid { flex:1; min-height:0; overflow:hidden!important; }
+ .app.screen-workspace .lesson-cards-page { flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+ .app.screen-workspace .lesson-cards-page .map-grid { flex:1; min-height:0; overflow:auto; margin:0; }
+ .app.screen-workspace .lesson-ready { flex:0 0 auto; margin:5px 0 0; padding:6px 8px; }
+ .app.screen-workspace .lesson-ready .button { min-height:40px; padding:5px 10px; }
+ .app.screen-workspace .lesson-cards-page .content-heading { margin:0; min-height:40px; }
+}
+.app.screen-workspace .route-correction>.route-title { display:none; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(3) { width:14%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(6) { width:12%; }
+.app.screen-workspace .viewport-ranking table[data-columns="7"] th:nth-child(7) { width:8%; }
+.mobile-ranking-cards { flex:1; min-height:0; display:grid; grid-auto-rows:148px; gap:8px; align-content:start; overflow:hidden; }
+.mobile-ranking-card { border:1px solid #e5ddd1; border-radius:12px; background:#fff; padding:8px 10px; overflow:hidden; }
+.mobile-ranking-card header { display:flex; align-items:center; gap:10px; height:28px; }
+.mobile-ranking-card header>span { font-size:16px; font-weight:800; }
+.mobile-ranking-card header strong { font-family:'Barlow Sport',sans-serif; font-size:25px; }
+.mobile-ranking-card dl { margin:4px 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; }
+.mobile-ranking-card dl>div { border-radius:5px; padding:3px 5px; background:#f7f4ef; min-width:0; }
+.mobile-ranking-card dt { font-size:12px; color:#514a40; line-height:1.1; }
+.mobile-ranking-card dd { margin:2px 0 0; font-size:15px; font-weight:750; white-space:nowrap; line-height:1.1; color:#333; }
+.app.screen-workspace .viewport-grid.map-grid .map-card { height:164px; min-height:0; padding:12px; }
+.app.screen-workspace .viewport-grid.map-grid .map-main { min-height:0; }
+.app.screen-workspace .viewport-grid.map-grid .map-main h3 { font-size:28px; }
+.app.screen-workspace .c-correction-new { display:flex; flex-direction:column; flex:1; min-height:0; overflow:hidden; }
+.app.screen-workspace .viewport-grid.c-pupil-board .c-student-tile { height:140px; min-height:0; }
+@media(max-height:600px) and (max-width:699px){
+ .app.screen-workspace .app-header:has(.header-context){height:54px;min-height:54px;flex-basis:54px;}
+ .app.screen-workspace .header-inner:has(.header-context){display:flex;}
+ .app.screen-workspace .header-inner:has(.header-context) .brand{display:none;}
+ .app.screen-workspace .header-context{flex:1;}
+ .app.screen-workspace .podium-grid{display:none;}
+}
+.mobile-ranking-cards { grid-auto-rows:126px; }
+@media(max-width:699px){
+ .app.screen-workspace .results-commandbar { flex-wrap:nowrap; }
+ .app.screen-workspace .results-commandbar .primary-results-tabs { flex:1; min-width:0; display:flex; }
+ .app.screen-workspace .results-commandbar .primary-results-tabs button { flex:1; min-width:0; padding:6px; font-size:13px; }
+ .app.screen-workspace .results-commandbar>.list-toolbar { flex:0 0 auto; width:auto; }
+ .app.screen-workspace .results-commandbar .head-actions .button { width:40px; min-width:40px; height:40px; padding:7px; font-size:0; gap:0; justify-content:center; }
+ .app.screen-workspace .podium-grid { display:none; }
+}
+@media(max-width:699px){
+ .app.screen-workspace .results-commandbar { flex-direction:row; align-items:center; }
+ .app.screen-workspace .results-commandbar .primary-results-tabs { width:auto; }
+ .app.screen-workspace .results-commandbar>.list-toolbar { min-width:0; }
+}
+.app.screen-workspace .viewport-ranking .results-table th { height:36px; }
+.app.screen-workspace .viewport-ranking .results-table td { height:30px; }
+@media(min-width:1200px){
+ .app.screen-workspace .lesson-heading-stable { min-height:0; height:0; flex-basis:0; margin:0; }
+ .app.screen-workspace .lesson-heading-controls { position:fixed; top:6px; right:70px; width:auto; z-index:3; }
+ .app.screen-workspace .header-context { max-width:calc(100vw - 700px); }
+ .app.screen-workspace .header-context h1 { max-width:170px; min-width:0; }
+ .app.screen-workspace .header-context>button:not(.icon-button) { max-width:150px; min-width:0; }
+}
+@media(min-width:1200px) and (max-width:1390px){ .app.screen-workspace .header-context time { display:none; } }
+@media(min-width:700px) and (max-height:700px){ .app.screen-workspace .podium-grid { display:none; } }
+@media(min-width:1200px){ .app.screen-workspace .lesson-heading-controls { z-index:40; } }
+.app.screen-workspace .viewport-grid { grid-template-rows:none!important; }
+@media(min-width:1200px){ .app.screen-workspace .lesson-heading-controls { top:1px; } }
