@@ -22,3 +22,7 @@ Le détecteur de grille a repéré automatiquement les trois cartons réels four
 La lecture des trous reste expérimentale : éclairage, texture du papier, trous partiels, annotation et poinçons retournés peuvent nécessiter une vérification. Le scan ne déclare jamais automatiquement une faute. Les tests couvrent les transformations géométriques, absences et ajouts de trous, motifs différents, annotations rouges, grille à six colonnes et rejet de cadre incomplet.
 
 Les photos originales d'élèves et les fichiers temporaires ne sont pas publiés. L'aperçu montre uniquement les cases de poinçonnage, sans prénom.
+
+## Correction de l’éclairage chaud
+
+Le premier filtre couleur confondait la teinte chaude du papier avec une annotation rouge. Régression reproduite sur les six vignettes de la capture iPad IMG_0089 : aucun point auparavant. Après séparation de l’encre rouge par son contraste rouge/vert plutôt que la seule différence rouge/bleu, quatre cases sont reconnues ; les deux autres restent à vérifier. Il s’agit d’un essai sur la capture d’écran, pas d’une nouvelle mesure sur le fichier photo original. Un test synthétique sur papier chaud protège cette correction.
