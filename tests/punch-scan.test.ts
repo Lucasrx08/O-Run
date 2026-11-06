@@ -1,0 +1,10 @@
+import {describe,it,expect} from 'vitest';
+import {shapeDistance,classifyPunch,punchReferences,detectHoles,rectify} from '../src/domain/punchScan';
+describe('punch scan conservative proposals',()=>{
+ it('recognizes a real reference after rotation, translation and scale',()=>{const p=punchReferences[1][0],a=.73;const transformed=p.map(([x,y])=>[2*(x*Math.cos(a)-y*Math.sin(a))+200,2*(x*Math.sin(a)+y*Math.cos(a))+50] as [number,number]);expect(shapeDistance(p,transformed)).toBeLessThan(.001);expect(classifyPunch(transformed,p).status).toBe('match');});
+ it('requires review for missing, extra or absent holes',()=>{const p=punchReferences[1][0];expect(classifyPunch([],p).status).toBe('review');expect(classifyPunch(p.slice(1),p).status).toBe('review');expect(classifyPunch([...p,[0,0]],p).status).toBe('review');});
+ it('does not accept a different pattern with the same hole count',()=>{expect(classifyPunch(punchReferences[0][0],punchReferences[1][0]).status).toBe('review');});
+ it('recognizes an observed punch despite irregular hole positions',()=>{expect(classifyPunch([[107.04,60],[82.93,62.13],[96.67,69.83],[98.8,86.55],[111,93.65],[85.64,96]],punchReferences[1][0]).status).toBe('match');expect(classifyPunch([[91.42,60.67],[88.29,92]],punchReferences[1][3]).status).toBe('review');});
+ it('extracts dark holes and excludes red annotations',()=>{const w=150,h=150,data=new Uint8ClampedArray(w*h*4).fill(255);for(const [x,y] of [[30,30],[55,55]])for(let yy=y;yy<y+3;yy++)for(let xx=x;xx<x+3;xx++){const k=(yy*w+xx)*4;data[k]=20;data[k+1]=20;data[k+2]=20;}for(let y=30;y<34;y++)for(let x=110;x<114;x++){const k=(y*w+x)*4;data[k]=220;data[k+1]=20;data[k+2]=20;}expect(detectHoles(data,w,h)).toHaveLength(2);});
+ it('rectifies an identity rectangle and rejects degenerate corners',()=>{const data=new Uint8ClampedArray(10*10*4).fill(180);const result=rectify({data,width:10,height:10,colorSpace:'srgb'},[[0,0],[9,0],[9,9],[0,9]],10,10);expect(result.data).toEqual(data);expect(()=>rectify({data,width:10,height:10,colorSpace:'srgb'},[[0,0],[0,0],[0,0],[0,0]])).toThrow();});
+});
