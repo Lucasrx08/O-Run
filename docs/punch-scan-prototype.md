@@ -1,24 +1,24 @@
-# Scan assisté des cartons — prototype du 6 novembre 2026
+# Scan automatique des cartons — prototype du 6 novembre 2026
 
 Accès : Résultats → Correction → ouvrir un élève → Scanner le carton. Également disponible pour chaque carte au poste C.
 
-Périmètre : cartons de six cases, modèles de la fiche de correction fournie par Lucas RIGAUX, cartes 1 à 6. Choisir explicitement le bon modèle ; les cartes personnalisées ne sont pas reconnues automatiquement.
+Cartons de six cases, modèles de la fiche de correction fournie par Lucas RIGAUX, cartes 1 à 6. La carte est préselectionnée à partir du nom du parcours lorsqu'il contient « Carte 1 » à « Carte 6 ». Le modèle reste visible et modifiable avant de démarrer ; aucune lecture du prénom ou numéro manuscrit n'est réalisée.
 
-1. Prendre ou choisir une photo nette. Sur ordinateur : choisir un fichier ; sur téléphone/tablette : la capture dépend du sélecteur de fichiers du navigateur.
-2. Choisir la carte de référence.
-3. Placer quatre repères sur la rangée des poinçons, sous les numéros, dans l'ordre haut gauche, haut droit, bas droit, bas gauche.
-4. Comparer les six cases. La photo et le modèle sont affichés côte à côte.
-5. Confirmer chaque case : Bon ou Faux / absent. Aucun état proposé ne vaut validation automatique.
-6. Reporter le total puis enregistrer normalement la correction. Le chrono n'est pas modifié par le scan.
+1. Démarrer le scan automatique et autoriser la caméra.
+2. Présenter le carton entier, à plat et bien éclairé. La grille est détectée automatiquement ; après trois observations stables, une image est capturée et les six cases sont extraites.
+3. Les poinçons reconnus sont préremplis « Bon ». Seules les cases incertaines demandent une décision « Bon » ou « Faux / absent ». Les décisions automatiques restent modifiables.
+4. Reporter le total puis enregistrer normalement le résultat. Aucun résultat ni chrono n'est enregistré automatiquement.
 
-Analyse locale uniquement : aucun transfert réseau, aucun stockage de photo dans la base ou les exports. La photo est libérée à la fermeture du composant. La photo prise via le système peut rester dans la photothèque selon le navigateur.
+Une photo peut aussi être choisie : cadrage et analyse démarrent automatiquement. Si la grille n'est pas détectée, une nouvelle photo ou le cadrage manuel restent possibles. Les cartes personnalisées, cartons incomplets, rotations importantes et grilles masquées ne sont pas garantis.
 
-## Limites observées
+## Confidentialité et caméra
 
-Essai initial sur les trois photos fournies, avec cadrage préparé et rectification de perspective : 7 propositions de correspondance sur 18 cases ; 11 cases à vérifier. Il ne s'agit pas d'un taux de précision ni d'une validation terrain. Aucune case n'est automatiquement déclarée fausse. La version demande encore la confirmation des six cases, y compris les correspondances proposées.
+Analyse locale uniquement : aucun transfert réseau ni stockage des photos dans la base ou les exports. La caméra s'arrête après capture, à l'arrêt demandé et à la fermeture du composant. La capture nécessite HTTPS, une caméra et une autorisation du navigateur. Une photo choisie via le système peut rester dans la photothèque selon le navigateur.
 
-Détection sensible à l'éclairage, à la texture du papier, aux trous partiellement ouverts et aux annotations. Pas de reconnaissance de prénom ni de numéro manuscrit. Pas encore de cadrage automatique, de contrôle du flou ou de calibration par de nouvelles empreintes réelles. La comparaison est invariante en position, taille et rotation ; les motifs retournés ou partiellement visibles restent à vérifier.
+## Vérification
 
-Les tests vérifient les transformations géométriques, motifs différents, trous absents/supplémentaires, séparation des annotations rouges et les cas géométriques dégénérés. La suite complète (168 tests) passe. Contrôle navigateur limité au chargement de l'interface ; le sélecteur de fichier du navigateur de test a bloqué, donc la capture iPad/iPhone réelle reste à vérifier.
+Le détecteur de grille a repéré automatiquement les trois cartons réels fournis. Le parcours caméra → stabilité → capture → découpe → propositions → vérification des seules cases incertaines → report a été vérifié dans Chrome avec un flux caméra simulé alimenté par l'une des photos réelles. Sur ce flux : trois cases reconnues, trois à vérifier. Ce test ne remplace pas un essai caméra physique iPad/iPhone en extérieur.
 
-Les photos d'élèves et les fichiers temporaires de traitement ne sont pas publiés dans le dépôt.
+La lecture des trous reste expérimentale : éclairage, texture du papier, trous partiels, annotation et poinçons retournés peuvent nécessiter une vérification. Le scan ne déclare jamais automatiquement une faute. Les tests couvrent les transformations géométriques, absences et ajouts de trous, motifs différents, annotations rouges, grille à six colonnes et rejet de cadre incomplet.
+
+Les photos originales d'élèves et les fichiers temporaires ne sont pas publiés. L'aperçu montre uniquement les cases de poinçonnage, sans prénom.

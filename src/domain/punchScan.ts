@@ -18,9 +18,30 @@ export function detectHoles(data:Uint8ClampedArray,width:number,height:number):P
  return merged.filter(p=>merged.some(q=>q!==p&&distance(p,q)<48));
 }
 /** Project the four selected corners onto a flat six-cell strip. */
-export function rectify(source:ImageData,corners:Point[],width=900,height=150){
+export function rectify(source:{data:Uint8ClampedArray;width:number;height:number;colorSpace?:string},corners:Point[],width=900,height=150){
  const targets:Point[]=[[0,0],[width-1,0],[width-1,height-1],[0,height-1]],a:number[][]=[];
  targets.forEach(([x,y],i)=>{const [u,v]=corners[i];a.push([x,y,1,0,0,0,-u*x,-u*y,u],[0,0,0,x,y,1,-v*x,-v*y,v]);});
  for(let i=0;i<8;i++){let pivot=i;for(let j=i+1;j<8;j++)if(Math.abs(a[j][i])>Math.abs(a[pivot][i]))pivot=j;[a[i],a[pivot]]=[a[pivot],a[i]];const d=a[i][i];if(Math.abs(d)<1e-8)throw Error('Repères trop proches : recommencez le cadrage.');for(let k=i;k<9;k++)a[i][k]/=d;for(let j=0;j<8;j++)if(j!==i){const f=a[j][i];for(let k=i;k<9;k++)a[j][k]-=f*a[i][k];}}
  const m=a.map(row=>row[8]),out=new Uint8ClampedArray(width*height*4);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const den=m[6]*x+m[7]*y+1,u=Math.round((m[0]*x+m[1]*y+m[2])/den),v=Math.round((m[3]*x+m[4]*y+m[5])/den),to=(y*width+x)*4;if(u<0||v<0||u>=source.width||v>=source.height){out.fill(255,to,to+4);continue;}const from=(v*source.width+u)*4;out.set(source.data.subarray(from,from+4),to);}return {data:out,width,height};
+}
+/** Locate the connected printed 6-column grid; reject incomplete or ambiguous frames. */
+export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{
+ const mask=new Uint8Array(width*height);for(let i=0;i<mask.length;i++){const k=i*4;if(Math.max(data[k],data[k+1],data[k+2])<105)mask[i]=1;}
+ let best:Point[]|null=null,bestScore=0;
+ for(let start=0;start<mask.length;start++)if(mask[start]){
+  const stack=[start];mask[start]=0;let n=0,minx=width,maxx=0,miny=height,maxy=0;let tl:Point=[0,0],tr:Point=[0,0],br:Point=[0,0],bl:Point=[0,0],minSum=Infinity,maxSum=-Infinity,minDiff=Infinity,maxDiff=-Infinity;
+  while(stack.length){const i=stack.pop()!,x=i%width,y=Math.floor(i/width);n++;minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y);if(x+y<minSum){minSum=x+y;tl=[x,y];}if(x+y>maxSum){maxSum=x+y;br=[x,y];}if(x-y>maxDiff){maxDiff=x-y;tr=[x,y];}if(x-y<minDiff){minDiff=x-y;bl=[x,y];}for(const j of [i-1,i+1,i-width,i+width])if(j>=0&&j<mask.length&&mask[j]){mask[j]=0;stack.push(j);}}
+  const w=maxx-minx,h=maxy-miny;if(w<width*.25||h<30||w/h<2.3||w/h>7||n/(w*h)<.025||n/(w*h)>.35)continue;
+  // Seven vertical strokes must cross the lower (punch) part, not just a photo frame.
+  const corners=[tl,tr,br,bl],flat=rectify({data,width,height,colorSpace:'srgb'},corners,600,150),columns:number[]=[];
+  for(let x=0;x<600;x++){let hits=0;for(let y=60;y<140;y++){const k=(y*600+x)*4;if(Math.max(flat.data[k],flat.data[k+1],flat.data[k+2])<110)hits++;}if(hits>53)columns.push(x);}
+  const groups:number[][]=[];for(const x of columns){if(!groups.length||x-groups[groups.length-1].at(-1)!>8)groups.push([x]);else groups.at(-1)!.push(x);}const centers=groups.map(g=>g.reduce((a,b)=>a+b,0)/g.length);
+  if(centers.length!==7||centers.some((x,i)=>i>0&&Math.abs(x-centers[i-1]-100)>24))continue;
+  // Find the horizontal divider under the numbers within the upper half.
+  let divider=0,peak=0;for(let y=24;y<83;y++){let hits=0;for(let x=10;x<590;x++){const k=(y*600+x)*4;if(Math.max(flat.data[k],flat.data[k+1],flat.data[k+2])<110)hits++;}if(hits>peak){peak=hits;divider=y;}}
+  if(peak<430)continue;
+  const t=(divider+4)/149,lerp=(a:Point,b:Point):Point=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  const score=w*h;if(score>bestScore){bestScore=score;best=[lerp(tl,bl),lerp(tr,br),br,bl];}
+ }
+ return best;
 }
