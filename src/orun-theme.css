@@ -686,3 +686,10 @@ body { font-size:var(--read-body); }
 .punch-scanner canvas { max-height:none; object-fit:fill; }
 .scan-camera video { width:100%; max-height:55vh; background:#222; border-radius:14px; object-fit:contain; }
 .scan-camera p { padding:10px; background:#fff2d5; color:#333; border-radius:10px; }
+/* La vérification se concentre sur les empreintes incertaines. */
+.scan-resolved .scan-comparison { display:none; }
+.scan-detail-toggle { font-size:12px; min-height:32px; margin:3px 0; }
+
+.scan-comparison img,.scan-comparison svg { max-height:125px; object-fit:contain; }
+.scan-progress { font-weight:700; }
+@media(min-width:900px){.scan-cells{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}.scan-cells article{padding:9px;}.scan-cells h3{font-size:14px;}}

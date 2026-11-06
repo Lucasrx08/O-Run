@@ -106,7 +106,7 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
 
  </>}
  {!visibleRows.length&&<Empty title={search?'Aucun élève trouvé.':'Les résultats arrivent avec les élèves.'}><p>Les cartes terminées apparaîtront ici.</p></Empty>}
- {edit&&<Dialog title={`Résultat · ${labels.get(edit.studentId)}`} onClose={()=>setEdit(null)}>
+ {edit&&<Dialog wide={punchScan} title={`Résultat · ${labels.get(edit.studentId)}`} onClose={()=>setEdit(null)}>
   {punchScan?<PunchScanner initialReference={Math.min(6,Math.max(0,Number((edit.courseSnapshot.name).match(/(?:carte|parcours)\s*([1-6])\b/i)?.[1]||0)))} onCancel={()=>setPunchScan(false)} onApply={count=>{setErrors(count);setPunchScan(false);}}/>:<><div className="correction-header"><CourseTag course={edit.courseSnapshot}/>
    {!editTime?<button type="button" className="correction-time-edit" aria-label="Modifier le chrono" onClick={()=>setEditTime(true)}><strong className="mono">{formatTime(elapsed(edit),true)}</strong><span>✎ Modifier</span></button>
     :<label className="correction-time-input"><span>Corriger le temps (mm:ss.d)</span><input aria-label="Temps corrigé" autoFocus inputMode="decimal" value={timeText} onChange={e=>setTimeText(e.target.value)} placeholder="01:24.5"/></label>}

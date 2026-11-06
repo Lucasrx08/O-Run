@@ -26,3 +26,9 @@ Les photos originales d'élèves et les fichiers temporaires ne sont pas publié
 ## Correction de l’éclairage chaud
 
 Le premier filtre couleur confondait la teinte chaude du papier avec une annotation rouge. Régression reproduite sur les six vignettes de la capture iPad IMG_0089 : aucun point auparavant. Après séparation de l’encre rouge par son contraste rouge/vert plutôt que la seule différence rouge/bleu, quatre cases sont reconnues ; les deux autres restent à vérifier. Il s’agit d’un essai sur la capture d’écran, pas d’une nouvelle mesure sur le fichier photo original. Un test synthétique sur papier chaud protège cette correction.
+
+## Stabilisation du contraste et lecture iPad
+
+Comparaison à cinq seuils de contraste ; une proposition « Bon » exige le même motif complet à au moins deux seuils, avec des points spatialement cohérents. Aucun point n’est retiré d’un jeu détecté pour forcer la correspondance. Sur les quatre vignettes entièrement visibles de la capture du 6 novembre à 22:15:55, les quatre motifs sont proposés « Bon », dont la case 1 précédemment perturbée par un point supplémentaire. Les cases 5 et 6 sont tronquées dans cette capture et n’ont pas été réévaluées à partir de celle-ci.
+
+Les cases renseignées affichent une présentation compacte, avec « Voir le poinçon » pour rouvrir la comparaison. Les cases incertaines conservent leurs images. La fenêtre de scan s’élargit et utilise trois colonnes sur les écrans larges.
