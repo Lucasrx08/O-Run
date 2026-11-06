@@ -693,3 +693,25 @@ body { font-size:var(--read-body); }
 .scan-comparison img,.scan-comparison svg { max-height:125px; object-fit:contain; }
 .scan-progress { font-weight:700; }
 @media(min-width:900px){.scan-cells{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}.scan-cells article{padding:9px;}.scan-cells h3{font-size:14px;}}
+/* Résultat de scan : un score, puis uniquement les doutes à trancher. */
+.scan-score-screen { display:grid; grid-template-columns:minmax(210px,.85fr) minmax(250px,1.15fr); gap:20px; align-items:center; }
+.scan-score-hero { background:#333; color:#fff; border-radius:24px; padding:25px 18px; text-align:center; }
+.scan-score-hero>span { font-size:12px; font-weight:800; letter-spacing:.08em; }
+.scan-score-hero>strong { display:block; font:800 clamp(86px,12vw,140px)/1 'Outfit Variable',sans-serif; color:#ffa74b; margin:12px 0 0; font-variant-numeric:tabular-nums; }
+.scan-score-hero>strong small { font-size:28px; color:#fff; }
+.scan-score-hero>b { display:block; font:800 28px/1.1 'Outfit Variable',sans-serif; }
+.scan-score-hero>p { font-size:14px; line-height:1.4; margin:12px 0 0; color:#fff; }
+.scan-score-hero.complete { grid-column:1/-1; max-width:480px; width:100%; justify-self:center; box-sizing:border-box; }
+.scan-doubt { border:2px solid #ffd272; border-radius:20px; padding:14px; background:#fffaf1; min-width:0; }
+.scan-doubt header>span { color:#79520a; font-size:12px; font-weight:900; letter-spacing:.05em; }
+.scan-doubt h3 { font:800 18px/1.2 'Nunito Sans Variable',sans-serif; margin:5px 0 10px; }
+.scan-doubt .scan-comparison img,.scan-doubt .scan-comparison svg { max-height:155px; }
+.scan-doubt .scan-comparison figcaption { font-size:12px; text-align:center; margin-top:4px; }
+.scan-score-decisions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.scan-score-decisions .button { padding:12px 8px; font-size:14px; min-height:48px; }
+.scan-score-actions { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.scan-score-actions .button { min-height:50px; }
+.scan-score-adjust { grid-column:1/-1; font-size:12px; }
+.scan-score-adjust>div { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding-top:10px; }
+.scan-score-adjust label { display:grid; gap:4px; }
+@media(max-width:599px){.scan-score-screen{grid-template-columns:1fr;gap:12px;}.scan-score-hero{padding:15px;}.scan-score-hero>strong{font-size:82px;}.scan-score-hero>b{font-size:22px;}.scan-doubt .scan-comparison img,.scan-doubt .scan-comparison svg{max-height:115px;}.scan-score-adjust>div{grid-template-columns:repeat(2,1fr);}}

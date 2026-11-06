@@ -32,3 +32,17 @@ Le premier filtre couleur confondait la teinte chaude du papier avec une annotat
 Comparaison à cinq seuils de contraste ; une proposition « Bon » exige le même motif complet à au moins deux seuils, avec des points spatialement cohérents. Aucun point n’est retiré d’un jeu détecté pour forcer la correspondance. Sur les quatre vignettes entièrement visibles de la capture du 6 novembre à 22:15:55, les quatre motifs sont proposés « Bon », dont la case 1 précédemment perturbée par un point supplémentaire. Les cases 5 et 6 sont tronquées dans cette capture et n’ont pas été réévaluées à partir de celle-ci.
 
 Les cases renseignées affichent une présentation compacte, avec « Voir le poinçon » pour rouvrir la comparaison. Les cases incertaines conservent leurs images. La fenêtre de scan s’élargit et utilise trois colonnes sur les écrans larges.
+
+## Parcours centré sur le score
+
+Le résultat affiche désormais un grand score sur six. Tant qu’une empreinte est incertaine, le score est explicitement partiel (« points reconnus » et nombre de poinçons restant à vérifier). Les poinçons reconnus ne sont plus montrés.
+
+Un seul doute est présenté à la fois : photo et modèle attendu, avec « Bon · +1 point » et « Faux / absent · 0 ». Après décision, ce doute disparaît et le suivant prend sa place. Le résultat final affiche seulement le score et son action d’enregistrement. Une rubrique repliée permet de rectifier une décision.
+
+Dans la correction classique, le bouton enregistre directement le résultat via la commande habituelle, sans repasser par une deuxième validation. Au poste C, le score est reporté dans le brouillon de la carte et l’enregistrement groupé des cartons est conservé. Le chrono n’est pas modifié par cette action.
+
+La caméra recherche la grille toutes les 300 ms et exige toujours plusieurs observations stables. Cette cadence n’est pas une garantie de temps de lecture en conditions réelles.
+
+### Cartons à envisager pour les prochains essais
+
+Des repères de cadrage contrastés dans les quatre coins, des cases plus grandes et vides de décor, un identifiant imprimé de carte/version et un papier non brillant pourraient faciliter le scan. Un QR de carte demanderait son lecteur et une association explicite aux modèles. Ces pistes ne sont pas encore des fonctionnalités de reconnaissance de nouveaux cartons et leur gain doit être mesuré avant de remplacer les cartons existants. Le contraste des véritables trous et la netteté restent déterminants ; un fond sombre mat sous la feuille est une configuration à tester.
