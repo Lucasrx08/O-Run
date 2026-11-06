@@ -17,13 +17,26 @@ export function detectHoles(data:Uint8ClampedArray,width:number,height:number,co
  // Remove isolated paper texture only; ambiguous clusters remain for manual review.
  return merged.filter(p=>merged.some(q=>q!==p&&distance(p,q)<48));
 }
+/** Flatten broad illumination changes while keeping the small punch contrasts. */
+export function normalizeIllumination(data:Uint8ClampedArray,width:number,height:number,radius=22){
+ const integral=new Float64Array((width+1)*(height+1)),out=new Uint8ClampedArray(data.length);
+ for(let y=0;y<height;y++){let sum=0;for(let x=0;x<width;x++){const k=(y*width+x)*4;sum+=(data[k]+data[k+1]+data[k+2])/3;integral[(y+1)*(width+1)+x+1]=integral[y*(width+1)+x+1]+sum;}}
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++){const x0=Math.max(0,x-radius),x1=Math.min(width,x+radius+1),y0=Math.max(0,y-radius),y1=Math.min(height,y+radius+1),mean=(integral[y1*(width+1)+x1]-integral[y0*(width+1)+x1]-integral[y1*(width+1)+x0]+integral[y0*(width+1)+x0])/((x1-x0)*(y1-y0)),gain=Math.min(4,210/Math.max(25,mean)),k=(y*width+x)*4;for(let c=0;c<3;c++)out[k+c]=Math.min(255,data[k+c]*gain);out[k+3]=255;}return out;
+}
+/** Relative sharpness for choosing a frame, not a reliability percentage. */
+export function punchSharpness(data:Uint8ClampedArray,width:number,height:number){let total=0,n=0;const gray=(i:number)=>(data[i*4]+data[i*4+1]+data[i*4+2])/3;for(let y=4;y<height-4;y++)for(let x=4;x<width-4;x++){const i=y*width+x;total+=Math.abs(4*gray(i)-gray(i-1)-gray(i+1)-gray(i-width)-gray(i+width));n++;}return total/Math.max(1,n);}
 /** Require the whole motif to agree at two contrast levels, never discard a hole to force a match. */
-export function analyzePunch(data:Uint8ClampedArray,width:number,height:number,expected:Point[]){
+function analyzeContrast(data:Uint8ClampedArray,width:number,height:number,expected:Point[]){
  const candidates=[7,8,9,10,12].map(contrast=>{const points=detectHoles(data,width,height,contrast);return {points,...classifyPunch(points,expected)};});
  const matches=candidates.filter(c=>c.status==='match').sort((a,b)=>a.score-b.score);
  const consistent=matches.filter(a=>matches.some(b=>a!==b&&a.points.every(p=>b.points.some(q=>distance(p,q)<4))));
  const chosen=consistent[0]||matches[0]||candidates[2];
  return {points:chosen.points,status:consistent.length>=2?'match' as const:'review' as const};
+}
+export function analyzePunch(data:Uint8ClampedArray,width:number,height:number,expected:Point[]){
+ const ordinary=analyzeContrast(data,width,height,expected);if(ordinary.status==='match')return ordinary;
+ const normalized=analyzeContrast(normalizeIllumination(data,width,height),width,height,expected);
+ return normalized.status==='match'?normalized:ordinary;
 }
 /** Project the four selected corners onto a flat six-cell strip. */
 export function rectify(source:{data:Uint8ClampedArray;width:number;height:number;colorSpace?:string},corners:Point[],width=900,height=150){
@@ -33,7 +46,7 @@ export function rectify(source:{data:Uint8ClampedArray;width:number;height:numbe
  const m=a.map(row=>row[8]),out=new Uint8ClampedArray(width*height*4);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const den=m[6]*x+m[7]*y+1,u=Math.round((m[0]*x+m[1]*y+m[2])/den),v=Math.round((m[3]*x+m[4]*y+m[5])/den),to=(y*width+x)*4;if(u<0||v<0||u>=source.width||v>=source.height){out.fill(255,to,to+4);continue;}const from=(v*source.width+u)*4;out.set(source.data.subarray(from,from+4),to);}return {data:out,width,height};
 }
 /** Locate the connected printed 6-column grid; reject incomplete or ambiguous frames. */
-export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{
+function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{
  const mask=new Uint8Array(width*height);for(let i=0;i<mask.length;i++){const k=i*4;if(Math.max(data[k],data[k+1],data[k+2])<105)mask[i]=1;}
  let best:Point[]|null=null,bestScore=0;
  for(let start=0;start<mask.length;start++)if(mask[start]){
@@ -53,3 +66,5 @@ export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number)
  }
  return best;
 }
+
+export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{return findPrintedGrid(data,width,height)||findPrintedGrid(normalizeIllumination(data,width,height,30),width,height);}

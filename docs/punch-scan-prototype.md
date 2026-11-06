@@ -46,3 +46,15 @@ La caméra recherche la grille toutes les 300 ms et exige toujours plusieurs obs
 ### Cartons à envisager pour les prochains essais
 
 Des repères de cadrage contrastés dans les quatre coins, des cases plus grandes et vides de décor, un identifiant imprimé de carte/version et un papier non brillant pourraient faciliter le scan. Un QR de carte demanderait son lecteur et une association explicite aux modèles. Ces pistes ne sont pas encore des fonctionnalités de reconnaissance de nouveaux cartons et leur gain doit être mesuré avant de remplacer les cartons existants. Le contraste des véritables trous et la netteté restent déterminants ; un fond sombre mat sous la feuille est une configuration à tester.
+
+## Compensation des ombres et enchaînement
+
+La lecture conserve d’abord son résultat sur l’image d’origine. En cas de doute, elle retente la comparaison après normalisation de l’éclairage local (gain plafonné). Le repérage de grille dispose du même recours. Une image entièrement noire ne permet pas de reconstruire des trous : elle reste à vérifier.
+
+La capture automatique conserve trois images successives d’un carton stable et choisit la plus nette selon un indicateur relatif calculé sur la bande de poinçonnage. Cet indicateur n’est pas un pourcentage de fiabilité. La caméra est coupée après capture et les images restent en mémoire temporaire.
+
+Dans la correction classique, « Enregistrer et scanner le suivant » valide le résultat courant, sélectionne le prochain passage de six balises encore à corriger et relance la caméra. Le prénom reste celui du passage ouvert dans l’en-tête. Le résultat du suivant n’est pas modifié avant sa propre validation. Les autres types de cartons et le poste C conservent leur parcours habituel.
+
+Vérification : motif faible sous un gradient sombre, cadre sous ombre uniforme, rejet d’un bord d’ombre vide, image noire, sélection relative d’une image nette, enregistrement/enchaînement sans correction anticipée de l’élève suivant. La suite complète comporte 177 tests réussis. Le parcours caméra est contrôlé avec un flux simulé ; un essai extérieur sur iPad reste nécessaire.
+
+Pistes suivantes, non implémentées : identifiant QR anonyme par carton (élève, carte, tentative) pour éviter la sélection et les doublons ; étalonnage à partir de véritables poinçons de référence ; file de doutes à reprendre en fin de passage ; retour sonore discret de fin de lecture ; exploitation des quatre repères du prototype P1.
