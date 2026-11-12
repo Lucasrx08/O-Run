@@ -3,7 +3,8 @@ export type Role = 'teacher'|'departure'|'arrival';
 export type Level = 1|2|3|4;
 export interface Student {id:string; firstName:string; lastName:string; className:string; label?:string;}
 export interface Rubric {enabled:boolean; useTime?:boolean; useControls?:boolean; thresholds:[number,number,number]; maxErrors:[number,number,number];}
-export interface Course {id:string;familyId?:string; name:string; color:string; distance:number; controls:number; penalty:number; difficulty:string; rubric:Rubric; map?:{name:string;type:string;data:string};}
+export type CorrectionModel = 'cards-3'|'cards-4'|'cards-6'|'legacy-6';
+export interface Course {correction?:{model:CorrectionModel;reference:number};id:string;familyId?:string; name:string; color:string; distance:number; controls:number; penalty:number; difficulty:string; rubric:Rubric; map?:{name:string;type:string;data:string};}
 export interface Sequence {id:string;color?:string;name:string;period:string;objectives:string;classes:string[];archived:boolean;}
 export interface Session {id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;deviceMode?:1|2|3;deviceKey?:string;deviceGroupA?:string[];deviceGroupB?:string[];}
 export interface Pause {start:number;end?:number;}

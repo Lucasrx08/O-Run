@@ -58,3 +58,13 @@ Dans la correction classique, « Enregistrer et scanner le suivant » valide le 
 Vérification : motif faible sous un gradient sombre, cadre sous ombre uniforme, rejet d’un bord d’ombre vide, image noire, sélection relative d’une image nette, enregistrement/enchaînement sans correction anticipée de l’élève suivant. La suite complète comporte 177 tests réussis. Le parcours caméra est contrôlé avec un flux simulé ; un essai extérieur sur iPad reste nécessaire.
 
 Pistes suivantes, non implémentées : identifiant QR anonyme par carton (élève, carte, tentative) pour éviter la sélection et les doublons ; étalonnage à partir de véritables poinçons de référence ; file de doutes à reprendre en fin de passage ; retour sonore discret de fin de lecture ; exploitation des quatre repères du prototype P1.
+
+## Cartes 6 balises - références réelles du 12 novembre 2026
+
+Le menu « Modèle de correction » est disponible à la création d'une leçon et à la création/modification d'une carte. « Cartes 6 balises » contient les 36 motifs des six nouveaux cartons photographiés. Le numéro de référence est enregistré séparément du nom, copié avec la leçon et conservé dans l'instantané du passage. Les transferts existants transportent ce champ avec la carte. Les anciennes cartes restent lisibles ; « Ancien modèle 6 balises » reste disponible dans le scan. Aucun résultat existant n'est recalculé automatiquement.
+
+« Cartes 3 balises » et « Cartes 4 balises » règlent le nombre de balises et conservent la correction manuelle : aucune référence photographique n'a été fournie pour ces variantes. Ne pas prétendre qu'elles disposent du scan automatique.
+
+Le cadrage ignore désormais les contours dégénérés du décor, au lieu de laisser leur homographie interrompre toute la lecture. La comparaison explore aussi des seuils de contraste plus élevés, en exigeant toujours un motif entier concordant sur deux seuils ; aucune suppression de trou pour forcer une validation.
+
+Vérification sur les six photos sources : 32 cases reconnues et quatre à vérifier (carte 1 case 3 ; carte 3 cases 2 et 3 ; carte 5 case 6). Ce sont des références d'étalonnage, pas une mesure indépendante de fiabilité. Les photos et leurs extraits de validation restent locaux et ne sont pas publiés dans le dépôt. Tester d'autres cartons physiques et la caméra Safari/iPad reste nécessaire. Les ronds d'identification élève/carte et les quatre repères noirs ne sont pas encore décodés : le scan utilise la grille et le numéro de référence choisi. Les numéros imprimés de balise ne sont pas inférés à partir des photos ; le nouveau modèle affiche seulement la case à vérifier.

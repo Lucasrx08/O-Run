@@ -1,6 +1,8 @@
+import realReferences from './punchReferencesSixReal.json';
 import references from './punchReferences.json';
 export type Point=[number,number];
 export const punchReferences=references as Point[][][];
+export const sixRealReferences=realReferences as Point[][][];
 export const beaconNumbers=[[49,57,64,66,67,65],[35,58,47,39,55,68],[34,69,40,56,59,46],[71,41,63,36,60,45],[37,70,32,48,72,44],[62,33,31,38,50,61]];
 const distance=(a:Point,b:Point)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 function normalize(points:Point[]){const cx=points.reduce((n,p)=>n+p[0],0)/points.length,cy=points.reduce((n,p)=>n+p[1],0)/points.length;const scale=Math.sqrt(points.reduce((n,p)=>n+(p[0]-cx)**2+(p[1]-cy)**2,0)/points.length)||1;return points.map(p=>[(p[0]-cx)/scale,(p[1]-cy)/scale] as Point);}
@@ -27,7 +29,7 @@ export function normalizeIllumination(data:Uint8ClampedArray,width:number,height
 export function punchSharpness(data:Uint8ClampedArray,width:number,height:number){let total=0,n=0;const gray=(i:number)=>(data[i*4]+data[i*4+1]+data[i*4+2])/3;for(let y=4;y<height-4;y++)for(let x=4;x<width-4;x++){const i=y*width+x;total+=Math.abs(4*gray(i)-gray(i-1)-gray(i+1)-gray(i-width)-gray(i+width));n++;}return total/Math.max(1,n);}
 /** Require the whole motif to agree at two contrast levels, never discard a hole to force a match. */
 function analyzeContrast(data:Uint8ClampedArray,width:number,height:number,expected:Point[]){
- const candidates=[7,8,9,10,12].map(contrast=>{const points=detectHoles(data,width,height,contrast);return {points,...classifyPunch(points,expected)};});
+ const candidates=[7,8,9,10,12,14,16,18].map(contrast=>{const points=detectHoles(data,width,height,contrast);return {points,...classifyPunch(points,expected)};});
  const matches=candidates.filter(c=>c.status==='match').sort((a,b)=>a.score-b.score);
  const consistent=matches.filter(a=>matches.some(b=>a!==b&&a.points.every(p=>b.points.some(q=>distance(p,q)<4))));
  const chosen=consistent[0]||matches[0]||candidates[2];
@@ -54,7 +56,7 @@ function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number):Poin
   while(stack.length){const i=stack.pop()!,x=i%width,y=Math.floor(i/width);n++;minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y);if(x+y<minSum){minSum=x+y;tl=[x,y];}if(x+y>maxSum){maxSum=x+y;br=[x,y];}if(x-y>maxDiff){maxDiff=x-y;tr=[x,y];}if(x-y<minDiff){minDiff=x-y;bl=[x,y];}for(const j of [i-1,i+1,i-width,i+width])if(j>=0&&j<mask.length&&mask[j]){mask[j]=0;stack.push(j);}}
   const w=maxx-minx,h=maxy-miny;if(w<width*.25||h<30||w/h<2.3||w/h>7||n/(w*h)<.025||n/(w*h)>.35)continue;
   // Seven vertical strokes must cross the lower (punch) part, not just a photo frame.
-  const corners=[tl,tr,br,bl],flat=rectify({data,width,height,colorSpace:'srgb'},corners,600,150),columns:number[]=[];
+  const corners=[tl,tr,br,bl];let flat:ReturnType<typeof rectify>;try{flat=rectify({data,width,height,colorSpace:'srgb'},corners,600,150);}catch{continue;}const columns:number[]=[];
   for(let x=0;x<600;x++){let hits=0;for(let y=60;y<140;y++){const k=(y*600+x)*4;if(Math.max(flat.data[k],flat.data[k+1],flat.data[k+2])<110)hits++;}if(hits>53)columns.push(x);}
   const groups:number[][]=[];for(const x of columns){if(!groups.length||x-groups[groups.length-1].at(-1)!>8)groups.push([x]);else groups.at(-1)!.push(x);}const centers=groups.map(g=>g.reduce((a,b)=>a+b,0)/g.length);
   if(centers.length!==7||centers.some((x,i)=>i>0&&Math.abs(x-centers[i-1]-100)>24))continue;
