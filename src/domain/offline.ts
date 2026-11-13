@@ -49,7 +49,7 @@ export function createSessionPack(data:Data,sessionId:string,post:'A'|'B',studen
  const courses=session.courseIds.map(id=>data.courses.find(c=>c.id===id));
  if(courses.some(c=>!c))throw new Error('Carte introuvable dans la séance.');
  return {kind:'orun-session-v1',post,sessionId,createdAt:Date.now(),transferKey,
-  session:{...session,studentIds:[...studentIds]},sequence:{...sequence,classes:[session.className||sequence.classes[0]]},
+  session:{...session,poseDeposeTasks:undefined,studentIds:[...studentIds]},sequence:{...sequence,classes:[session.className||sequence.classes[0]]},
   // Les iPads de chronométrage n'ont besoin que du prénom et de l'initiale.
   courses:(courses as Course[]).map(({map:_map,...course})=>course),students:studentIds.map(id=>data.students.find(s=>s.id===id)!).filter(Boolean).map(s=>({...s,lastName:s.lastName.charAt(0).toUpperCase()}))};
 }

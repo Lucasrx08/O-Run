@@ -1,3 +1,4 @@
+import {PoseDeposeRanking} from './PoseDepose';
 import {referenceForCourse,canScanCourse} from '../domain/correctionModels';
 import {PunchScanner} from '../components/PunchScanner';
 import {ViewportGrid,ViewportRanking} from '../components/ViewportPages';
@@ -20,7 +21,7 @@ import {createSessionPack} from '../domain/offline';
 import {openTimes} from '../services/offlineTransfer';
 import * as storage from '../services/storage';
 
-export function LessonResults({session,className,correctionOnly=false}:{session:Session;className:string;correctionOnly?:boolean}){
+function CourseResults({session,className,correctionOnly=false}:{session:Session;className:string;correctionOnly?:boolean}){
  const s=useStore(),labels=studentLabels(s.data.students);
  const [scope,setScope]=useState<'lesson'|'general'>('lesson'),[group,setGroup]=useState<'courses'|'students'>('courses'),[generalView,setGeneralView]=useState<'all'|'courses'|'beacons'|'students'>('all'),[lessonView,setLessonView]=useState<'corrections'|'rankings'>(()=>{if(sessionStorage.getItem('orun-open-ranking')===session.id){sessionStorage.removeItem('orun-open-ranking');return 'rankings';}return 'corrections';});
  const [punchScan,setPunchScan]=useState(false),[autoNextScan,setAutoNextScan]=useState(false);
@@ -132,4 +133,10 @@ export function LessonResults({session,className,correctionOnly=false}:{session:
  </Dialog>}
  {qrControl}{prepControl}
  </div>;
+}
+
+export function LessonResults(props:Parameters<typeof CourseResults>[0]){
+ const s=useStore(),[pose,setPose]=useState(!!props.session.poseDepose&&!s.data.runs.some(r=>r.sessionId===props.session.id));
+ const available=props.session.poseDepose||s.data.sessions.some(l=>l.poseDeposeTasks?.length&&(!l.className||l.className===props.className));
+ return <>{available&&<div className="pd-results-choice" role="group" aria-label="Rubrique du classement"><button className={`button ${!pose?'active':''}`} aria-pressed={!pose} onClick={()=>setPose(false)}>Course d’orientation</button><button className={`button ${pose?'active':''}`} aria-pressed={pose} onClick={()=>setPose(true)}>Pose-dépose</button></div>}{pose&&available?<PoseDeposeRanking session={props.session} className={props.className}/>:<CourseResults {...props}/>}</>;
 }

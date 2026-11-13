@@ -6,7 +6,8 @@ export interface Rubric {enabled:boolean; useTime?:boolean; useControls?:boolean
 export type CorrectionModel = 'cards-3'|'cards-4'|'cards-6'|'legacy-6';
 export interface Course {correction?:{model:CorrectionModel;reference:number};id:string;familyId?:string; name:string; color:string; distance:number; controls:number; penalty:number; difficulty:string; rubric:Rubric; map?:{name:string;type:string;data:string};}
 export interface Sequence {id:string;color?:string;name:string;period:string;objectives:string;classes:string[];archived:boolean;}
-export interface Session {id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;deviceMode?:1|2|3;deviceKey?:string;deviceGroupA?:string[];deviceGroupB?:string[];}
+export interface PoseDeposeTask {beacon:number;placers:string[];verifiers:string[];placementValid:boolean|null;verificationValid:boolean|null;collected:boolean;revision:number;}
+export interface Session {poseDepose?:boolean;poseDeposeTasks?:PoseDeposeTask[];id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;deviceMode?:1|2|3;deviceKey?:string;deviceGroupA?:string[];deviceGroupB?:string[];}
 export interface Pause {start:number;end?:number;}
 export interface Run {id:string;studentId:string;sessionId:string;courseId:string;start:number;end?:number;pauses:Pause[];errors:number|null;manualLevel:Level|null;revision:number; courseSnapshot:Course; manualTimeMs?:number;}
 export interface Audit {id:string;at:number;action:string;runId?:string;actor:string;detail:string;}

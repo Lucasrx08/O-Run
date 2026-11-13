@@ -6,9 +6,9 @@ export function lessonsForClass(d:Data,name:string){return d.sessions.filter(s=>
 export function lessonStudents(d:Data,s:Session,name:string){return d.students.filter(p=>p.className===name&&s.studentIds.includes(p.id));}
 export function createClass(d:Data,name:string,makeId=uid,color=mapColors[0]):Data{name=name.trim();if(!name)throw new Error('Donnez un nom à la classe.');if(classNames(d).some(c=>c.toLowerCase()===name.toLowerCase()))throw new Error('Cette classe existe déjà.');return {...d,sequences:[...d.sequences,{id:makeId(),name,color,period:'',objectives:'',classes:[name],archived:false}]};}
 export function newMap(i:number,makeId=uid):Course{return {id:makeId(),name:`Carte ${i}`,color:mapColors[(i-1)%mapColors.length],controls:6,distance:1000,penalty:0,difficulty:'Découverte',rubric:{enabled:false,thresholds:[600,780,960],maxErrors:[0,1,3]}};}
-export interface LessonTemplate{name:string;courses:Course[];}
-export function copyLesson(d:Data,s:Session):LessonTemplate{return {name:s.name,courses:s.courseIds.map(id=>d.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c).map(c=>structuredClone(c))};}
-export interface NewLessonOptions {cards:number;controls:number;correctionModel?:CorrectionModel;}
+export interface LessonTemplate{name:string;courses:Course[];poseDepose?:boolean;}
+export function copyLesson(d:Data,s:Session):LessonTemplate{return {name:s.name,poseDepose:s.poseDepose,courses:s.courseIds.map(id=>d.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c).map(c=>structuredClone(c))};}
+export interface NewLessonOptions {cards:number;controls:number;correctionModel?:CorrectionModel;poseDepose?:boolean;}
 export function createLesson(d:Data,className:string,name:string,date:string,template?:LessonTemplate,makeId=uid,options:NewLessonOptions={cards:6,controls:6}):{data:Data;session:Session}{
  if(!classNames(d).includes(className))throw new Error('Classe introuvable.');if(!name.trim()||!date)throw new Error('Indiquez un nom et une date.');
  let q=d.sequences.find(q=>q.classes.length===1&&q.classes[0]===className&&!q.archived);if(!q)q={id:makeId(),name:className,period:'',objectives:'',classes:[className],archived:false};
@@ -16,7 +16,7 @@ export function createLesson(d:Data,className:string,name:string,date:string,tem
  const model=options.correctionModel?correctionModels.find(m=>m.id===options.correctionModel):undefined;
  if(!template&&options.correctionModel&&(!model||model.controls!==options.controls||options.cards>6))throw new Error('Ce modèle propose six cartes au maximum, avec le nombre de balises correspondant.');
  const courses=template?template.courses.map(c=>({...structuredClone(c),familyId:c.familyId||c.id,id:makeId()})):Array.from({length:options.cards},(_,i)=>({...newMap(i+1,makeId),controls:options.controls,correction:model?{model:model.id,reference:i+1}:undefined}));
- const session:Session={id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className).map(p=>p.id)};
+ const session:Session={poseDepose:template?.poseDepose??options.poseDepose,id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className).map(p=>p.id)};
  return {data:{...d,sequences:d.sequences.some(x=>x.id===q!.id)?d.sequences:[...d.sequences,q],courses:[...d.courses,...courses],sessions:[...d.sessions,session]},session};
 }
 export function addClassStudents(d:Data,name:string,students:Student[]):Data{const ids=new Set(lessonsForClass(d,name).map(s=>s.id)),added=students.map(p=>({...p,className:name}));return {...d,students:[...d.students,...added],sessions:d.sessions.map(s=>ids.has(s.id)?{...s,studentIds:[...new Set([...s.studentIds,...added.map(p=>p.id)])]}:s)};}

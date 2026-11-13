@@ -1,3 +1,4 @@
+import {validatePoseDepose} from './poseDepose';
 import {validCorrection} from './correctionModels';
 import {removeClass,removeLesson} from './classroom';
 import type {Command, Course, Data, Level, Role, Run, Student} from './types';
@@ -62,7 +63,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   check(ids(cmd.students)&&ids(cmd.sessions)&&ids(cmd.courses)&&ids(cmd.sequences),'Identifiants en doublon.');
   for(const c of cmd.courses) check(validCorrection(c)&&(c.rubric.useTime===undefined||typeof c.rubric.useTime==='boolean')&&(c.rubric.useControls===undefined||typeof c.rubric.useControls==='boolean')&&(!c.rubric.enabled||c.rubric.useTime!==false||c.rubric.useControls!==false)&&c.name.trim()&&c.distance>0&&Number.isFinite(c.distance)&&Number.isInteger(c.controls)&&c.controls>0&&c.penalty>=0&&Number.isFinite(c.penalty)&&c.rubric.thresholds.every((t,i,a)=>Number.isFinite(t)&&t>0&&(!i||t>=a[i-1]))&&c.rubric.maxErrors.every(e=>Number.isInteger(e)&&e>=0&&e<=c.controls),'Paramètres de parcours ou barème invalides.');
   for(const s of cmd.students) check(s.firstName.trim()&&s.lastName.trim()&&s.className.trim(),'Prénom, nom et classe sont obligatoires.');
-  for(const s of cmd.sessions) check(cmd.sequences.some(q=>q.id===s.sequenceId)&&s.studentIds.every(id=>cmd.students.some(p=>p.id===id))&&s.courseIds.every(id=>cmd.courses.some(c=>c.id===id)),'Séance incohérente.');
+  for(const s of cmd.sessions) {validatePoseDepose(s);check(cmd.sequences.some(q=>q.id===s.sequenceId)&&s.studentIds.every(id=>cmd.students.some(p=>p.id===id))&&s.courseIds.every(id=>cmd.courses.some(c=>c.id===id)),'Séance incohérente.');}
   for(const r of next.runs)check(cmd.students.some(s=>s.id===r.studentId)&&cmd.sessions.some(s=>s.id===r.sessionId),'Supprimez les résultats associés avant de supprimer cet élève ou cette séance.');
   next.students=cmd.students;next.sequences=cmd.sequences;next.sessions=cmd.sessions;next.courses=cmd.courses;
   next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>cmd.students.some(s=>s.id===c.studentId)&&cmd.sessions.some(s=>s.id===c.sessionId&&s.courseIds.includes(c.courseId)&&s.studentIds.includes(c.studentId)));
@@ -75,7 +76,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   check(lesson,'Leçon introuvable.');
   Object.assign(next,removeLesson(next,cmd.sessionId));detail=`Leçon supprimée : ${lesson.name}`;
  }else if(cmd.kind==='purge') {
-  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);detail='Résultats de la séance supprimés';
+  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);next.sessions=next.sessions.map(s=>s.id===cmd.sessionId?{...s,poseDeposeTasks:[]}:s);detail='Résultats de la séance supprimés';
  }else if(cmd.kind==='offlineCorrect'){
   const session=next.sessions.find(s=>s.id===cmd.sessionId);
   const course=next.courses.find(c=>c.id===cmd.courseId);
