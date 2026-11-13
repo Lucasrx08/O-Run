@@ -1,7 +1,7 @@
 import {createSessionPack} from '../src/domain/offline';
 import {describe,it,expect} from 'vitest';
 import {demo} from '../src/domain/demo';
-import {assignPoseDepose,judgePoseDepose,collectPoseDepose,poseDeposeRanking,validatePoseDepose} from '../src/domain/poseDepose';
+import {assignPoseDepose,judgePoseDepose,collectPoseDepose,poseDeposeRanking,validatePoseDepose,batchPoseDepose,comparePoseDeposeStudents} from '../src/domain/poseDepose';
 import {createLesson,copyLesson} from '../src/domain/classroom';
 import {apply} from '../src/domain/engine';
 import {validateBackup} from '../src/services/storage';
@@ -27,8 +27,8 @@ describe('pose-dépose : attributions et barème',()=>{
  it('remplace un groupe sans dupliquer les balises ni transférer les anciens points',()=>{
   let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,true);session=assignPoseDepose(session,'pose',[31],[pupil(5)]);expect(session.poseDeposeTasks).toHaveLength(2);expect(total(data(d,session),pupil(1))).toBe(0);expect(total(data(d,session),pupil(5))).toBe(0);expect(total(data(d,session),pupil(3))).toBe(0);
  });
- it('refuse auto-vérification, groupe de trois, élèves étrangers, mauvais numéro et validation périmée',()=>{
-  const {session}=ready();expect(()=>assignPoseDepose(session,'verification',[31],[pupil(1)])).toThrow(/propre/);expect(()=>assignPoseDepose(session,'pose',[31],[pupil(1),pupil(2),pupil(3)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[30],[pupil(1)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[73],[pupil(1)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[31],['unknown'])).toThrow();expect(()=>judgePoseDepose(session,31,999,true,true)).toThrow(/changé/);
+ it('refuse auto-vérification, groupe de quatre, élèves étrangers, mauvais numéro et validation périmée',()=>{
+  const {session}=ready();expect(()=>assignPoseDepose(session,'verification',[31],[pupil(1)])).toThrow(/propre/);expect(()=>assignPoseDepose(session,'pose',[31],[pupil(1),pupil(2),pupil(3),pupil(4)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[30],[pupil(1)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[73],[pupil(1)])).toThrow();expect(()=>assignPoseDepose(session,'pose',[31],['unknown'])).toThrow();expect(()=>judgePoseDepose(session,31,999,true,true)).toThrow(/changé/);
  });
  it('préserve une attribution identique et les points déjà validés',()=>{
   let {session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,true);expect(assignPoseDepose(session,'pose',[31],[pupil(2),pupil(1)])).toEqual(session);
@@ -48,3 +48,15 @@ describe('pose-dépose : attributions et barème',()=>{
 });
 
 it('garde les points pose-dépose sur le poste enseignant lors de la préparation des iPads de chrono',()=>{const {d,session}=ready();const pack=createSessionPack(data(d,session),session.id,'A',[pupil(1)],'ab'.repeat(32));expect(pack.session.poseDeposeTasks).toBeUndefined();expect(session.poseDeposeTasks).toHaveLength(2);});
+
+it('accepte trois élèves par rôle et valide ou range plusieurs balises sans cumul',()=>{
+ let {d,session}=prepared();session=assignPoseDepose(session,'pose',[31,32],[pupil(1),pupil(2),pupil(3)]);session=assignPoseDepose(session,'verification',[31],[pupil(4),pupil(5),pupil(6)]);
+ session=batchPoseDepose(session,[31,32],'good');for(const n of [1,2,3])expect(total(data(d,session),pupil(n))).toBe(2);for(const n of [4,5,6])expect(total(data(d,session),pupil(n))).toBe(1);
+ expect(session.poseDeposeTasks![1].verificationValid).toBeNull();const again=batchPoseDepose(session,[31,32],'good');expect(total(data(d,again),pupil(1))).toBe(2);
+ const ranged=batchPoseDepose(again,[31,32],'collect');expect(ranged.poseDeposeTasks!.every(t=>t.collected)).toBe(true);expect(total(data(d,ranged),pupil(1))).toBe(2);
+ const before=structuredClone(session);expect(()=>batchPoseDepose(session,[31,99],'good')).toThrow();expect(session).toEqual(before);expect(()=>assignPoseDepose(session,'verification',[31],[pupil(3)])).toThrow(/propre/);
+});
+it('trie les élèves par prénom avant le nom, sans tenir compte des accents',()=>{
+ const student=(firstName:string,lastName:string)=>({id:firstName+lastName,firstName,lastName,className:'Test'});
+ expect([student('Zoé','A'),student('Élodie','B'),student('Alice','Z'),student('Elodie','A')].sort(comparePoseDeposeStudents).map(s=>s.firstName+' '+s.lastName)).toEqual(['Alice Z','Elodie A','Élodie B','Zoé A']);
+});

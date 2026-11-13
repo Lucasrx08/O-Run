@@ -56,7 +56,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
    </section>)}</div>
   </div>}
   {error&&<p role="alert" className="form-error">{error}</p>}
-  <div className="device-actions"><button type="button" className="button primary" disabled={busy} onClick={async()=>{if(chosen>1&&configured&&!selectedA){onContinue(chosen);return;}if(await configure())onContinue(chosen);}}><Check size={19}/>{chosen===1?'Ouvrir ma leçon':configured&&!selectedA?'Ouvrir la correction':'Enregistrer et ouvrir la correction'}</button>
+  <div className="device-actions"><button type="button" className="button primary" disabled={busy} onClick={async()=>{if(chosen>1&&configured&&!selectedA){onContinue(chosen);return;}if(await configure())onContinue(chosen);}}><Check size={19}/>{session.poseDepose?'Ouvrir pose-dépose':chosen===1?'Ouvrir ma leçon':configured&&!selectedA?'Ouvrir la correction':'Enregistrer et ouvrir la correction'}</button>
    {chosen>1&&!configured&&<span className="muted compact">Enregistrez ce mode avant d’envoyer les préparations.</span>}</div>
   {chosen>1&&configured&&<section className="device-send">
    <div><h3><ScanLine size={21}/>Préparer les iPads par QR code</h3><p>Flashez ces QR codes avec les tablettes A et B. Elles s’ouvriront directement dans leur vue élèves protégée, sans AirDrop.</p></div>

@@ -1,4 +1,5 @@
-import type {Data,PoseDeposeTask,Session} from './types';
+import type {Data,PoseDeposeTask,Session,Student} from './types';
+export const comparePoseDeposeStudents=(a:Student,b:Student)=>a.firstName.localeCompare(b.firstName,'fr',{sensitivity:'base',numeric:true})||a.lastName.localeCompare(b.lastName,'fr',{sensitivity:'base',numeric:true});
 export const poseDeposeBeacons=Array.from({length:42},(_,i)=>31+i);
 const ensure=(ok:unknown,message:string)=>{if(!ok)throw new Error(message);};
 export function validatePoseDepose(session:Session){
@@ -6,7 +7,7 @@ export function validatePoseDepose(session:Session){
  const tasks=session.poseDeposeTasks||[];ensure(Array.isArray(tasks)&&tasks.length<=42&&new Set(tasks.map(t=>t.beacon)).size===tasks.length,'Attributions de balises invalides.');
  for(const t of tasks){
   ensure(Number.isInteger(t.beacon)&&t.beacon>=31&&t.beacon<=72,'Les balises vont de 31 à 72.');
-  ensure(Array.isArray(t.placers)&&Array.isArray(t.verifiers)&&t.placers.length>=1&&t.placers.length<=2&&t.verifiers.length<=2,'Choisissez un ou deux élèves par groupe.');
+  ensure(Array.isArray(t.placers)&&Array.isArray(t.verifiers)&&t.placers.length>=1&&t.placers.length<=3&&t.verifiers.length<=3,'Choisissez un à trois élèves par groupe.');
   for(const ids of [t.placers,t.verifiers])ensure(new Set(ids).size===ids.length&&ids.every(id=>session.studentIds.includes(id)),'Élève absent de la leçon ou sélectionné en double.');
   ensure(t.verifiers.every(id=>!t.placers.includes(id)),'Un élève ne peut pas vérifier sa propre balise.');
   ensure((t.placementValid===null||typeof t.placementValid==='boolean')&&(t.verificationValid===null||typeof t.verificationValid==='boolean')&&(!t.verifiers.length?t.verificationValid===null:true),'Validation pose-dépose invalide.');
@@ -15,7 +16,7 @@ export function validatePoseDepose(session:Session){
 }
 export function assignPoseDepose(session:Session,role:'pose'|'verification',beacons:number[],students:string[]):Session{
  ensure(session.poseDepose,'Activez pose-dépose dans les paramètres de la leçon.');
- ensure(students.length>=1&&students.length<=2&&new Set(students).size===students.length&&students.every(id=>session.studentIds.includes(id)),'Choisissez un ou deux élèves de la leçon.');
+ ensure(students.length>=1&&students.length<=3&&new Set(students).size===students.length&&students.every(id=>session.studentIds.includes(id)),'Choisissez un à trois élèves de la leçon.');
  ensure(beacons.length>0&&new Set(beacons).size===beacons.length&&beacons.every(n=>Number.isInteger(n)&&n>=31&&n<=72),'Choisissez au moins une balise entre 31 et 72.');
  const tasks=structuredClone(session.poseDeposeTasks||[]);
  for(const beacon of beacons){
@@ -52,6 +53,13 @@ export function poseDeposeRanking(data:Data,className:string,sessionId?:string){
   }
   for(const id of seen)byId.get(id)!.lessons++;
  }
- rows.sort((a,b)=>b.total-a.total||a.student.lastName.localeCompare(b.student.lastName,'fr')||a.student.firstName.localeCompare(b.student.firstName,'fr'));
+ rows.sort((a,b)=>b.total-a.total||comparePoseDeposeStudents(a.student,b.student));
  let rank=0;return rows.map((r,i)=>{if(!i||r.total!==rows[i-1].total)rank=i+1;return {...r,rank};});
+}
+
+/** A batch is validated before any caller saves it; points are still derived from decisions. */
+export function batchPoseDepose(session:Session,beacons:number[],action:'good'|'collect'):Session{
+ ensure(beacons.length>0&&new Set(beacons).size===beacons.length&&beacons.every(n=>session.poseDeposeTasks?.some(t=>t.beacon===n)),'Sélection de balises invalide.');
+ let next=session;for(const beacon of beacons){const task=next.poseDeposeTasks!.find(t=>t.beacon===beacon)!;next=action==='good'?judgePoseDepose(next,beacon,task.revision,true,task.verifiers.length?true:null):collectPoseDepose(next,beacon,true);}
+ return next;
 }
