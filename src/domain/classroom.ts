@@ -23,7 +23,7 @@ export function addClassStudents(d:Data,name:string,students:Student[]):Data{con
 export function renameClass(d:Data,from:string,to:string):Data{to=to.trim();if(!to)throw new Error('Donnez un nom à la classe.');if(classNames(d).some(c=>c!==from&&c.toLowerCase()===to.toLowerCase()))throw new Error('Cette classe existe déjà.');return {...d,students:d.students.map(p=>p.className===from?{...p,className:to}:p),sequences:d.sequences.map(q=>({...q,name:q.name===from?to:q.name,classes:q.classes.map(c=>c===from?to:c)})),sessions:d.sessions.map(s=>s.className===from?{...s,className:to}:s)};}
 export interface StartEntry{studentId:string;courseId:string;}
 export function startCommands(sessionId:string,entries:StartEntry[],at:number,makeId=uid):Extract<Command,{kind:'start'}>[]{if(new Set(entries.map(e=>e.studentId)).size!==entries.length)throw new Error('Un élève ne peut pas partir deux fois.');const groups=new Map<string,string[]>();for(const e of entries)groups.set(e.courseId,[...(groups.get(e.courseId)??[]),e.studentId]);return [...groups].map(([courseId,students])=>({kind:'start',id:makeId(),at,sessionId,courseId,students,runIds:students.map(()=>makeId())}));}
-export interface ClassWavePlan{id:string;queue:StartEntry[];size:number;interval:number;nextAt:number;paused:boolean;}
+export interface ClassWavePlan{id:string;queue:StartEntry[];size:number;interval:number;nextAt:number;paused:boolean;remainingMs?:number;stage?:'preparation'|'waves';preparation?:number;}
 export function waveDecision(p:ClassWavePlan,t:number,hidden:boolean,drift:number){if(p.paused)return 'wait';if(hidden||drift>2000||t-p.nextAt>1800)return 'pause';return t>=p.nextAt?'fire':'wait';}
 export const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 
@@ -48,3 +48,12 @@ export function removeLesson(d:Data,sessionId:string):Data{
  const deletedRuns=new Set(d.runs.filter(r=>r.sessionId===sessionId).map(r=>r.id));
  return {...d,sessions,courses:d.courses.filter(c=>!unusedCourses.has(c.id)),runs:d.runs.filter(r=>r.sessionId!==sessionId),offlineCorrections:(d.offlineCorrections||[]).filter(c=>c.sessionId!==sessionId),audit:d.audit.filter(a=>!a.runId||!deletedRuns.has(a.runId))};
 }
+
+/** La rotation suit exactement les tuiles du poste, sans second tri invisible. */
+export function rotatingCourseIndex(index:number,count:number,descending=false){return count>0?(descending?count-1-index%count:index%count):-1;}
+export function waveSettings(size:string,interval:string,preparation:string,max:number){
+ const read=(value:string,min:number,limit:number,label:string)=>{const n=Number(value);if(!value.trim()||!Number.isInteger(n)||n<min||n>limit)throw new Error(`${label} : choisissez un nombre entier de ${min} à ${limit}.`);return n;};
+ return {size:read(size,1,Math.max(1,max),'Élèves par vague'),interval:read(interval,5,600,'Intervalle en secondes'),preparation:read(preparation,5,600,'Préparation en secondes')};
+}
+export function pauseClassWaves(plan:ClassWavePlan,time:number):ClassWavePlan{if(plan.paused)return plan;return {...plan,paused:true,remainingMs:Math.max(5000,plan.nextAt-time)};}
+export function resumeClassWaves(plan:ClassWavePlan,time:number):ClassWavePlan{return {...plan,paused:false,nextAt:time+(plan.remainingMs??60000),remainingMs:undefined};}

@@ -46,7 +46,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
  check(Number.isFinite(cmd.at)&&cmd.at>0,'Instant invalide.');
  const allowed=role==='teacher'||(role==='departure'&&cmd.kind==='start')||(role==='arrival'&&['stop','pause','resume'].includes(cmd.kind));
  check(allowed,'Ce compte ne possède pas cette autorisation.');
- const next=structuredClone(data); let detail='';
+ const next=structuredClone(data); let detail='';let cancelledRun:Run|undefined;
  if(cmd.kind==='start') {
   const session=next.sessions.find(s=>s.id===cmd.sessionId); const course=next.courses.find(c=>c.id===cmd.courseId);
   check(session&&course&&session.courseIds.includes(course.id),'Parcours absent de cette séance.');
@@ -58,6 +58,19 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   }
   for(let i=0;i<cmd.students.length;i++)next.runs.push({id:cmd.runIds[i],studentId:cmd.students[i],sessionId:session.id,courseId:course.id,courseSnapshot:structuredClone(course),start:cmd.at,pauses:[],errors:null,manualLevel:null,revision:0});
   detail=`${cmd.students.length} départ(s) · ${course.name}`;
+ }else if(cmd.kind==='voidRun') {
+  const run=next.runs.find(r=>r.id===cmd.runId);check(run,'Passage introuvable.');
+  check(run.revision===cmd.expectedRevision,'Ce passage a changé. Rouvrez sa fiche.');check(cmd.reason.trim(),'Indiquez le motif de l’annulation.');
+  check(run.errors===null&&run.manualLevel===null&&run.manualTimeMs===undefined,'Ce passage est déjà corrigé. Conservez-le dans les résultats.');
+  check(!next.runs.some(r=>r.studentId===run.studentId&&r.sessionId===run.sessionId&&r.start>run.start),'Annulez seulement le dernier départ de cet élève.');
+  cancelledRun=structuredClone(run);next.runs=next.runs.filter(r=>r.id!==run.id);detail=`Départ annulé · ${run.courseSnapshot.name} · ${cmd.reason}`;
+ }else if(cmd.kind==='restoreRun') {
+  const event=next.audit.find(a=>a.id===cmd.cancellationId&&a.action==='voidRun');const run=event?.cancelledRun;
+  check(run&&validRecoveryRun(run),'Ce départ ne peut pas être restauré.');
+  check(next.sessions.some(s=>s.id===run.sessionId&&s.studentIds.includes(run.studentId)&&s.courseIds.includes(run.courseId))&&next.students.some(s=>s.id===run.studentId),'La leçon ou l’élève a changé.');
+  check(!next.runs.some(r=>r.id===run.id),'Ce départ a déjà été restauré.');
+  check(run.end!==undefined||!next.runs.some(r=>r.studentId===run.studentId&&r.end===undefined),'Un autre chrono est actif pour cet élève.');
+  next.runs.push({...structuredClone(run),revision:run.revision+1});detail=`Annulation rétablie · ${run.courseSnapshot.name}`;
  }else if(cmd.kind==='config') {
   const ids=(items:{id:string}[])=>items.length===new Set(items.map(s=>s.id)).size;
   check(ids(cmd.students)&&ids(cmd.sessions)&&ids(cmd.courses)&&ids(cmd.sequences),'Identifiants en doublon.');
@@ -76,7 +89,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   check(lesson,'Leçon introuvable.');
   Object.assign(next,removeLesson(next,cmd.sessionId));detail=`Leçon supprimée : ${lesson.name}`;
  }else if(cmd.kind==='purge') {
-  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);next.sessions=next.sessions.map(s=>s.id===cmd.sessionId?{...s,poseDeposeTasks:[]}:s);detail='Résultats de la séance supprimés';
+  next.runs=next.runs.filter(r=>r.sessionId!==cmd.sessionId);next.offlineCorrections=(next.offlineCorrections||[]).filter(c=>c.sessionId!==cmd.sessionId);next.sessions=next.sessions.map(s=>s.id===cmd.sessionId?{...s,poseDeposeTasks:[]}:s);next.audit=next.audit.map(a=>a.cancelledRun?.sessionId===cmd.sessionId?{...a,cancelledRun:undefined}:a);detail='Résultats de la séance supprimés';
  }else if(cmd.kind==='offlineCorrect'){
   const session=next.sessions.find(s=>s.id===cmd.sessionId);
   const course=next.courses.find(c=>c.id===cmd.courseId);
@@ -130,7 +143,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   }
   run.revision++;
  }
- next.audit.push({id:cmd.id,at:cmd.at,action:cmd.kind,runId:'runId'in cmd?cmd.runId:undefined,actor,detail});
+ next.audit.push({id:cmd.id,at:cmd.at,action:cmd.kind,runId:'runId'in cmd?cmd.runId:undefined,actor,detail,...(cancelledRun?{cancelledRun}:{})});
  next.applied.push(cmd.id);next.version++;next.updatedAt=cmd.at;return next;
 }
 export function ranking(runs:Run[]):(Run&{rank:number})[]{
@@ -140,3 +153,10 @@ export function ranking(runs:Run[]):(Run&{rank:number})[]{
 }
 
 export function competitionKey(r:Run):string {const c=r.courseSnapshot;return JSON.stringify([c.id,c.distance,c.controls,c.penalty,c.difficulty,c.rubric]);}
+
+function validRecoveryRun(r:Run){
+ if(!r||typeof r.id!=='string'||typeof r.studentId!=='string'||typeof r.sessionId!=='string'||typeof r.courseId!=='string'||!Number.isFinite(r.start)||r.start<=0||!Number.isInteger(r.revision)||r.revision<0||!r.courseSnapshot||r.courseSnapshot.id!==r.courseId||!Array.isArray(r.pauses)||r.errors!==null||r.manualLevel!==null||r.manualTimeMs!==undefined)return false;
+ const c=r.courseSnapshot;if(typeof c.name!=='string'||!Number.isInteger(c.controls)||c.controls<1||!Number.isFinite(c.distance)||c.distance<=0||!c.rubric||!Array.isArray(c.rubric.thresholds)||!Array.isArray(c.rubric.maxErrors))return false;
+ let last=r.start;for(const p of r.pauses){if(!Number.isFinite(p.start)||p.start<last||p.end!==undefined&&(!Number.isFinite(p.end)||p.end<p.start)||r.end!==undefined&&(p.end===undefined||p.end>r.end))return false;last=p.end??Infinity;}
+ return r.end===undefined||Number.isFinite(r.end)&&r.end>=r.start;
+}

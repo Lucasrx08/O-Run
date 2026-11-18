@@ -10,7 +10,7 @@ export interface PoseDeposeTask {beacon:number;placers:string[];verifiers:string
 export interface Session {poseDepose?:boolean;poseDeposeTasks?:PoseDeposeTask[];id:string;sequenceId:string;name:string;date:string;courseIds:string[];studentIds:string[];className?:string;deviceMode?:1|2|3;deviceKey?:string;deviceGroupA?:string[];deviceGroupB?:string[];}
 export interface Pause {start:number;end?:number;}
 export interface Run {id:string;studentId:string;sessionId:string;courseId:string;start:number;end?:number;pauses:Pause[];errors:number|null;manualLevel:Level|null;revision:number; courseSnapshot:Course; manualTimeMs?:number;}
-export interface Audit {id:string;at:number;action:string;runId?:string;actor:string;detail:string;}
+export interface Audit {id:string;at:number;action:string;runId?:string;actor:string;detail:string;cancelledRun?:Run;}
 export interface OfflineCorrection {id:string;at:number;sessionId:string;studentId:string;courseId:string;attempt:number;errors:number;}
 export type OfflinePost = 'solo'|'A'|'B'|'AB'|'C';
 export interface OfflineConfig {post:OfflinePost;sessionId:string;studentIds:string[];groupA?:string[];groupB?:string[];transferKey?:string;importedPosts?:Array<'A'|'B'>;devices?:2|3;}
@@ -18,6 +18,8 @@ export interface Data {schema:1;version:number;students:Student[];sequences:Sequ
 export type Command =
  | {kind:'start';id:string;at:number;sessionId:string;courseId:string;students:string[];runIds:string[]}
  | {kind:'pause'|'resume'|'stop'|'reopen';id:string;at:number;runId:string;reason?:string}
+ | {kind:'voidRun';id:string;at:number;runId:string;expectedRevision:number;reason:string}
+ | {kind:'restoreRun';id:string;at:number;cancellationId:string}
  | {kind:'correct';id:string;at:number;runId:string;errors:number;expectedRevision:number;reason?:string;milliseconds?:number}
  | {kind:'adjustTime';id:string;at:number;runId:string;milliseconds:number;expectedRevision:number}
  | {kind:'level';id:string;at:number;runId:string;level:Level|null;expectedRevision:number;reason:string}

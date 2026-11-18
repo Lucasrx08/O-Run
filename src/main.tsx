@@ -2,3 +2,5 @@ import React from 'react';import ReactDOM from 'react-dom/client';import App fro
 import './pose-depose.css';
 class ErrorBoundary extends React.Component<{children:React.ReactNode},{error:boolean}>{state={error:false};static getDerivedStateFromError(){return {error:true};}render(){return this.state.error?<main className="gate"><h1>Une interruption est survenue.</h1><p>Vos données enregistrées restent dans ce navigateur.</p><button className="button primary" onClick={()=>location.reload()}>Rouvrir O’Run</button></main>:this.props.children;}}
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><ErrorBoundary><Provider><App/><UpdateNotice/></Provider></ErrorBoundary></React.StrictMode>);
+
+import './terrain-update.css';
