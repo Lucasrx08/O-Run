@@ -30,9 +30,9 @@ it('laisse effacer les nombres et donne une minute de préparation avant la prem
  for(const name of ['Élèves par vague','Intervalle entre les vagues']){const input=screen.getByRole('spinbutton',{name});fireEvent.change(input,{target:{value:''}});expect((input as HTMLInputElement).value).toBe('');fireEvent.change(input,{target:{value:name==='Élèves par vague'?'1':'30'}});}
  expect((screen.getByRole('spinbutton',{name:'Préparation avant la première vague'})as HTMLInputElement).value).toBe('60');
  fireEvent.click(screen.getByRole('button',{name:'1 min'}));expect((screen.getByRole('spinbutton',{name:'Intervalle entre les vagues'})as HTMLInputElement).value).toBe('60');
- vi.useFakeTimers({toFake:['Date','setInterval','clearInterval']});fireEvent.click(screen.getByRole('button',{name:'Lancer les vagues'}));expect(screen.getByRole('timer').textContent).toContain('01:00');
+ vi.useFakeTimers({toFake:['Date','setInterval','clearInterval']});fireEvent.click(screen.getByRole('button',{name:'Lancer les vagues'}));expect(screen.getByRole('timer').textContent).toContain('01:00');expect(screen.queryByRole('button',{name:'Corriger un départ'})).toBeNull();
  await act(async()=>{await vi.advanceTimersByTimeAsync(59000);});expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(0);
- await act(async()=>{await vi.advanceTimersByTimeAsync(1200);});await waitFor(async()=>expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(1));
+ await act(async()=>{await vi.advanceTimersByTimeAsync(1200);});await waitFor(async()=>expect((await loadWorkspace()).data.runs.filter(r=>r.sessionId===session.id)).toHaveLength(1));fireEvent.click(screen.getByRole('button',{name:'Suspendre'}));expect(screen.getByRole('button',{name:'Corriger un départ'})).toBeTruthy();
 });
 it('annule uniquement un départ accidentel, libère la carte et permet de le rétablir',async()=>{
  await setup('A',false,true);fireEvent.click(screen.getByRole('button',{name:'Corriger un départ'}));
