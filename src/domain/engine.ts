@@ -72,6 +72,7 @@ export function apply(data:Data,cmd:Command,role:Role='teacher',actor='Ce poste'
   check(run.end!==undefined||!next.runs.some(r=>r.studentId===run.studentId&&r.end===undefined),'Un autre chrono est actif pour cet élève.');
   next.runs.push({...structuredClone(run),revision:run.revision+1});detail=`Annulation rétablie · ${run.courseSnapshot.name}`;
  }else if(cmd.kind==='config') {
+  check(cmd.baseVersion===data.version,'Les données ont changé sur un autre écran. Rouvrez cette fiche avant d’enregistrer.');
   const ids=(items:{id:string}[])=>items.length===new Set(items.map(s=>s.id)).size;
   check(ids(cmd.students)&&ids(cmd.sessions)&&ids(cmd.courses)&&ids(cmd.sequences),'Identifiants en doublon.');
   for(const c of cmd.courses) check(validCorrection(c)&&(c.rubric.useTime===undefined||typeof c.rubric.useTime==='boolean')&&(c.rubric.useControls===undefined||typeof c.rubric.useControls==='boolean')&&(!c.rubric.enabled||c.rubric.useTime!==false||c.rubric.useControls!==false)&&c.name.trim()&&c.distance>0&&Number.isFinite(c.distance)&&Number.isInteger(c.controls)&&c.controls>0&&c.penalty>=0&&Number.isFinite(c.penalty)&&c.rubric.thresholds.every((t,i,a)=>Number.isFinite(t)&&t>0&&(!i||t>=a[i-1]))&&c.rubric.maxErrors.every(e=>Number.isInteger(e)&&e>=0&&e<=c.controls),'Paramètres de parcours ou barème invalides.');

@@ -117,3 +117,4 @@ it('supprime seulement la leçon ciblée, en gardant les autres leçons et les �
  expect(removed.courses).toHaveLength(6);
  expect(removed.runs).toHaveLength(0);
 });
+it('un QR A sur l’appareil enseignant conserve toutes les classes et les noms complets',()=>{const {data,session}=fixture(),split=splitAlphabetical(data,session.id);const prepared={...data,sessions:data.sessions.map(s=>({...s,deviceKey:transferKey,deviceMode:3 as const}))};const pack=createSessionPack(prepared,session.id,'A',split.A,transferKey);const result=importSessionPack(prepared,pack);expect(result.data.students).toEqual(data.students);expect(result.data.sessions[0].studentIds).toEqual(session.studentIds);expect(result.config.studentIds).toEqual(split.A);});

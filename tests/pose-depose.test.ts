@@ -22,7 +22,7 @@ describe('pose-dépose : attributions et barème',()=>{
  });
  it('sépare les scores de la leçon du cumul et ignore les autres classes',()=>{
   let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,false);d=data(d,session);let second={...session,id:'pose-2'};second=judgePoseDepose(second,31,second.poseDeposeTasks![0].revision,false,true);d.sessions.push(second);d.sessions.push({...session,id:'wrong-class',className:'5e Aurore'});
-  expect(total(d,pupil(1),session.id)).toBe(1);expect(total(d,pupil(1))).toBe(0);expect(total(d,pupil(3))).toBe(0);expect(poseDeposeRanking(d,'5e Horizon').filter(r=>r.total===0).every(r=>r.rank===1)).toBe(true);
+  expect(total(d,pupil(1),session.id)).toBe(1);expect(total(d,pupil(1))).toBe(0);expect(total(d,pupil(3))).toBe(0);expect(poseDeposeRanking(d,'5e Horizon').filter(r=>r.total===0&&r.possible>0).every(r=>r.rank===1)).toBe(true);
  });
  it('remplace un groupe sans dupliquer les balises ni transférer les anciens points',()=>{
   let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,true);session=assignPoseDepose(session,'pose',[31],[pupil(5)]);expect(session.poseDeposeTasks).toHaveLength(2);expect(total(data(d,session),pupil(1))).toBe(0);expect(total(data(d,session),pupil(5))).toBe(0);expect(total(data(d,session),pupil(3))).toBe(0);
@@ -60,3 +60,6 @@ it('trie les élèves par prénom avant le nom, sans tenir compte des accents',(
  const student=(firstName:string,lastName:string)=>({id:firstName+lastName,firstName,lastName,className:'Test'});
  expect([student('Zoé','A'),student('Élodie','B'),student('Alice','Z'),student('Elodie','A')].sort(comparePoseDeposeStudents).map(s=>s.firstName+' '+s.lastName)).toEqual(['Alice Z','Elodie A','Élodie B','Zoé A']);
 });
+import {poseDeposeLevel} from '../src/domain/poseDepose';
+it('détaille les points possibles par rôle sans compter les balises en attente',()=>{let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,true);const row=poseDeposeRanking(data(d,session),'5e Horizon').find(r=>r.student.id===pupil(1))!;expect(row.posePossible).toBe(1);expect(row.verificationPossible).toBe(0);expect(row.possible).toBe(1);expect(row.total).toBe(-1);expect(row.percentage).toBe(0);});
+it('respecte exactement les seuils 100, 80 et 60 pour les couleurs',()=>{expect(poseDeposeLevel(5,5)).toBe(4);expect(poseDeposeLevel(999,1000)).toBe(3);expect(poseDeposeLevel(4,5)).toBe(3);expect(poseDeposeLevel(799,1000)).toBe(2);expect(poseDeposeLevel(3,5)).toBe(2);expect(poseDeposeLevel(599,1000)).toBe(1);expect(poseDeposeLevel(-1,5)).toBe(1);expect(poseDeposeLevel(0,0)).toBeNull();});

@@ -1,3 +1,4 @@
+import {DataSafety} from './DataSafety';
 import {useState,type ChangeEvent} from 'react';
 import {ArrowRight,Camera,Check,Download,KeyRound,Lock,Monitor,Shield,Tablet,Timer,FileUp} from 'lucide-react';
 import {useStore} from '../store';
@@ -8,7 +9,7 @@ import {Dialog,Field} from '../components/ui';
 import * as storage from '../services/storage';
 import {download} from '../services/download';
 
-export function SettingsPage(){
+export function SettingsPage({onManage}:{onManage?:()=>void}){
  const s=useStore(),[scanner,setScanner]=useState<'A'|'B'|null>(null),[busy,setBusy]=useState(false),[recovery,setRecovery]=useState<'A'|'B'|null>(null);
  const [protect,setProtect]=useState(false),[password,setPassword]=useState(''),[confirmPassword,setConfirmPassword]=useState('');
  const loadPack=async(pack:unknown,role:'A'|'B')=>{
@@ -24,16 +25,21 @@ export function SettingsPage(){
   catch(e){s.notify((e as Error).message);}
  };
  const ready=['A','B','AB'].includes(s.offline?.post||'');
+ const manage=async()=>{if(busy)return;setBusy(true);try{if(await s.leaveStation()){s.setMode('complet');s.go('home');onManage?.();s.notify('Espace enseignant ouvert. Les chronos et postes précédents sont conservés.');}}finally{setBusy(false);}};
+ const openProfile=async(profile:NonNullable<typeof s.offline>)=>{if(busy)return;setBusy(true);try{if(await s.saveOffline(profile)){s.setSessionId(profile.sessionId);s.setMode('complet');s.go(['A','B','AB'].includes(profile.post)?'departures':profile.post==='C'?'control':'home');}}finally{setBusy(false);}};
  return <div className="page-enter settings-simplified stations-settings">
   <div className="page-heading"><div><p className="overline">SUR LE TERRAIN</p><h1>Mon poste<span>.</span></h1><p className="page-intro">Chaque appareil connaît son rôle. Préparez les iPads en scannant les QR codes de la leçon.</p></div></div>
+  <section className="station-management"><div><strong>Changer de poste ou démarrer une autre leçon</strong><p>Retrouvez vos classes sans effacer les chronos ni les préparations de cet appareil.</p></div><button className="button primary" disabled={busy||s.saving} onClick={()=>void manage()}>Mes classes et leçons</button></section>
   <div className="station-options">
-   <button type="button" className={s.offline?.post==='C'?'station-choice active':'station-choice'} onClick={()=>{if(s.offline?.post==='C'){s.setSessionId(s.offline.sessionId);s.go('control');}else{s.go('home');s.notify('Ouvrez une classe et une leçon, puis choisissez 2 ou 3 appareils pour configurer le poste C.');}}}>
+   <button type="button" className={s.offline?.post==='C'?'station-choice active':'station-choice'} onClick={()=>{if(s.offline?.post==='C'){s.setSessionId(s.offline.sessionId);s.go('control');}else{void manage();}}}>
     <span className="station-choice-icon"><Monitor size={30}/></span><strong>Correction · C</strong><small>Corriger les cartons, scanner les chronos, consulter les classements.</small><span className="station-choice-foot">{s.offline?.post==='C'?<><Check size={16}/>Poste prêt</>:<>Depuis la leçon<ArrowRight size={17}/></>}</span>
    </button>
    {(['A','B'] as const).map(role=><button type="button" key={role} className={(s.offline?.post===role||s.offline?.post==='AB')?'station-choice active':'station-choice'} onClick={()=>setScanner(role)}>
     <span className="station-choice-icon"><Tablet size={30}/></span><strong>Tablette {role}</strong><small>Départs et arrivées du groupe {role}. Scanner la préparation de la leçon.</small>
     <span className="station-choice-foot"><Camera size={17}/>{s.offline?.post===role||s.offline?.post==='AB'?'Réimporter ou ajouter un groupe':'Scanner le QR de préparation'}</span>
    </button>)}</div>
+  {s.stationProfiles.length>0&&<section className="saved-stations"><h2>Mes postes enregistrés</h2><div>{s.stationProfiles.map(profile=>{const lesson=s.data.sessions.find(l=>l.id===profile.sessionId);const active=s.offline?.post===profile.post&&s.offline.sessionId===profile.sessionId;return <article key={profile.sessionId+profile.post}><div><strong>{profile.post==='solo'?'Un appareil':`Poste ${profile.post}`} · {lesson?.name}</strong><small>{lesson?.className||''} · {profile.studentIds.length||lesson?.studentIds.length||0} élèves</small></div><button className="button" disabled={busy||s.saving||active} onClick={()=>void openProfile(profile)}>{active?'Poste actuel':'Ouvrir ce poste'}</button></article>;})}</div></section>}
+  <DataSafety/>
   {ready&&<section className="station-ready"><div><Check size={19}/><strong>{s.offline?.post==='AB'?'iPad A + B prêt':`Tablette ${s.offline?.post} prête`}</strong><span>{s.offline?.studentIds.length} élèves · leçon reçue</span></div>
    <button className="button primary" onClick={()=>{s.setSessionId(s.offline!.sessionId);s.go('departures');}}><Timer size={18}/>Ouvrir les chronos<ArrowRight size={17}/></button></section>}
   {s.offline?.post==='C'&&s.data.runs.some(r=>r.sessionId===s.offline?.sessionId)&&<details className="station-backup station-recovery"><summary><Shield size={17}/>Secours : récupérer les chronos d’une tablette bloquée</summary>

@@ -31,6 +31,7 @@ export function planLessonDevices(data:Data,sessionId:string,mode:1|2|3,selected
   throw new Error('Cette leçon contient déjà des chronos. Conservez son mode pour ne pas mélanger les résultats.');
  const all=alphabeticalStudents(data,sessionId).map(s=>s.id);
  if(mode>1&&!all.length)throw new Error('Ajoutez les élèves à la classe avant de préparer les tablettes.');
+ if(mode===3&&selectedA&&session.deviceGroupA&&data.runs.some(r=>r.sessionId===sessionId)&&(selectedA.length!==session.deviceGroupA.length||selectedA.some(id=>!session.deviceGroupA!.includes(id))))throw new Error('Cette leçon contient des chronos : conservez la répartition A/B. Créez une autre leçon pour la changer.');
  const saved=session.deviceGroupA;
  const isValid=!!saved&&saved.length>0&&saved.length<all.length&&new Set(saved).size===saved.length&&saved.every(id=>all.includes(id));
  const groups=mode===3?splitAlphabetical(data,sessionId,selectedA??(isValid?saved:undefined)):
@@ -66,7 +67,7 @@ export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig)
  const p=validateSessionPack(input);
  const existing=data.sessions.find(s=>s.id===p.sessionId);
  const fromTablet=!!config&&['A','B','AB'].includes(config.post)&&config.sessionId===p.sessionId;
- if(existing&&!fromTablet)throw new Error('Cette leçon existe déjà sur cet appareil. Pour fusionner A et B, importez la préparation sur un iPad configuré en A ou B.');
+ if(existing&&!fromTablet&&existing.deviceKey!==p.transferKey)throw new Error('Cette leçon existe déjà avec une autre clé. Utilisez sa préparation d’origine.');
  if(fromTablet&&config!.transferKey!==p.transferKey)throw new Error('Préparation incompatible : les fichiers A et B ne proviennent pas de la même séance.');
  if(existing&&(existing.sequenceId!==p.session.sequenceId||existing.name!==p.session.name||
   existing.date!==p.session.date||existing.className!==p.session.className||
@@ -83,11 +84,11 @@ export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig)
  const studentIds=[...new Set([...nextA,...nextB])];
  const byId=<T extends {id:string}>(previous:T[],incoming:T[])=>{
   const map=new Map(previous.map(x=>[x.id,x]));
-  for(const item of incoming)map.set(item.id,item);
+  for(const item of incoming)if(!map.has(item.id))map.set(item.id,item);
   return [...map.values()];
  };
  const next={...data,students:byId(data.students,p.students),sequences:byId(data.sequences,[p.sequence]),
-  sessions:byId(data.sessions,[{...p.session,studentIds}]),courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
+  sessions:data.sessions.some(s=>s.id===p.sessionId)?data.sessions.map(s=>s.id===p.sessionId?{...s,studentIds:[...new Set([...s.studentIds,...studentIds])]}:s):[...data.sessions,{...p.session,studentIds}],courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
  return {data:next,config:{post:nextA.length&&nextB.length?'AB':p.post,sessionId:p.sessionId,studentIds,groupA:nextA,groupB:nextB,transferKey:p.transferKey,devices:p.session.deviceMode===2?2:3}};
 }
 export function exportTimes(data:Data,config:OfflineConfig,post?:'A'|'B'):TimesPack{

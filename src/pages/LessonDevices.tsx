@@ -22,11 +22,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
  const configure=async(mode=chosen)=>{
   if(busy)return false;setBusy(true);setError('');
   try{
-   const p=planLessonDevices(s.data,session.id,mode,selectedA??undefined,newTransferKey);
-   const active=s.offline;
-   if(!await s.command(configCommand(p.data,`Organisation de la leçon : ${mode} appareil(s)`)))return false;
-   const config={...p.config,importedPosts:active?.post==='C'&&active.sessionId===session.id?active.importedPosts:[]};
-   if(!await s.saveOffline(config))return false;
+   if(!await s.configureDevices(session.id,mode,selectedA??undefined))return false;
    s.setSessionId(session.id);s.setMode('complet');setSelectedA(null);
    s.notify(`Mode ${mode} appareil${mode>1?'s':''} prêt pour cette leçon.`);
    return true;

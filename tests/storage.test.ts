@@ -8,11 +8,11 @@ describe('Persistance locale et chiffrement',()=>{
  it('interrompt tout espace serveur ancien avant un nouveau chrono',async()=>{await mutate(w=>({...w,room:'room-test',role:'arrival'}));await execute({kind:'start',id:'local',at:Date.now(),sessionId:'session-2',courseId:'course-orange',students:['demo-student-11'],runIds:['new']});const w=await loadWorkspace();expect(w.room).toBeNull();expect(w.data.runs.some(r=>r.id==='new')).toBe(true);});
  it('préserve les anciennes opérations locales en attente sans les envoyer',async()=>{const cmd={kind:'start' as const,id:'old',at:Date.now(),sessionId:'session-2',courseId:'course-orange',students:['demo-student-12'],runIds:['old-run']};await mutate(w=>({...w,room:'room-test',pending:[cmd]}));await execute({kind:'start',id:'new-command',at:Date.now(),sessionId:'session-2',courseId:'course-orange',students:['demo-student-11'],runIds:['new']});const w=await loadWorkspace();expect(w.pending).toHaveLength(1);expect(w.pending[0].id).toBe('old');expect(w.room).toBeNull();});
  it('enregistre la configuration locale de l’appareil C sans effacer les données',async()=>{const original=(await loadWorkspace()).data;await setOfflineConfig({post:'C',sessionId:'session-2',studentIds:original.sessions[1].studentIds,groupA:['demo-student-11'],groupB:['demo-student-12'],transferKey:'ab'.repeat(32)});const w=await loadWorkspace();expect(w.offline?.post).toBe('C');expect(w.data).toEqual(original);});
- it('empêche de transformer une tablette A contenant des chronos en poste C',async()=>{
+ it('permet A vers C après les arrivées sans effacer les chronos',async()=>{
   const before=await loadWorkspace(),ids=before.data.sessions[1].studentIds;
   await setOfflineConfig({post:'A',sessionId:'session-2',studentIds:ids,groupA:ids,groupB:[],transferKey:'ab'.repeat(32)});
-  await expect(setOfflineConfig({post:'C',sessionId:'session-2',studentIds:ids,groupA:ids.slice(0,12),groupB:ids.slice(12),transferKey:'ab'.repeat(32)})).rejects.toThrow(/protégée/);
-  const after=await loadWorkspace();expect(after.offline?.post).toBe('A');expect(after.data.runs).toEqual(before.data.runs);
+  await setOfflineConfig({post:'C',sessionId:'session-2',studentIds:ids,groupA:ids.slice(0,12),groupB:ids.slice(12),transferKey:'ab'.repeat(32)});
+  const after=await loadWorkspace();expect(after.offline?.post).toBe('C');expect(after.data.runs).toEqual(before.data.runs);expect(after.stationProfiles?.some(p=>p.post==='A')).toBe(true);
  });
  it('restaure les QR de la tablette A après une ancienne mauvaise organisation',async()=>{
   const before=await loadWorkspace(),ids=before.data.sessions[1].studentIds;

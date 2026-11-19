@@ -42,19 +42,19 @@ export function collectPoseDepose(session:Session,beacon:number,collected:boolea
  ensure(session.poseDeposeTasks?.some(t=>t.beacon===beacon),'Balise non attribuée.');return {...session,poseDeposeTasks:session.poseDeposeTasks!.map(t=>t.beacon===beacon?{...t,collected,revision:t.revision+1}:t)};
 }
 export function poseDeposeRanking(data:Data,className:string,sessionId?:string){
- const students=data.students.filter(s=>s.className===className),rows=students.map(student=>({student,rank:0,pose:0,verification:0,total:0,good:0,wrong:0,pending:0,lessons:0}));
+ const students=data.students.filter(s=>s.className===className),rows=students.map(student=>({student,rank:0,pose:0,verification:0,total:0,good:0,wrong:0,pending:0,lessons:0,posePossible:0,verificationPossible:0,poseGood:0,verificationGood:0}));
  const byId=new Map(rows.map(r=>[r.student.id,r]));
  for(const session of data.sessions.filter(s=>!sessionId||s.id===sessionId)){
   // Explicit classes isolate cumulative results; old mixed-class lessons use student membership.
   if(session.className&&session.className!==className)continue;
   const seen=new Set<string>();
   for(const task of session.poseDeposeTasks||[])for(const [ids,valid,key] of [[task.placers,task.placementValid,'pose'],[task.verifiers,task.verificationValid,'verification']] as const){
-   for(const id of ids){const row=byId.get(id);if(!row)continue;seen.add(id);if(valid===null){row.pending++;continue;}const points=valid?1:-1;row[key]+=points;row.total+=points;if(valid)row.good++;else row.wrong++;}
+   for(const id of ids){const row=byId.get(id);if(!row)continue;seen.add(id);if(valid===null){row.pending++;continue;}row[key==='pose'?'posePossible':'verificationPossible']++;if(valid)row[key==='pose'?'poseGood':'verificationGood']++;const points=valid?1:-1;row[key]+=points;row.total+=points;if(valid)row.good++;else row.wrong++;}
   }
   for(const id of seen)byId.get(id)!.lessons++;
  }
- rows.sort((a,b)=>b.total-a.total||comparePoseDeposeStudents(a.student,b.student));
- let rank=0;return rows.map((r,i)=>{if(!i||r.total!==rows[i-1].total)rank=i+1;return {...r,rank};});
+ rows.sort((a,b)=>Number(b.posePossible+b.verificationPossible>0)-Number(a.posePossible+a.verificationPossible>0)||b.total-a.total||comparePoseDeposeStudents(a.student,b.student));
+ let rank=0;return rows.map((r,i)=>{if(!i||r.total!==rows[i-1].total)rank=i+1;const possible=r.posePossible+r.verificationPossible;return {...r,rank:possible?rank:0,possible,percentage:possible?Math.max(0,r.total/possible*100):null};});
 }
 
 /** A batch is validated before any caller saves it; points are still derived from decisions. */
@@ -63,3 +63,5 @@ export function batchPoseDepose(session:Session,beacons:number[],action:'good'|'
  let next=session;for(const beacon of beacons){const task=next.poseDeposeTasks!.find(t=>t.beacon===beacon)!;next=action==='good'?judgePoseDepose(next,beacon,task.revision,true,task.verifiers.length?true:null):collectPoseDepose(next,beacon,true);}
  return next;
 }
+
+export function poseDeposeLevel(points:number,possible:number):1|2|3|4|null{if(!possible)return null;const ratio=points/possible;return ratio>=1?4:ratio>=.8?3:ratio>=.6?2:1;}
