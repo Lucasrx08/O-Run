@@ -1,12 +1,18 @@
-import {useEffect,useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {RefreshCw} from 'lucide-react';
-import {saveCheckpoint} from '../services/storage';
+import {loadWorkspace,saveCheckpoint} from '../services/storage';
 import {useStore} from '../store';
 
-/** Les mises à jour du service worker ne sont jamais appliquées en plein chrono. */
+/**
+ * Ne jamais recharger un chronomètre ou une écriture en cours.
+ * La nouvelle version s'applique seule à l'accueil, après sauvegarde locale
+ * et vérification du contenu enregistré. Aucun transfert externe.
+ */
 export function UpdateNotice(){
  const s=useStore(),[ready,setReady]=useState(false),[updating,setUpdating]=useState(false),[error,setError]=useState('');
+ const attempt=useRef(false);
  const running=s.data.runs.some(r=>r.end===undefined);
+ const busy=running||s.saving;
  useEffect(()=>{
   if(!import.meta.env.PROD||!('serviceWorker'in navigator))return;
   let disposed=false;
@@ -22,10 +28,30 @@ export function UpdateNotice(){
   const timer=window.setInterval(update,10*60*1000);
   return()=>{disposed=true;window.clearInterval(timer);document.removeEventListener('visibilitychange',update);window.removeEventListener('online',update);navigator.serviceWorker.removeEventListener('controllerchange',onChanged);};
  },[]);
+ async function applyUpdate(){
+  setUpdating(true);setError('');
+  try{
+   await saveCheckpoint('Avant mise à jour automatique');
+   const workspace=await loadWorkspace();
+   if(workspace.data.runs.some(r=>r.end===undefined)){
+    setError('Un chronomètre a démarré : mise à jour reportée.');attempt.current=false;setUpdating(false);return;
+   }
+   window.location.reload();
+  }catch{
+   setError('Mise à jour reportée : sauvegarde impossible. Exportez une copie depuis les réglages.');
+   attempt.current=false;setUpdating(false);
+  }
+ }
+ // À l'accueil uniquement, l'actualisation se fait sans désinstaller l'application.
+ useEffect(()=>{
+  if(!ready||busy||s.view!=='home'||attempt.current)return;
+  attempt.current=true;
+  void applyUpdate();
+ },[ready,busy,s.view]);
  if(!ready)return null;
  return <aside className="orun-update-notice" role="status">
   <RefreshCw size={19}/>
-  <div><strong>Nouvelle version d’O’Run prête</strong><span>{running?'Terminez les chronos en cours avant d’actualiser.':'Une copie de secours sera créée avant d’actualiser.'}</span></div>
-  <button type="button" disabled={running||s.saving||updating} onClick={async()=>{setUpdating(true);setError('');try{await saveCheckpoint();window.location.reload();}catch{setError('Actualisation interrompue : la copie de secours n’a pas pu être créée. Téléchargez une sauvegarde depuis les réglages.');setUpdating(false);}}}>Mettre à jour</button>{error&&<p role="alert">{error}</p>}
+  <div><strong>Nouvelle version d’O’Run disponible</strong><span>{busy?'Enregistrement en cours : mise à jour différée.':s.view==='home'?'Vérification des données avant actualisation…':'Retournez à l’accueil pour une actualisation automatique, ou utilisez le bouton.'}</span></div>
+  <button type="button" disabled={busy||updating||s.view!=='home'} onClick={()=>{if(!attempt.current){attempt.current=true;void applyUpdate();}}}> {updating?'Vérification…':'Mettre à jour'}</button>{error&&<p role="alert">{error}</p>}
  </aside>;
 }
