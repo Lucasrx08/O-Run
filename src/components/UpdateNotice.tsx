@@ -34,12 +34,12 @@ export function UpdateNotice(){
    await saveCheckpoint('Avant mise à jour automatique');
    const workspace=await loadWorkspace();
    if(workspace.data.runs.some(r=>r.end===undefined)){
-    setError('Un chronomètre a démarré : mise à jour reportée.');setUpdating(false);return;
+    setError('Un chronomètre a démarré : mise à jour reportée.');attempt.current=false;setUpdating(false);return;
    }
    window.location.reload();
   }catch{
    setError('Mise à jour reportée : sauvegarde impossible. Exportez une copie depuis les réglages.');
-   setUpdating(false);
+   attempt.current=false;setUpdating(false);
   }
  }
  // À l'accueil uniquement, l'actualisation se fait sans désinstaller l'application.
@@ -52,6 +52,6 @@ export function UpdateNotice(){
  return <aside className="orun-update-notice" role="status">
   <RefreshCw size={19}/>
   <div><strong>Nouvelle version d’O’Run disponible</strong><span>{busy?'Enregistrement en cours : mise à jour différée.':s.view==='home'?'Vérification des données avant actualisation…':'Retournez à l’accueil pour une actualisation automatique, ou utilisez le bouton.'}</span></div>
-  <button type="button" disabled={busy||updating} onClick={()=>{if(!attempt.current){attempt.current=true;void applyUpdate();}}}> {updating?'Vérification…':'Mettre à jour'}</button>{error&&<p role="alert">{error}</p>}
+  <button type="button" disabled={busy||updating||s.view!=='home'} onClick={()=>{if(!attempt.current){attempt.current=true;void applyUpdate();}}}> {updating?'Vérification…':'Mettre à jour'}</button>{error&&<p role="alert">{error}</p>}
  </aside>;
 }
