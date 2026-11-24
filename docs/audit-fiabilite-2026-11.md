@@ -61,3 +61,11 @@ Les tests existants couvrent également départs par vagues, pause/reprise, rota
 - Grilles de corrections complètes sans pagination, hauteur minimale des tuiles, temps insécables, état/nom/chrono organisés séparément. Sur mobile ou écran court, défilement vertical accessible au lieu de couper les textes. Barres de commandes repliables et dialogues limités à l’écran.
 
 Validation : suite complète de tests, compilation, construction de production et contrôle dans le navigateur avec une classe fictive de 32 élèves. Les appareils personnels de l’enseignant ne sont pas accessibles ; la cause exacte d’une perte passée n’est pas établie. Aucune récupération de données déjà totalement effacées n’est revendiquée.
+
+### Ajustement après les captures du poste C et des 12 groupes
+
+Les captures reçues après publication montrent que le cas mono-appareil ne couvrait pas l’empilement des commandes du poste C : QR, compteurs, explication et titre de panneau réduisaient fortement la grille des élèves. Le poste C utilise désormais un compteur compact et un menu facultatif pour les QR et fichiers. La correction par élève reste identique ; seuls les titres, compteurs et commandes sont réorganisés.
+
+La pose-dépose utilise une zone de travail bornée en tablette/ordinateur. Les groupes se répartissent en tuiles compactes, les panneaux occupent la hauteur restante, et la barre d’attribution réserve son propre espace plutôt que de recouvrir les dernières balises. Sur téléphone, le défilement continu est conservé.
+
+Cas de contrôle : 24 élèves fictifs, 12 cartes, 72 passages terminés, 12 groupes et 36 balises validées. Test ajouté : corriger une carte du dernier élève conserve les 24 fiches, les 12 cartes et les 72 heures de départ/arrivée, en ne changeant que la correction choisie. Aucun changement du schéma, du stockage, du barème ou du mécanisme de mise à jour.

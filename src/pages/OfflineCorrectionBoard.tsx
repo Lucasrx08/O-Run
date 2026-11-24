@@ -68,10 +68,8 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
   }else{setTouched(old=>old.slice(saved));setTimeTouched(old=>old.slice(saved));}
  };
  return <section className="c-correction-workspace c-correction-new" aria-label="Correction des cartons par élève">
-  <div className="c-correction-head"><div><h2>Correction par élève</h2><p>Les tuiles présentent uniquement les parcours effectués.</p></div>
-   <div className="c-correction-counter"><strong>{corrected.size}</strong><span>cartons corrigés</span></div>
-  </div>
-  <div className="c-correction-toolbar"><span><Users size={18}/>{students.length} élèves · {runs.length} chrono(s) reçu(s)</span>
+  <h2 className="sr-only">Correction par élève</h2>
+  <div className="c-correction-toolbar"><span><Users size={18}/>{students.length} élèves <small>{corrected.size} cartons corrigés</small></span>
    <div className="c-correction-filters" role="tablist" aria-label="Statut des corrections">{([['pending','À corriger',pendingCount],['corrected','Corrigés',completeCount],['all','Tous',students.filter(p=>cardsFor(p.id).length).length]] as const).map(([id,name,count])=><button type="button" role="tab" key={id} aria-selected={queueView===id} className={queueView===id?'active':''} onClick={()=>setQueueView(id)}>{name} <span>{count}</span></button>)}</div>
    <label className="search"><Search size={17}/><input aria-label="Rechercher un élève à corriger" placeholder="Un prénom…" value={search} onChange={e=>setSearch(e.target.value)}/></label></div>
   {!runs.length&&!corrections.length&&!manual&&<div className="c-pending-hint">Les chronos A / B ne sont pas encore arrivés. Scannez-les pour faire apparaître les passages, ou indiquez manuellement les cartes réellement effectuées. <button type="button" className="button" onClick={()=>setManual(true)}>Corriger un carton avant transfert</button></div>}

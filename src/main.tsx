@@ -4,3 +4,5 @@ class ErrorBoundary extends React.Component<{children:React.ReactNode},{error:bo
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><ErrorBoundary><Provider><App/><UpdateNotice/></Provider></ErrorBoundary></React.StrictMode>);
 
 import './terrain-update.css';
+
+import './compact-workspaces.css';

@@ -159,7 +159,7 @@ it('organise trois appareils en deux groupes alphabétiques, avec QR de prépara
  expect(screen.getByText('Répartition alphabétique')).toBeTruthy();expect(screen.getByText('2 élèves')).toBeTruthy();expect(screen.getByText('1 élève')).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Enregistrer et ouvrir la correction'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.sessions.find(x=>x.id===session.id)?.deviceMode).toBe(3));
- expect(screen.getByRole('button',{name:'QR Tablette A'})).toBeTruthy();expect(screen.getByRole('button',{name:'QR Tablette B'})).toBeTruthy();
+ fireEvent.click(screen.getByText('Transferts / QR'));expect(screen.getByRole('button',{name:'QR Tablette A'})).toBeTruthy();expect(screen.getByRole('button',{name:'QR Tablette B'})).toBeTruthy();
  expect(screen.getByRole('heading',{name:'Correction par élève'})).toBeTruthy();
  expect(screen.getByRole('button',{name:'Scanner les chronos A / B'})).toBeTruthy();
 });
