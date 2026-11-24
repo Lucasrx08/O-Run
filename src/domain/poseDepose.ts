@@ -49,7 +49,7 @@ export function poseDeposeRanking(data:Data,className:string,sessionId?:string){
   if(session.className&&session.className!==className)continue;
   const seen=new Set<string>();
   for(const task of session.poseDeposeTasks||[])for(const [ids,valid,key] of [[task.placers,task.placementValid,'pose'],[task.verifiers,task.verificationValid,'verification']] as const){
-   for(const id of ids){const row=byId.get(id);if(!row)continue;seen.add(id);if(valid===null){row.pending++;continue;}row[key==='pose'?'posePossible':'verificationPossible']++;if(valid)row[key==='pose'?'poseGood':'verificationGood']++;const points=valid?1:-1;row[key]+=points;row.total+=points;if(valid)row.good++;else row.wrong++;}
+   for(const id of ids){const row=byId.get(id);if(!row)continue;seen.add(id);if(valid===null){row.pending++;continue;}row[key==='pose'?'posePossible':'verificationPossible']++;if(valid)row[key==='pose'?'poseGood':'verificationGood']++;const points=valid?1:0;row[key]+=points;row.total+=points;if(valid)row.good++;else row.wrong++;}
   }
   for(const id of seen)byId.get(id)!.lessons++;
  }

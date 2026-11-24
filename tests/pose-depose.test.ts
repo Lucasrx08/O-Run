@@ -12,17 +12,17 @@ function ready(){let {d,session}=prepared();session=assignPoseDepose(session,'po
 function data(d:Data,s:Session){return {...d,sessions:d.sessions.map(l=>l.id===s.id?s:l)};}
 const total=(d:Data,id:string,s?:string)=>poseDeposeRanking(d,'5e Horizon',s).find(r=>r.student.id===id)!.total;
 describe('pose-dépose : attributions et barème',()=>{
- for(const [pose,verification] of [[true,true],[false,true],[true,false],[false,false]])it(`attribue exactement ${pose?'+1':'−1'} en pose et ${verification?'+1':'−1'} en vérification à chaque membre`,()=>{
+ for(const [pose,verification] of [[true,true],[false,true],[true,false],[false,false]])it(`attribue exactement ${pose?'+1':'0'} en pose et ${verification?'+1':'0'} en vérification à chaque membre`,()=>{
   let {d,session}=ready();const task=session.poseDeposeTasks![0];session=judgePoseDepose(session,31,task.revision,pose,verification);d=data(d,session);
-  for(const n of [1,2])expect(total(d,pupil(n))).toBe(pose?1:-1);for(const n of [3,4])expect(total(d,pupil(n))).toBe(verification?1:-1);
+  for(const n of [1,2])expect(total(d,pupil(n))).toBe(pose?1:0);for(const n of [3,4])expect(total(d,pupil(n))).toBe(verification?1:0);
  });
- it('ne compte pas les attributions non validées, conserve les points négatifs et recalcule une rectification sans cumul',()=>{
-  let {d,session}=ready();expect(total(data(d,session),pupil(1))).toBe(0);session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,false);expect(total(data(d,session),pupil(1))).toBe(-1);
+ it('ne compte pas les attributions non validées, compte les erreurs à zéro et recalcule une rectification sans cumul',()=>{
+  let {d,session}=ready();expect(total(data(d,session),pupil(1))).toBe(0);session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,false);expect(total(data(d,session),pupil(1))).toBe(0);
   session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,true);expect(total(data(d,session),pupil(1))).toBe(1);session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,null,null);expect(total(data(d,session),pupil(1))).toBe(0);
  });
  it('sépare les scores de la leçon du cumul et ignore les autres classes',()=>{
   let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,false);d=data(d,session);let second={...session,id:'pose-2'};second=judgePoseDepose(second,31,second.poseDeposeTasks![0].revision,false,true);d.sessions.push(second);d.sessions.push({...session,id:'wrong-class',className:'5e Aurore'});
-  expect(total(d,pupil(1),session.id)).toBe(1);expect(total(d,pupil(1))).toBe(0);expect(total(d,pupil(3))).toBe(0);expect(poseDeposeRanking(d,'5e Horizon').filter(r=>r.total===0&&r.possible>0).every(r=>r.rank===1)).toBe(true);
+  expect(total(d,pupil(1),session.id)).toBe(1);expect(total(d,pupil(1))).toBe(1);expect(total(d,pupil(3))).toBe(1);expect(poseDeposeRanking(d,'5e Horizon').filter(r=>r.total===1&&r.possible>0).every(r=>r.rank===1)).toBe(true);
  });
  it('remplace un groupe sans dupliquer les balises ni transférer les anciens points',()=>{
   let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,true,true);session=assignPoseDepose(session,'pose',[31],[pupil(5)]);expect(session.poseDeposeTasks).toHaveLength(2);expect(total(data(d,session),pupil(1))).toBe(0);expect(total(data(d,session),pupil(5))).toBe(0);expect(total(data(d,session),pupil(3))).toBe(0);
@@ -61,7 +61,7 @@ it('trie les élèves par prénom avant le nom, sans tenir compte des accents',(
  expect([student('Zoé','A'),student('Élodie','B'),student('Alice','Z'),student('Elodie','A')].sort(comparePoseDeposeStudents).map(s=>s.firstName+' '+s.lastName)).toEqual(['Alice Z','Elodie A','Élodie B','Zoé A']);
 });
 import {poseDeposeLevel} from '../src/domain/poseDepose';
-it('détaille les points possibles par rôle sans compter les balises en attente',()=>{let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,true);const row=poseDeposeRanking(data(d,session),'5e Horizon').find(r=>r.student.id===pupil(1))!;expect(row.posePossible).toBe(1);expect(row.verificationPossible).toBe(0);expect(row.possible).toBe(1);expect(row.total).toBe(-1);expect(row.percentage).toBe(0);});
+it('détaille les points possibles par rôle sans compter les balises en attente',()=>{let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,true);const row=poseDeposeRanking(data(d,session),'5e Horizon').find(r=>r.student.id===pupil(1))!;expect(row.posePossible).toBe(1);expect(row.verificationPossible).toBe(0);expect(row.possible).toBe(1);expect(row.total).toBe(0);expect(row.percentage).toBe(0);});
 it('respecte exactement les seuils 100, 80 et 60 pour les couleurs',()=>{expect(poseDeposeLevel(5,5)).toBe(4);expect(poseDeposeLevel(999,1000)).toBe(3);expect(poseDeposeLevel(4,5)).toBe(3);expect(poseDeposeLevel(799,1000)).toBe(2);expect(poseDeposeLevel(3,5)).toBe(2);expect(poseDeposeLevel(599,1000)).toBe(1);expect(poseDeposeLevel(-1,5)).toBe(1);expect(poseDeposeLevel(0,0)).toBeNull();});
 
 import {editPoseGroup,poseGroups} from '../src/domain/poseDepose';
@@ -80,4 +80,12 @@ it('bloque une correction conflictuelle ou périmée sans modifier les attributi
  expect(()=>editPoseGroup(session,[pupil(1),pupil(2)],['unknown'],expected)).toThrow(/leçon/);
  expect(()=>editPoseGroup(collectPoseDepose(session,31,true),[pupil(1),pupil(2)],[pupil(6)],expected)).toThrow(/changé/);
  expect(session).toEqual(before);
+});
+
+it('compte deux poses correctes sur trois et huit réussites sur neuf sans modifier les validations',()=>{
+ let {d,session}=prepared();session=assignPoseDepose(session,'pose',[31,32,33],[pupil(1)]);session=assignPoseDepose(session,'pose',[34,35,36,37,38,39],[pupil(2)]);session=assignPoseDepose(session,'verification',[34,35,36,37,38,39],[pupil(1)]);
+ session=batchPoseDepose(session,[31,32,34,35,36,37,38,39],'good');session=judgePoseDepose(session,33,session.poseDeposeTasks!.find(t=>t.beacon===33)!.revision,false,null);
+ const before=structuredClone(session),row=poseDeposeRanking(data(d,session),'5e Horizon',session.id).find(r=>r.student.id===pupil(1))!;
+ expect(row).toMatchObject({pose:2,posePossible:3,verification:6,verificationPossible:6,total:8,possible:9,good:8,wrong:1});expect(row.percentage).toBeCloseTo(88.8889,3);expect(poseDeposeLevel(row.total,row.possible)).toBe(3);expect(session).toEqual(before);
+ const second={...session,id:'another-lesson'};const cumulative=poseDeposeRanking({...data(d,session),sessions:[session,second]},'5e Horizon').find(r=>r.student.id===pupil(1))!;expect(cumulative).toMatchObject({pose:4,posePossible:6,total:16,possible:18});
 });

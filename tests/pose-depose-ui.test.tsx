@@ -22,9 +22,9 @@ it('attribue par tuiles, interdit l’auto-vérification, valide les deux groupe
  fireEvent.click(screen.getByRole('button',{name:'Camille E.'}));fireEvent.click(screen.getByRole('button',{name:'Dorian E.'}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la vérification'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].poseDeposeTasks![0].verifiers).toEqual(['c','d']));
  fireEvent.click(screen.getByRole('tab',{name:'Validation'}));await waitFor(()=>expect((screen.getByRole('button',{name:'Signaler une erreur balise 31'})as HTMLButtonElement).disabled).toBe(false));fireEvent.click(screen.getByRole('button',{name:'Signaler une erreur balise 31'}));fireEvent.click(screen.getByRole('button',{name:'Mal posée'}));fireEvent.click(screen.getByRole('button',{name:'Enregistrer le résultat'}));
- await waitFor(async()=>expect(poseDeposeRanking((await loadWorkspace()).data,'3e Pose').find(r=>r.student.id==='a')!.total).toBe(-1));
+ await waitFor(async()=>expect(poseDeposeRanking((await loadWorkspace()).data,'3e Pose').find(r=>r.student.id==='a')!.total).toBe(0));
  await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());expect(screen.queryByRole('article',{name:'Validation balise 31'})).toBeNull();expect(screen.queryByRole('checkbox',{name:'Balise 31 rangée'})).toBeNull();
- fireEvent.click(screen.getByRole('tab',{name:'Classement'}));expect(screen.getByRole('row',{name:/Alice E./}).textContent).toContain('-1');expect(screen.getByRole('row',{name:/Camille E./}).textContent).toContain('1');
+ fireEvent.click(screen.getByRole('tab',{name:'Classement'}));expect(screen.getByRole('row',{name:/Alice E./}).textContent).toContain('0 / 1');expect(screen.getByRole('row',{name:/Camille E./}).textContent).toContain('1');
  fireEvent.click(screen.getByRole('button',{name:'Toutes les leçons'}));expect(screen.getByRole('button',{name:'Toutes les leçons'}).getAttribute('aria-pressed')).toBe('true');
  fireEvent.click(screen.getByRole('tab',{name:'Résultats'}));expect(screen.getByRole('group',{name:'Rubrique du classement'})).toBeTruthy();expect(screen.getByRole('heading',{name:'Classement pose-dépose'})).toBeTruthy();
 });
