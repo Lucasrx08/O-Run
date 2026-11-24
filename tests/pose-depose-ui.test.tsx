@@ -49,3 +49,12 @@ it('trie les prénoms, accepte trois poseurs et valide une sélection en une act
  await waitFor(()=>expect(screen.queryAllByRole('article')).toHaveLength(0),{timeout:5000});expect(poseDeposeRanking((await loadWorkspace()).data,'3e Pose').find(r=>r.student.id==='c')!.total).toBe(2);
  fireEvent.click(screen.getByRole('button',{name:'Validées'}));await screen.findByRole('article',{name:'Validation balise 31'});expect(screen.getAllByRole('article')).toHaveLength(2);expect(screen.queryByText('Marquer rangées')).toBeNull();
 });
+it('réutilise un groupe coloré pour plusieurs poses puis pour vérifier un autre groupe',async()=>{
+ await prepare();fireEvent.click(await screen.findByRole('button',{name:/^Pose test/}));await enterPose();
+ for(const name of ['Alice E.','Basile E.'])fireEvent.click(screen.getByRole('button',{name}));
+ fireEvent.click(screen.getByRole('button',{name:/^Balise 31 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));
+ const group=await screen.findByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'});expect(group.getAttribute('aria-pressed')).toBe('true');const color=group.style.getPropertyValue('--group-color');expect(color).toContain('hsl');
+ fireEvent.click(screen.getByRole('button',{name:/^Balise 32 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].poseDeposeTasks).toHaveLength(2));
+ fireEvent.click(screen.getByRole('button',{name:'Nouveau groupe'}));fireEvent.click(screen.getByRole('button',{name:'Camille E.'}));fireEvent.click(screen.getByRole('button',{name:/^Balise 33 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));await screen.findByRole('button',{name:'Reprendre le groupe Camille E.'});
+ fireEvent.click(screen.getByRole('tab',{name:'Vérification'}));fireEvent.click(screen.getByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'}));fireEvent.click(screen.getByRole('button',{name:/^Balise 33 ·/}));expect((screen.getByRole('button',{name:/^Balise 31 ·/}) as HTMLButtonElement).disabled).toBe(true);fireEvent.click(screen.getByRole('button',{name:'Attribuer la vérification'}));await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].poseDeposeTasks?.find(t=>t.beacon===33)?.verifiers).toEqual(['a','b']));expect(screen.getByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'}).style.getPropertyValue('--group-color')).toBe(color);
+});

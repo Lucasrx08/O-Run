@@ -65,3 +65,8 @@ export function batchPoseDepose(session:Session,beacons:number[],action:'good'|'
 }
 
 export function poseDeposeLevel(points:number,possible:number):1|2|3|4|null{if(!possible)return null;const ratio=points/possible;return ratio>=1?4:ratio>=.8?3:ratio>=.6?2:1;}
+
+/** Groups come from saved assignments: no migration, duplicate roster or new pupil data. */
+export const poseGroupKey=(ids:string[])=>[...ids].sort().join('|');
+export function poseGroupColor(ids:string[]){let hash=0;for(const c of poseGroupKey(ids))hash=(Math.imul(hash,31)+c.charCodeAt(0))>>>0;return `hsl(${hash%360} 65% 38%)`;}
+export function poseGroups(session:Session){const groups=new Map<string,{key:string;ids:string[];color:string;beacons:number[]}>();for(const t of session.poseDeposeTasks||[])for(const ids of [t.placers,t.verifiers]){if(!ids.length)continue;const key=poseGroupKey(ids),group=groups.get(key)||{key,ids:[...ids],color:poseGroupColor(ids),beacons:[]};if(!group.beacons.includes(t.beacon))group.beacons.push(t.beacon);groups.set(key,group);}return [...groups.values()];}

@@ -32,3 +32,4 @@ it('la liste complète reste accessible sans pagination en mode vue d’ensemble
  render(<ViewportGrid overview>{Array.from({length:36},(_,i)=><button key={i}>Élève {i+1}</button>)}</ViewportGrid>);
  expect(screen.getByText('Élève 36')).toBeTruthy();expect(screen.queryByRole('button',{name:'Suivants'})).toBeNull();
 });
+it('réserve une hauteur lisible aux corrections de 32 élèves sur tablette',()=>{for(const [width,height] of [[990,420],[736,700],[1330,630]]){const grid=overviewGrid(width,height,32,130,7,64);expect(grid.tileWidth).toBeGreaterThanOrEqual(130);expect(grid.tileHeight).toBeGreaterThanOrEqual(64);expect(grid.rows*grid.columns).toBeGreaterThanOrEqual(32);expect(grid.rows*grid.tileHeight+(grid.rows-1)*6).toBeLessThanOrEqual(height+.01);}});

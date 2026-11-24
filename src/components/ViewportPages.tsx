@@ -4,12 +4,12 @@ import {ResultTable} from './ResultTable';
 import {sortedSection,type ReportSection,type TableSort} from '../services/resultExport';
 export function pageCapacity(width:number,height:number,minWidth:number,rowHeight:number){const columns=Math.max(1,Math.floor((width+10)/(minWidth+10))),rows=Math.max(1,Math.floor((height-50+10)/(rowHeight+10)));return {columns,rows,size:columns*rows};}
 /** Cherche une grille de classe complète, en donnant la priorité aux noms lisibles. */
-export function overviewGrid(width:number,height:number,count:number){
- const n=Math.max(1,count),gap=6,max=Math.min(n,6,Math.max(1,Math.floor((width+gap)/(180+gap))));
+export function overviewGrid(width:number,height:number,count:number,minWidth=180,maxColumns=6,minHeight=0){
+ const n=Math.max(1,count),gap=6,max=Math.min(n,maxColumns,Math.max(1,Math.floor((width+gap)/(minWidth+gap))));
  let best={columns:1,rows:n,tileHeight:height/n,tileWidth:width},score=-Infinity;
  for(let columns=1;columns<=max;columns++){
   const rows=Math.ceil(n/columns),w=(width-(columns-1)*gap)/columns,h=(height-(rows-1)*gap)/rows;
-  const value=Math.min(w/220,h/70)-Math.abs(Math.log(Math.max(.01,w/h)/3.5))*.08-(columns*rows-n)/n*.25-Math.max(0,42-h)*.08;
+  const value=Math.min(w/220,h/70)-Math.abs(Math.log(Math.max(.01,w/h)/3.5))*.08-(columns*rows-n)/n*.25-Math.max(0,42-h)*.08-Math.max(0,minHeight-h);
   if(value>score){score=value;best={columns,rows,tileHeight:h,tileWidth:w};}
  }
  return best;
@@ -21,10 +21,10 @@ export function rankingOverview(width:number,height:number,count:number,fields:n
 }
 function useBox(){const ref=useRef<HTMLDivElement>(null),[box,setBox]=useState({width:1200,height:620});useEffect(()=>{const e=ref.current;if(!e)return;const measure=()=>{const r=e.getBoundingClientRect();if(r.width&&r.height)setBox({width:r.width,height:r.height});};measure();const o=typeof ResizeObserver==='undefined'?null:new ResizeObserver(measure);o?.observe(e);window.addEventListener('resize',measure);return()=>{o?.disconnect();window.removeEventListener('resize',measure);};},[]);return {ref,box};}
 function Pager({page,pages,start,end,total,onChange,label}:{page:number;pages:number;start:number;end:number;total:number;onChange:(n:number)=>void;label:string}){return <nav className="viewport-pager" aria-label={label}><button className="button" disabled={page===0} onClick={()=>onChange(page-1)}>Précédents</button><span aria-live="polite">{start+1}–{end} / {total}<small>Page {page+1} / {pages}</small></span><button className="button" disabled={page>=pages-1} onClick={()=>onChange(page+1)}>Suivants</button></nav>;}
-export function ViewportGrid({children,minWidth=200,rowHeight=164,className='',label='Pages',maxColumns=99,mobileRowHeight,overview=false,cellWidth}:{children:ReactNode;minWidth?:number;rowHeight?:number;className?:string;label?:string;maxColumns?:number;mobileRowHeight?:number;overview?:boolean;cellWidth?:number}){
+export function ViewportGrid({children,minWidth=200,rowHeight=164,className='',label='Pages',maxColumns=99,mobileRowHeight,overview=false,cellWidth,minTileHeight=38}:{children:ReactNode;minWidth?:number;rowHeight?:number;className?:string;label?:string;maxColumns?:number;mobileRowHeight?:number;overview?:boolean;cellWidth?:number;minTileHeight?:number}){
  const items=Children.toArray(children),{ref,box}=useBox(),[wanted,setPage]=useState(0),mobile=box.width<700;
- const full=overview&&!mobile?overviewGrid(box.width-2,box.height-4,items.length):null;
- const tileHeight=full?Math.max(38,Math.min(rowHeight,full.tileHeight)):mobile?(mobileRowHeight??rowHeight):rowHeight;
+ const full=overview&&!mobile?overviewGrid(box.width-2,box.height-4,items.length,minWidth,Math.min(maxColumns,7),minTileHeight):null;
+ const tileHeight=full?Math.max(minTileHeight,Math.min(rowHeight,full.tileHeight)):mobile?(mobileRowHeight??rowHeight):rowHeight;
  const fit=pageCapacity(box.width,box.height,cellWidth??minWidth,tileHeight),columns=full?.columns??(overview?1:Math.min(fit.columns,maxColumns)),size=overview?items.length:columns*fit.rows,pages=Math.max(1,Math.ceil(items.length/Math.max(1,size))),page=Math.min(wanted,pages-1),start=page*size;
  const track=cellWidth?`${Math.min(cellWidth,box.width)}px`:'1fr';
  return <div ref={ref} className={`viewport-pages ${overview?'overview-pages':''} ${cellWidth?'hub-pages':''}`} style={items.length?undefined:{display:'none'}}><div className={`viewport-grid ${className} ${overview?'overview-pupils':''} ${full&&tileHeight<80?'compact-overview':''}`} style={{gridTemplateColumns:`repeat(${columns},minmax(0,${track}))`,gridAutoRows:`${tileHeight}px`,'--overview-tile-height':`${tileHeight}px`,'--overview-font':tileHeight<62?'13px':'14px'} as CSSProperties}>{items.slice(start,start+size)}</div>{!overview&&pages>1&&<Pager label={label} page={page} pages={pages} start={start} end={Math.min(items.length,start+size)} total={items.length} onChange={setPage}/>}</div>;
