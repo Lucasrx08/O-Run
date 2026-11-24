@@ -63,3 +63,21 @@ it('trie les élèves par prénom avant le nom, sans tenir compte des accents',(
 import {poseDeposeLevel} from '../src/domain/poseDepose';
 it('détaille les points possibles par rôle sans compter les balises en attente',()=>{let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,true);const row=poseDeposeRanking(data(d,session),'5e Horizon').find(r=>r.student.id===pupil(1))!;expect(row.posePossible).toBe(1);expect(row.verificationPossible).toBe(0);expect(row.possible).toBe(1);expect(row.total).toBe(-1);expect(row.percentage).toBe(0);});
 it('respecte exactement les seuils 100, 80 et 60 pour les couleurs',()=>{expect(poseDeposeLevel(5,5)).toBe(4);expect(poseDeposeLevel(999,1000)).toBe(3);expect(poseDeposeLevel(4,5)).toBe(3);expect(poseDeposeLevel(799,1000)).toBe(2);expect(poseDeposeLevel(3,5)).toBe(2);expect(poseDeposeLevel(599,1000)).toBe(1);expect(poseDeposeLevel(-1,5)).toBe(1);expect(poseDeposeLevel(0,0)).toBeNull();});
+
+import {editPoseGroup,poseGroups} from '../src/domain/poseDepose';
+it('corrige un groupe dans les deux rôles et transfère ses résultats sans perdre les verdicts',()=>{
+ let {d,session}=ready();session=judgePoseDepose(session,31,session.poseDeposeTasks![0].revision,false,true);session=collectPoseDepose(session,31,true);
+ session=assignPoseDepose(session,'pose',[33],[pupil(5)]);session=assignPoseDepose(session,'verification',[33],[pupil(1),pupil(2)]);session=judgePoseDepose(session,33,session.poseDeposeTasks!.find(t=>t.beacon===33)!.revision,true,true);
+ const before=structuredClone(session),next=editPoseGroup(session,[pupil(2),pupil(1)],[pupil(1),pupil(6)],structuredClone(session.poseDeposeTasks!));
+ expect(session).toEqual(before);expect(next.poseDeposeTasks).toHaveLength(3);expect(next.poseDeposeTasks![0]).toMatchObject({placers:[pupil(1),pupil(6)],placementValid:false,verificationValid:true,collected:true});expect(next.poseDeposeTasks!.find(t=>t.beacon===33)!.verifiers).toEqual([pupil(1),pupil(6)]);
+ expect(total(data(d,next),pupil(2))).toBe(0);expect(poseDeposeRanking(data(d,next),'5e Horizon').find(r=>r.student.id===pupil(6))!.possible).toBe(2);expect(poseGroups(next).some(g=>g.key===[pupil(1),pupil(2)].sort().join('|'))).toBe(false);
+ expect(editPoseGroup(next,[pupil(1),pupil(6)],[pupil(6),pupil(1)],next.poseDeposeTasks!)).toEqual(next);
+});
+it('bloque une correction conflictuelle ou périmée sans modifier les attributions',()=>{
+ const {session}=ready(),before=structuredClone(session),expected=structuredClone(session.poseDeposeTasks!);
+ expect(()=>editPoseGroup(session,[pupil(1),pupil(2)],[pupil(1),pupil(3)],expected)).toThrow(/Balise 31/);
+ expect(()=>editPoseGroup(session,[pupil(1),pupil(2)],[],expected)).toThrow(/trois/);
+ expect(()=>editPoseGroup(session,[pupil(1),pupil(2)],['unknown'],expected)).toThrow(/leçon/);
+ expect(()=>editPoseGroup(collectPoseDepose(session,31,true),[pupil(1),pupil(2)],[pupil(6)],expected)).toThrow(/changé/);
+ expect(session).toEqual(before);
+});

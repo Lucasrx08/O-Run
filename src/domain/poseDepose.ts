@@ -70,3 +70,20 @@ export function poseDeposeLevel(points:number,possible:number):1|2|3|4|null{if(!
 export const poseGroupKey=(ids:string[])=>[...ids].sort().join('|');
 export function poseGroupColor(ids:string[]){let hash=0;for(const c of poseGroupKey(ids))hash=(Math.imul(hash,31)+c.charCodeAt(0))>>>0;return `hsl(${hash%360} 65% 38%)`;}
 export function poseGroups(session:Session){const groups=new Map<string,{key:string;ids:string[];color:string;beacons:number[]}>();for(const t of session.poseDeposeTasks||[])for(const ids of [t.placers,t.verifiers]){if(!ids.length)continue;const key=poseGroupKey(ids),group=groups.get(key)||{key,ids:[...ids],color:poseGroupColor(ids),beacons:[]};if(!group.beacons.includes(t.beacon))group.beacons.push(t.beacon);groups.set(key,group);}return [...groups.values()];}
+
+/** Correct a roster mistake across this lesson, retaining the teacher's verdicts. */
+export function editPoseGroup(session:Session,original:string[],students:string[],expected:PoseDeposeTask[]):Session{
+ ensure(JSON.stringify(session.poseDeposeTasks||[])===JSON.stringify(expected),'Les attributions ont changé. Rouvrez la modification du groupe.');
+ ensure(students.length>=1&&students.length<=3&&new Set(students).size===students.length&&students.every(id=>session.studentIds.includes(id)),'Choisissez un à trois élèves de la leçon.');
+ const key=poseGroupKey(original),tasks=session.poseDeposeTasks||[];
+ ensure(original.length>0&&tasks.some(t=>[t.placers,t.verifiers].some(ids=>poseGroupKey(ids)===key)),'Ce groupe n’existe plus.');
+ if(poseGroupKey(students)===key)return session;
+ const next={...session,poseDeposeTasks:tasks.map(t=>{
+  const pose=poseGroupKey(t.placers)===key,verification=poseGroupKey(t.verifiers)===key;
+  if(!pose&&!verification)return t;
+  const placers=pose?[...students]:t.placers,verifiers=verification?[...students]:t.verifiers;
+  ensure(!placers.some(id=>verifiers.includes(id)),`Balise ${t.beacon} : un élève du nouveau groupe est déjà dans l’autre rôle. Corrigez cette attribution avant de modifier le groupe.`);
+  return {...t,placers,verifiers,revision:t.revision+1};
+ })};
+ validatePoseDepose(next);return next;
+}

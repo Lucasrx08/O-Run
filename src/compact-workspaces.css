@@ -73,3 +73,8 @@
 .app .pd-beacon:disabled strong{color:#726c64}
 @media(min-width:701px) and (min-height:601px){.app .pd-group-chips{max-height:102px}}
 @media(min-width:701px) and (max-width:900px) and (min-height:900px){.app .pd-group-chips{max-height:154px}}
+
+.pd-group-actions{display:flex;gap:12px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.pd-group-editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:7px;max-height:45dvh;overflow:auto;padding:3px}
+.pd-group-editor .pd-pupil{min-height:44px;font-size:16px;display:flex;align-items:center;justify-content:space-between;text-align:left}
+@media(max-width:700px){.app .pd-group-reuse>div:first-child{flex-wrap:wrap}.pd-group-actions{gap:8px}}
