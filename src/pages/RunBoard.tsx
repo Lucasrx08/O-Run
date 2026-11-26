@@ -10,11 +10,12 @@ import {Dialog,Empty} from '../components/ui';
 import {RunRecovery} from './RunRecovery';
 import {QRShowDialog} from '../components/QRTransfer';
 import {encodeTimingQR} from '../services/qrTransfer';
-import {exportTimes} from '../domain/offline';
+import {classNumbers,exportTimes} from '../domain/offline';
 import {sealTimes,shareOrDownload} from '../services/offlineTransfer';
 
 export function RunBoard({session,className,kiosk=false}:{session:Session;className:string;kiosk?:boolean}){
  const s=useStore(),time=useNow(),pupils=lessonStudents(s.data,session,className).filter(p=>(!['A','B','AB'].includes(s.offline?.post||''))||s.offline!.sessionId!==session.id||s.offline!.studentIds.includes(p.id)),labels=studentLabels(s.data.students);
+ const numbers=session.classNumbers??(s.offline?.sessionId===session.id&&['A','B','AB'].includes(s.offline.post)?{}:classNumbers(s.data,className));
  const courses=session.courseIds.map(id=>s.data.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c);
  const workMode=s.offline?.sessionId===session.id&&['A','B','AB'].includes(s.offline.post)?'complet':s.role==='arrival'?'arrivals':s.role==='departure'?'departures':s.mode;
  const completed=(id:string)=>new Set(s.data.runs.filter(r=>r.studentId===id&&r.sessionId===session.id&&r.end!==undefined).map(r=>r.courseId));
@@ -73,7 +74,7 @@ export function RunBoard({session,className,kiosk=false}:{session:Session;classN
   const action=foreign?`${label} est dans une autre leçon`:r?`Arrêter le chrono de ${label}`:waiting?`${label} attend sa vague`:finished?`Choisir une nouvelle carte pour ${label}`:`Sélectionner ${label}`;
   return <article key={p.id} className={`run-tile ${state}`} style={{'--card-color':c?.color||'#ef702c'} as CSSProperties}>
    <button className="run-tile-main" aria-label={kiosk&&!r?`Choisir une carte pour ${label}`:action} disabled={foreign||waiting||stopping.has(p.id)||(!r&&(!canStart||dispatching||!courses.length))||!!r&&!canStop} onClick={()=>{if(r){void stop(r);return;}if(finished){setPicker({studentId:p.id,restart:true});return;}if(kiosk){setPicker({studentId:p.id,restart:true,immediate:true});return;}setSelected(prev=>{const next=new Set(prev);if(next.has(p.id))next.delete(p.id);else next.add(p.id);return next;});}}>
-    <div className="run-tile-top"><span className="runner-number" aria-hidden="true">{String(pupils.indexOf(p)+1).padStart(2,'0')}</span><span className="run-status">{foreign?'Autre leçon':r?'En course':waiting?'Dans la vague':finished?'Arrivé':'Prêt au départ'}</span>{r?<span className="stop-square"><Square size={13} fill="currentColor"/></span>:finished?<span className="finished-check"><Check size={17}/></span>:<span className={`selection-check ${selected.has(p.id)?'checked':''}`}>{selected.has(p.id)&&<Check size={14}/>}</span>}</div>
+    <div className="run-tile-top"><span className="runner-number" aria-hidden="true">{numbers[p.id]?String(numbers[p.id]).padStart(2,'0'):'—'}</span><span className="run-status">{foreign?'Autre leçon':r?'En course':waiting?'Dans la vague':finished?'Arrivé':'Prêt au départ'}</span>{r?<span className="stop-square"><Square size={13} fill="currentColor"/></span>:finished?<span className="finished-check"><Check size={17}/></span>:<span className={`selection-check ${selected.has(p.id)?'checked':''}`}>{selected.has(p.id)&&<Check size={14}/>}</span>}</div>
     <h2 title={label} style={{fontSize:`${Math.max(13,Math.min(kiosk?46:31,layout.tileHeight*.22,layout.tileWidth/(Math.max(7,label.length)*.58)))}px`}}>{label}</h2><div className={`run-time ${!r&&!finished?'chrono-idle':''}`}>{r?formatTime(elapsed(r,time)):finished?formatTime(elapsed(done!)):'00:00'}</div>
     <span className="run-action-hint">{foreign?'Chrono déjà actif':r?(canStop?'Toucher pour arrêter':'Chrono en cours'):waiting?'Départ programmé':finished?'Toucher pour repartir':kiosk?'Toucher pour choisir une carte':selected.has(p.id)?'Sélectionné':'Toucher pour sélectionner'}</span>
    </button><div className="run-tile-bottom">{!kiosk&&!r&&!finished&&!waiting&&canStart?<button className="run-map-choice" aria-label={`Carte de départ de ${label}`} disabled={dispatching||!courses.length} onClick={()=>setPicker({studentId:p.id,restart:false})}><span><i/>{c?.name||'Aucune carte'}</span><ChevronDown size={15}/></button>:<span className="run-map-label"><i/>{c?.name}</span>}</div>

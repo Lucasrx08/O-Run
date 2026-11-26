@@ -118,3 +118,12 @@ it('supprime seulement la leçon ciblée, en gardant les autres leçons et les �
  expect(removed.runs).toHaveLength(0);
 });
 it('un QR A sur l’appareil enseignant conserve toutes les classes et les noms complets',()=>{const {data,session}=fixture(),split=splitAlphabetical(data,session.id);const prepared={...data,sessions:data.sessions.map(s=>({...s,deviceKey:transferKey,deviceMode:3 as const}))};const pack=createSessionPack(prepared,session.id,'A',split.A,transferKey);const result=importSessionPack(prepared,pack);expect(result.data.students).toEqual(data.students);expect(result.data.sessions[0].studentIds).toEqual(session.studentIds);expect(result.config.studentIds).toEqual(split.A);});
+
+it('conserve les numéros de la liste initiale sur B seul puis après ajout de A',()=>{
+ const {data,session}=fixture(),groups=splitAlphabetical(data,session.id,['student-0','student-3']);
+ const b=importSessionPack(emptyData(),createSessionPack(data,session.id,'B',groups.B,transferKey));
+ const numbers=b.data.sessions[0].classNumbers!;
+ for(const id of groups.B)expect(numbers[id]).toBe(data.students.findIndex(p=>p.id===id)+1);
+ const ab=importSessionPack(b.data,createSessionPack(data,session.id,'A',groups.A,transferKey),b.config);
+ data.students.forEach((p,i)=>expect(ab.data.sessions[0].classNumbers![p.id]).toBe(i+1));
+});

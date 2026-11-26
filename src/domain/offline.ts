@@ -8,6 +8,9 @@ export interface TimeEntry {id:string;studentId:string;courseId:string;start:num
 export interface TimesPack {kind:'orun-times-v1';post:'A'|'B';sessionId:string;createdAt:number;runs:TimeEntry[];}
 
 const unique=(values:string[])=>new Set(values).size===values.length;
+export function classNumbers(data:Data,name:string){
+ return Object.fromEntries(data.students.filter(p=>p.className===name).map((p,i)=>[p.id,i+1]));
+}
 export function alphabeticalStudents(data:Data,sessionId:string):Student[]{
  const session=data.sessions.find(s=>s.id===sessionId);
  if(!session)throw new Error('Leçon introuvable.');
@@ -39,7 +42,7 @@ export function planLessonDevices(data:Data,sessionId:string,mode:1|2|3,selected
  if(mode===3&&(!groups.A.length||!groups.B.length))throw new Error('La répartition doit contenir des élèves dans chaque groupe.');
  const key=mode===1?session.deviceKey:session.deviceKey||(newKey?newKey():crypto.randomUUID().replace(/-/g,'').repeat(2));
  if(mode>1&&(!key||!/^([a-f0-9]{64})$/.test(key)))throw new Error('Clé de transfert invalide.');
- const updated:Session={...session,deviceMode:mode,deviceKey:key,deviceGroupA:groups.A,deviceGroupB:groups.B};
+ const updated:Session={...session,classNumbers:session.classNumbers??classNumbers(data,session.className??data.students.find(p=>all.includes(p.id))?.className??''),deviceMode:mode,deviceKey:key,deviceGroupA:groups.A,deviceGroupB:groups.B};
  return {data:{...data,sessions:data.sessions.map(s=>s.id===sessionId?updated:s)},
   config:mode===1?{post:'solo',sessionId,studentIds:[]}:
    {post:'C',sessionId,studentIds:all,groupA:groups.A,groupB:groups.B,devices:mode,transferKey:key,importedPosts:[]}};
@@ -50,7 +53,7 @@ export function createSessionPack(data:Data,sessionId:string,post:'A'|'B',studen
  const courses=session.courseIds.map(id=>data.courses.find(c=>c.id===id));
  if(courses.some(c=>!c))throw new Error('Carte introuvable dans la séance.');
  return {kind:'orun-session-v1',post,sessionId,createdAt:Date.now(),transferKey,
-  session:{...session,poseDeposeTasks:undefined,studentIds:[...studentIds]},sequence:{...sequence,classes:[session.className||sequence.classes[0]]},
+  session:{...session,classNumbers:Object.fromEntries(studentIds.map(id=>[id,(session.classNumbers??classNumbers(data,session.className??sequence.classes[0]))[id]])),poseDeposeTasks:undefined,studentIds:[...studentIds]},sequence:{...sequence,classes:[session.className||sequence.classes[0]]},
   // Les iPads de chronométrage n'ont besoin que du prénom et de l'initiale.
   courses:(courses as Course[]).map(({map:_map,...course})=>course),students:studentIds.map(id=>data.students.find(s=>s.id===id)!).filter(Boolean).map(s=>({...s,lastName:s.lastName.charAt(0).toUpperCase()}))};
 }
@@ -61,6 +64,7 @@ export function validateSessionPack(value:unknown):SessionPack{
   !p.students.length||!unique(p.students.map(s=>s.id))||!unique(p.courses.map(c=>c.id))||
   !unique(p.session.studentIds)||!p.session.studentIds.every(id=>p.students.some(s=>s.id===id))||
   !p.session.courseIds.every(id=>p.courses.some(c=>c.id===id)))throw new Error('Fichier de répartition invalide.');
+ if(p.session.classNumbers){const nums=p.session.studentIds.map(id=>p.session.classNumbers![id]);if(nums.some(n=>!Number.isSafeInteger(n)||n<1)||new Set(nums).size!==nums.length)throw new Error('Numéros de classe invalides.');}
  return p;
 }
 export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig):{data:Data;config:OfflineConfig}{
@@ -88,7 +92,7 @@ export function importSessionPack(data:Data,input:unknown,config?:OfflineConfig)
   return [...map.values()];
  };
  const next={...data,students:byId(data.students,p.students),sequences:byId(data.sequences,[p.sequence]),
-  sessions:data.sessions.some(s=>s.id===p.sessionId)?data.sessions.map(s=>s.id===p.sessionId?{...s,studentIds:[...new Set([...s.studentIds,...studentIds])]}:s):[...data.sessions,{...p.session,studentIds}],courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
+  sessions:data.sessions.some(s=>s.id===p.sessionId)?data.sessions.map(s=>s.id===p.sessionId?{...s,classNumbers:{...s.classNumbers,...p.session.classNumbers},studentIds:[...new Set([...s.studentIds,...studentIds])]}:s):[...data.sessions,{...p.session,studentIds}],courses:byId(data.courses,p.courses),version:data.version+1,updatedAt:Date.now()};
  return {data:next,config:{post:nextA.length&&nextB.length?'AB':p.post,sessionId:p.sessionId,studentIds,groupA:nextA,groupB:nextB,transferKey:p.transferKey,devices:p.session.deviceMode===2?2:3}};
 }
 export function exportTimes(data:Data,config:OfflineConfig,post?:'A'|'B'):TimesPack{
