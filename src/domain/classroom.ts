@@ -14,7 +14,7 @@ export function createLesson(d:Data,className:string,name:string,date:string,tem
  let q=d.sequences.find(q=>q.classes.length===1&&q.classes[0]===className&&!q.archived);if(!q)q={id:makeId(),name:className,period:'',objectives:'',classes:[className],archived:false};
  if(!template&&(!Number.isInteger(options.cards)||options.cards<1||options.cards>30||!Number.isInteger(options.controls)||options.controls<1||options.controls>60))throw new Error('Choisissez entre 1 et 30 cartes et entre 1 et 60 balises par carte.');
  const model=options.correctionModel?correctionModels.find(m=>m.id===options.correctionModel):undefined;
- if(!template&&options.correctionModel&&(!model||model.controls!==options.controls||options.cards>6))throw new Error('Ce modèle propose six cartes au maximum, avec le nombre de balises correspondant.');
+ if(!template&&options.correctionModel&&(!model||model.controls!==options.controls||options.cards>(model.id==='cards-3'?12:6)))throw new Error('Nombre de cartes ou de balises incompatible avec le modèle.');
  const courses=template?template.courses.map(c=>({...structuredClone(c),familyId:c.familyId||c.id,id:makeId()})):Array.from({length:options.cards},(_,i)=>({...newMap(i+1,makeId),controls:options.controls,correction:model?{model:model.id,reference:i+1}:undefined}));
  const session:Session={poseDepose:template?.poseDepose??options.poseDepose,id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className).map(p=>p.id)};
  return {data:{...d,sequences:d.sequences.some(x=>x.id===q!.id)?d.sequences:[...d.sequences,q],courses:[...d.courses,...courses],sessions:[...d.sessions,session]},session};

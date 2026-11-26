@@ -18,10 +18,10 @@ describe('modèles de correction persistants',()=>{
   expect(validCorrection(c)).toBe(true);expect(validCorrection({...c,controls:3})).toBe(false);expect(validCorrection({...c,correction:{...c.correction,reference:7}})).toBe(false);
   expect(()=>createLesson(demo(),'5e Aurore','Scan','2026-11-12',undefined,undefined,{cards:7,controls:6,correctionModel:'cards-6'})).toThrow();
  });
- it('propose les variantes 3 et 4 balises en manuel sans inventer de poinçons',()=>{
+ it('active le scan des 12 cartes à trois balises et conserve la correction libre à quatre',()=>{
   for(const controls of [3,4]){
-   const {data,session}=createLesson(demo(),'5e Aurore','Manuel','2026-11-12',undefined,undefined,{cards:6,controls,correctionModel:controls===3?'cards-3':'cards-4'});
-   const courses=data.courses.filter(c=>session.courseIds.includes(c.id));expect(courses.every(c=>validCorrection(c)&&!canScanCourse(c))).toBe(true);
+   const {data,session}=createLesson(demo(),'5e Aurore','Manuel','2026-11-12',undefined,undefined,{cards:controls===3?12:6,controls,correctionModel:controls===3?'cards-3':'cards-4'});
+   const courses=data.courses.filter(c=>session.courseIds.includes(c.id));expect(courses.every(c=>validCorrection(c)&&canScanCourse(c)===(controls===3))).toBe(true);
   }
  });
 });

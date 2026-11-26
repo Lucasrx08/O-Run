@@ -1,4 +1,4 @@
-import {referenceForCourse} from '../domain/correctionModels';
+import {referenceForCourse,canScanCourse} from '../domain/correctionModels';
 import {PunchScanner} from '../components/PunchScanner';
 import {ViewportGrid} from '../components/ViewportPages';
 import {useState,type CSSProperties} from 'react';
@@ -85,14 +85,14 @@ export function OfflineCorrectionBoard({session}:{session:Session}){
    </button>;
   })}</ViewportGrid>
   {chosen&&<Dialog wide title={`Cartons · ${labels.get(chosen.id)}`} onClose={()=>choose('')}>
-   {scanCourse?<PunchScanner initialModel={courses.find(c=>c.id===scanCourse)?.correction?.model==='legacy-6'?'legacy-6':'cards-6'} initialReference={referenceForCourse(courses.find(c=>c.id===scanCourse)!)} onCancel={()=>setScanCourse(null)} onApply={count=>{selectErrors(scanCourse,count);setScanCourse(null);}}/>:<div className="c-student-sheet"><p>Indiquez les <b>balises fausses</b> uniquement sur les cartes récupérées. Vous pouvez corriger plusieurs cartes avant d’enregistrer.</p>
+   {scanCourse?<PunchScanner initialModel={courses.find(c=>c.id===scanCourse)?.correction?.model==='cards-3'?'cards-3':courses.find(c=>c.id===scanCourse)?.correction?.model==='legacy-6'?'legacy-6':'cards-6'} initialReference={referenceForCourse(courses.find(c=>c.id===scanCourse)!)} onCancel={()=>setScanCourse(null)} onApply={count=>{selectErrors(scanCourse,count);setScanCourse(null);}}/>:<div className="c-student-sheet"><p>Indiquez les <b>balises fausses</b> uniquement sur les cartes récupérées. Vous pouvez corriger plusieurs cartes avant d’enregistrer.</p>
     {manual&&<div className="c-attempt-picker"><span>Cartes réellement effectuées</span><div>{courses.map(course=>{const received=runs.some(r=>r.studentId===chosen.id&&r.courseId===course.id)||corrections.some(c=>c.studentId===chosen.id&&c.courseId===course.id);const picked=cardsFor(chosen.id).some(c=>c.id===course.id);return <button type="button" key={course.id} aria-pressed={picked} disabled={received} className={picked?'active':''} onClick={()=>setManualSelections(old=>{const current=old[chosen.id]||[];return {...old,[chosen.id]:current.includes(course.id)?current.filter(id=>id!==course.id):[...current,course.id]};})}><span style={{background:course.color}}/>{course.name}{picked?' ✓':''}</button>;})}</div></div>}
     {!cardsFor(chosen.id).length&&<div className="c-pending-hint">Aucun parcours déclaré pour cet élève. {manual?'Sélectionnez ci-dessus la ou les cartes de son carton.':'Importez ses chronos ou activez la correction manuelle.'}</div>}
     <div className="c-sheet-grid">{cardsFor(chosen.id).map(course=>{
      const run=byRun(chosen.id,course.id),value=currentErrors(course),dirty=touched.includes(course.id)||timeTouched.includes(course.id);
      return <div className={dirty?'c-sheet-card dirty':value!==null?'c-sheet-card corrected':'c-sheet-card'} key={course.id} style={{'--card-color':course.color} as CSSProperties}>
       <div className="c-sheet-top"><span className="c-sheet-map-icon"><Map size={17}/></span><strong>{course.name}</strong>{value!==null&&<CheckCircle2 size={16} color="#548a50"/>}</div>
-      {course.controls===6&&<button className="button" onClick={()=>setScanCourse(course.id)}>Scanner le carton · expérimental</button>}<span className="c-sheet-prompt">Balises fausses</span>
+      {canScanCourse(course)&&<button className="button" onClick={()=>setScanCourse(course.id)}>Scanner le carton · expérimental</button>}<span className="c-sheet-prompt">Balises fausses</span>
       <div className="c-sheet-buttons" role="group" aria-label={`Balises fausses · ${course.name}`}>{Array.from({length:Math.min(12,course.controls)+1},(_,i)=><button type="button" key={i} aria-label={`${course.name} · ${i} faute${i>1?'s':''}`} aria-pressed={value===i} className={value===i?'active':''} onClick={()=>selectErrors(course.id,i)}>{i}</button>)}</div>
       <div className="c-sheet-time">{run?<><Clock3 size={14}/>{timeTouched.includes(course.id)?<input aria-label={`Temps corrigé · ${course.name}`} autoFocus={false} value={timeDrafts[course.id]} onChange={e=>setTimeDrafts(old=>({...old,[course.id]:e.target.value}))}/>:<><span>{formatTime(elapsed(run),true)}</span><button type="button" aria-label={`Modifier le temps · ${course.name}`} onClick={()=>editTime(course.id,formatTime(elapsed(run),true))}><Pencil size={13}/> Modifier</button></>}</>:<><Clock3 size={14}/>Chrono à recevoir</>}</div>
      </div>;

@@ -4,6 +4,8 @@ export type Point=[number,number];
 export const punchReferences=references as Point[][][];
 export const sixRealReferences=realReferences as Point[][][];
 export const beaconNumbers=[[49,57,64,66,67,65],[35,58,47,39,55,68],[34,69,40,56,59,46],[71,41,63,36,60,45],[37,70,32,48,72,44],[62,33,31,38,50,61]];
+export const threeBeaconNumbers=[[49, 57, 64], [65, 66, 67], [35, 47, 58], [39, 55, 68], [34, 69, 40], [46, 59, 56], [41, 63, 71], [36, 45, 60], [32, 48, 37], [72, 70, 44], [33, 31, 62], [38, 50, 61]];
+export const threeReferences=threeBeaconNumbers.map(row=>row.map(n=>{const i=beaconNumbers.findIndex(r=>r.includes(n));return sixRealReferences[i][beaconNumbers[i].indexOf(n)];}));
 const distance=(a:Point,b:Point)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 function normalize(points:Point[]){const cx=points.reduce((n,p)=>n+p[0],0)/points.length,cy=points.reduce((n,p)=>n+p[1],0)/points.length;const scale=Math.sqrt(points.reduce((n,p)=>n+(p[0]-cx)**2+(p[1]-cy)**2,0)/points.length)||1;return points.map(p=>[(p[0]-cx)/scale,(p[1]-cy)/scale] as Point);}
 /** Translation, size and rotation invariant; never treats missing holes as a fault. */
@@ -48,7 +50,7 @@ export function rectify(source:{data:Uint8ClampedArray;width:number;height:numbe
  const m=a.map(row=>row[8]),out=new Uint8ClampedArray(width*height*4);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const den=m[6]*x+m[7]*y+1,u=Math.round((m[0]*x+m[1]*y+m[2])/den),v=Math.round((m[3]*x+m[4]*y+m[5])/den),to=(y*width+x)*4;if(u<0||v<0||u>=source.width||v>=source.height){out.fill(255,to,to+4);continue;}const from=(v*source.width+u)*4;out.set(source.data.subarray(from,from+4),to);}return {data:out,width,height};
 }
 /** Locate the connected printed 6-column grid; reject incomplete or ambiguous frames. */
-function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{
+function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number,count:number):Point[]|null{
  const mask=new Uint8Array(width*height);for(let i=0;i<mask.length;i++){const k=i*4;if(Math.max(data[k],data[k+1],data[k+2])<105)mask[i]=1;}
  let best:Point[]|null=null,bestScore=0;
  for(let start=0;start<mask.length;start++)if(mask[start]){
@@ -59,7 +61,7 @@ function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number):Poin
   const corners=[tl,tr,br,bl];let flat:ReturnType<typeof rectify>;try{flat=rectify({data,width,height,colorSpace:'srgb'},corners,600,150);}catch{continue;}const columns:number[]=[];
   for(let x=0;x<600;x++){let hits=0;for(let y=60;y<140;y++){const k=(y*600+x)*4;if(Math.max(flat.data[k],flat.data[k+1],flat.data[k+2])<110)hits++;}if(hits>53)columns.push(x);}
   const groups:number[][]=[];for(const x of columns){if(!groups.length||x-groups[groups.length-1].at(-1)!>8)groups.push([x]);else groups.at(-1)!.push(x);}const centers=groups.map(g=>g.reduce((a,b)=>a+b,0)/g.length);
-  if(centers.length!==7||centers.some((x,i)=>i>0&&Math.abs(x-centers[i-1]-100)>24))continue;
+  if(centers.length!==count+1||centers.some((x,i)=>i>0&&Math.abs(x-centers[i-1]-600/count)>24))continue;
   // Find the horizontal divider under the numbers within the upper half.
   let divider=0,peak=0;for(let y=24;y<83;y++){let hits=0;for(let x=10;x<590;x++){const k=(y*600+x)*4;if(Math.max(flat.data[k],flat.data[k+1],flat.data[k+2])<110)hits++;}if(hits>peak){peak=hits;divider=y;}}
   if(peak<430)continue;
@@ -69,4 +71,4 @@ function findPrintedGrid(data:Uint8ClampedArray,width:number,height:number):Poin
  return best;
 }
 
-export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number):Point[]|null{return findPrintedGrid(data,width,height)||findPrintedGrid(normalizeIllumination(data,width,height,30),width,height);}
+export function findPunchGrid(data:Uint8ClampedArray,width:number,height:number,count=6):Point[]|null{return findPrintedGrid(data,width,height,count)||findPrintedGrid(normalizeIllumination(data,width,height,30),width,height,count);}
