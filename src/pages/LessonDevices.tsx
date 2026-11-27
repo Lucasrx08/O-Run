@@ -16,7 +16,7 @@ export function LessonDevices({session,onContinue}:{session:Session;onContinue:(
  const [chosen,setChosen]=useState<1|2|3>(session.deviceMode||1),[selectedA,setSelectedA]=useState<string[]|null>(null);
  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[qr,setQR]=useState<{title:string;frames:string[]}|null>(null);
  const all=students.map(p=>p.id);
- const currentGroupA=selectedA??(chosen===3&&session.deviceGroupA?.length&&session.deviceGroupA.length<all.length?session.deviceGroupA:undefined);
+ const currentGroupA=selectedA?.filter(id=>all.includes(id))??(chosen===3&&session.deviceGroupA?.length&&session.deviceGroupA.length<all.length?session.deviceGroupA:undefined);
  const split=chosen===3?splitAlphabetical(s.data,session.id,currentGroupA):{A:all,B:[] as string[]};
  const configured=s.offline?.post==='C'&&s.offline.sessionId===session.id&&session.deviceMode===chosen;
  const configure=async(mode=chosen)=>{

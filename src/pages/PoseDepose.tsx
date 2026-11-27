@@ -33,7 +33,7 @@ export function PoseDepose({session,className}:{session:Session;className:string
   if(view!=='pose'&&view!=='verification')return;
   const occupied=tasks.some(t=>beacons.includes(t.beacon)&&(view==='pose'?t.placers.length:t.verifiers.length)&&poseGroupKey(view==='pose'?t.placers:t.verifiers)!==poseGroupKey(students));
   if(occupied&&!confirm){setReplace(true);return;}
-  try{if(await save(assignPoseDepose(session,view,beacons,students),`${view==='pose'?'Pose':'Vérification'} · ${beacons.join(', ')} · ${names(students)}`)){setBeacons([]);setReplace(false);s.notify('Attribution enregistrée. Le groupe reste sélectionné pour les prochaines balises.');}}catch(e){setError((e as Error).message);setReplace(false);}
+  try{if(await save(assignPoseDepose(session,view,beacons,students),`${view==='pose'?'Pose':'Vérification'} · ${beacons.join(', ')} · ${names(students)}`)){setStudents([]);setBeacons([]);setPupilSearch('');setReplace(false);s.notify('Attribution enregistrée.');}}catch(e){setError((e as Error).message);setReplace(false);}
  };
  const switchView=(v:typeof view)=>{setView(v);setStudents([]);setBeacons([]);setError('');setPupilSearch('');};
  const chosen=(n:number)=>beacons.includes(n);

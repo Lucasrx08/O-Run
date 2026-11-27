@@ -53,7 +53,7 @@ it('réutilise un groupe coloré pour plusieurs poses puis pour vérifier un aut
  await prepare();fireEvent.click(await screen.findByRole('button',{name:/^Pose test/}));await enterPose();
  for(const name of ['Alice E.','Basile E.'])fireEvent.click(screen.getByRole('button',{name}));
  fireEvent.click(screen.getByRole('button',{name:/^Balise 31 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));
- const group=await screen.findByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'});expect(group.getAttribute('aria-pressed')).toBe('true');const color=group.style.getPropertyValue('--group-color');expect(color).toContain('hsl');
+ const group=await screen.findByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'});await waitFor(()=>expect(group.getAttribute('aria-pressed')).toBe('false'));fireEvent.click(group);const color=group.style.getPropertyValue('--group-color');expect(color).toContain('hsl');
  fireEvent.click(screen.getByRole('button',{name:/^Balise 32 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].poseDeposeTasks).toHaveLength(2));
  fireEvent.click(screen.getByRole('button',{name:'Nouveau groupe'}));fireEvent.click(screen.getByRole('button',{name:'Camille E.'}));fireEvent.click(screen.getByRole('button',{name:/^Balise 33 ·/}));fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));await screen.findByRole('button',{name:'Reprendre le groupe Camille E.'});
  fireEvent.click(screen.getByRole('tab',{name:'Vérification'}));fireEvent.click(screen.getByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'}));fireEvent.click(screen.getByRole('button',{name:/^Balise 33 ·/}));expect((screen.getByRole('button',{name:/^Balise 31 ·/}) as HTMLButtonElement).disabled).toBe(true);fireEvent.click(screen.getByRole('button',{name:'Attribuer la vérification'}));await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].poseDeposeTasks?.find(t=>t.beacon===33)?.verifiers).toEqual(['a','b']));expect(screen.getByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'}).style.getPropertyValue('--group-color')).toBe(color);
@@ -64,7 +64,21 @@ it('modifie un binôme enregistré sans perdre ses balises et persiste le nouvea
  for(const name of ['Alice E.','Basile E.'])fireEvent.click(screen.getByRole('button',{name}));
  for(const n of [31,32])fireEvent.click(screen.getByRole('button',{name:new RegExp(`^Balise ${n} ·`)}));
  fireEvent.click(screen.getByRole('button',{name:'Attribuer la pose'}));await screen.findByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'});
- fireEvent.click(screen.getByRole('button',{name:'Modifier ce groupe'}));const {within}=await import('@testing-library/react');const dialog=within(screen.getByRole('dialog',{name:'Modifier le groupe'}));fireEvent.click(dialog.getByRole('button',{name:'Basile E.'}));fireEvent.click(dialog.getByRole('button',{name:'Camille E.'}));fireEvent.click(dialog.getByRole('button',{name:'Enregistrer le groupe'}));
+ fireEvent.click(screen.getByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'}));fireEvent.click(screen.getByRole('button',{name:'Modifier ce groupe'}));const {within}=await import('@testing-library/react');const dialog=within(screen.getByRole('dialog',{name:'Modifier le groupe'}));fireEvent.click(dialog.getByRole('button',{name:'Basile E.'}));fireEvent.click(dialog.getByRole('button',{name:'Camille E.'}));fireEvent.click(dialog.getByRole('button',{name:'Enregistrer le groupe'}));
  await waitFor(()=>expect(screen.queryByRole('dialog')).toBeNull());const w=await loadWorkspace();expect(w.data.sessions[0].poseDeposeTasks).toHaveLength(2);expect(w.data.sessions[0].poseDeposeTasks!.every(t=>t.placers.join(',')==='a,c')).toBe(true);expect(w.data.students).toHaveLength(4);
  cleanup();render(<Provider><App/></Provider>);fireEvent.click(await screen.findByRole('button',{name:/^Pose test/}));fireEvent.click(await screen.findByRole('tab',{name:'Pose-dépose'}));expect(await screen.findByRole('button',{name:'Reprendre le groupe Alice E. + Camille E.'})).toBeTruthy();expect(screen.queryByRole('button',{name:'Reprendre le groupe Alice E. + Basile E.'})).toBeNull();
+});
+it('permet de faire puis corriger l’appel après la préparation',async()=>{
+ await prepare();
+ fireEvent.click(await screen.findByRole('button',{name:'Appel'}));
+ fireEvent.change(screen.getByRole('combobox',{name:/Alice Essai/}),{target:{value:'absent'}});
+ fireEvent.click(screen.getByRole('button',{name:'Enregistrer l’appel'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].studentIds).not.toContain('a'));
+ fireEvent.click(screen.getByRole('button',{name:/^Pose test/}));
+ fireEvent.click(await screen.findByRole('button',{name:'Appel'}));
+ const select=screen.getByRole('combobox',{name:/Alice Essai/}) as HTMLSelectElement;
+ expect(select.value).toBe('absent');
+ fireEvent.change(select,{target:{value:''}});
+ fireEvent.click(screen.getByRole('button',{name:'Enregistrer l’appel'}));
+ await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].studentIds).toContain('a'));
 });
