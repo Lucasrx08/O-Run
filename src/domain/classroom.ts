@@ -8,7 +8,7 @@ export function createClass(d:Data,name:string,makeId=uid,color=mapColors[0]):Da
 export function newMap(i:number,makeId=uid):Course{return {id:makeId(),name:`Carte ${i}`,color:mapColors[(i-1)%mapColors.length],controls:6,distance:1000,penalty:0,difficulty:'Découverte',rubric:{enabled:false,thresholds:[600,780,960],maxErrors:[0,1,3]}};}
 export interface LessonTemplate{name:string;courses:Course[];poseDepose?:boolean;}
 export function copyLesson(d:Data,s:Session):LessonTemplate{return {name:s.name,poseDepose:s.poseDepose,courses:s.courseIds.map(id=>d.courses.find(c=>c.id===id)).filter((c):c is Course=>!!c).map(c=>structuredClone(c))};}
-export interface NewLessonOptions {cards:number;controls:number;correctionModel?:CorrectionModel;poseDepose?:boolean;}
+export interface NewLessonOptions {attendance?:Session["attendance"];cards:number;controls:number;correctionModel?:CorrectionModel;poseDepose?:boolean;}
 export function createLesson(d:Data,className:string,name:string,date:string,template?:LessonTemplate,makeId=uid,options:NewLessonOptions={cards:6,controls:6}):{data:Data;session:Session}{
  if(!classNames(d).includes(className))throw new Error('Classe introuvable.');if(!name.trim()||!date)throw new Error('Indiquez un nom et une date.');
  let q=d.sequences.find(q=>q.classes.length===1&&q.classes[0]===className&&!q.archived);if(!q)q={id:makeId(),name:className,period:'',objectives:'',classes:[className],archived:false};
@@ -16,7 +16,8 @@ export function createLesson(d:Data,className:string,name:string,date:string,tem
  const model=options.correctionModel?correctionModels.find(m=>m.id===options.correctionModel):undefined;
  if(!template&&options.correctionModel&&(!model||model.controls!==options.controls||options.cards>(model.id==='cards-3'?12:6)))throw new Error('Nombre de cartes ou de balises incompatible avec le modèle.');
  const courses=template?template.courses.map(c=>({...structuredClone(c),familyId:c.familyId||c.id,id:makeId()})):Array.from({length:options.cards},(_,i)=>({...newMap(i+1,makeId),controls:options.controls,correction:model?{model:model.id,reference:i+1}:undefined}));
- const session:Session={poseDepose:template?.poseDepose??options.poseDepose,id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className).map(p=>p.id)};
+ const attendance=Object.fromEntries(d.students.filter(p=>p.className===className&&options.attendance?.[p.id]).map(p=>[p.id,options.attendance![p.id]]));
+ const session:Session={attendance,poseDepose:template?.poseDepose??options.poseDepose,id:makeId(),sequenceId:q.id,className,name:name.trim(),date,courseIds:courses.map(c=>c.id),studentIds:d.students.filter(p=>p.className===className&&!attendance[p.id]).map(p=>p.id)};
  return {data:{...d,sequences:d.sequences.some(x=>x.id===q!.id)?d.sequences:[...d.sequences,q],courses:[...d.courses,...courses],sessions:[...d.sessions,session]},session};
 }
 export function addClassStudents(d:Data,name:string,students:Student[]):Data{const ids=new Set(lessonsForClass(d,name).map(s=>s.id)),added=students.map(p=>({...p,className:name}));return {...d,students:[...d.students,...added],sessions:d.sessions.map(s=>ids.has(s.id)?{...s,studentIds:[...new Set([...s.studentIds,...added.map(p=>p.id)])]}:s)};}

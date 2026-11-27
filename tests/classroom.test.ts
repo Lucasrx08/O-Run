@@ -20,3 +20,15 @@ import {rotatingCourseIndex,waveSettings,pauseClassWaves,resumeClassWaves} from 
 it('fait tourner les six cartes dans les deux sens et répète la séquence',()=>{expect(Array.from({length:12},(_,i)=>rotatingCourseIndex(i,6))).toEqual([0,1,2,3,4,5,0,1,2,3,4,5]);expect(Array.from({length:8},(_,i)=>rotatingCourseIndex(i,6,true))).toEqual([5,4,3,2,1,0,5,4]);});
 it('valide les champs des vagues seulement au lancement et refuse les valeurs incomplètes',()=>{expect(waveSettings('2','30','60',25)).toEqual({size:2,interval:30,preparation:60});for(const args of [['','30','60'],['2','','60'],['2','30',''],['1.5','30','60'],['26','30','60'],['2','0','60'],['2','30','601']])expect(()=>waveSettings(args[0],args[1],args[2],25)).toThrow();});
 it('préserve le temps de préparation en pause, y compris lors du verrouillage de la tablette',()=>{const initial={...p,nextAt:61000,stage:'preparation' as const};const paused=pauseClassWaves(initial,11000);expect(paused.remainingMs).toBe(50000);expect(pauseClassWaves(paused,90000)).toEqual(paused);const resumed=resumeClassWaves(paused,100000);expect(resumed.nextAt).toBe(150000);expect(waveDecision(resumed,149999,false,0)).toBe('wait');expect(waveDecision(resumed,150000,false,0)).toBe('fire');});
+it('limite les absences et dispenses à la leçon concernée',()=>{
+ const old=demo(),name='5e Aurore';
+ const [absent,dispensed]=old.students.filter(p=>p.className===name);
+ const attendance={[absent.id]:'absent',[dispensed.id]:'dispensed'} as const;
+ const {data,session}=createLesson(old,name,'Terrain','2026-11-27',undefined,undefined,{cards:6,controls:6,attendance});
+ expect(session.attendance).toEqual(attendance);
+ expect(lessonStudents(data,session,name)).toHaveLength(6);
+ expect(session.studentIds).not.toContain(absent.id);
+ expect(session.studentIds).not.toContain(dispensed.id);
+ expect(data.runs).toEqual(old.runs);
+ expect(createLesson(data,name,'Suite','2026-12-04',copyLesson(data,session)).session.studentIds).toHaveLength(8);
+});
