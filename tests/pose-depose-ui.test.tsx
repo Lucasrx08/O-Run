@@ -72,14 +72,16 @@ it('modifie un binôme enregistré sans perdre ses balises et persiste le nouvea
 it('permet de faire puis corriger l’appel après la préparation',async()=>{
  await prepare();
  fireEvent.click(await screen.findByRole('button',{name:'Appel'}));
- fireEvent.change(screen.getByRole('combobox',{name:/Alice Essai/}),{target:{value:'absent'}});
+ fireEvent.click(screen.getByRole('button',{name:'Alice Essai · Présent'}));
+ expect(screen.getByRole('button',{name:'Alice Essai · Dispensé'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'Alice Essai · Dispensé'}));
+ expect(screen.getByRole('button',{name:'Alice Essai · Absent'})).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Enregistrer l’appel'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].studentIds).not.toContain('a'));
  fireEvent.click(screen.getByRole('button',{name:/^Pose test/}));
  fireEvent.click(await screen.findByRole('button',{name:'Appel'}));
- const select=screen.getByRole('combobox',{name:/Alice Essai/}) as HTMLSelectElement;
- expect(select.value).toBe('absent');
- fireEvent.change(select,{target:{value:''}});
+ fireEvent.click(screen.getByRole('button',{name:'Alice Essai · Absent'}));
+ expect(screen.getByRole('button',{name:'Alice Essai · Présent'})).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Enregistrer l’appel'}));
  await waitFor(async()=>expect((await loadWorkspace()).data.sessions[0].studentIds).toContain('a'));
 });

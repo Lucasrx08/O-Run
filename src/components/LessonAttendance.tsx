@@ -1,8 +1,25 @@
 import {useState} from 'react';
-import {Users} from 'lucide-react';
+import {Users,Check,Minus,X,LockKeyhole} from 'lucide-react';
 import {useStore,configCommand} from '../store';
 import type {Session} from '../domain/types';
 import {Dialog} from './ui';
+
+type AttendanceStatus='absent'|'dispensed';
+type AttendancePupil={id:string;firstName:string;lastName:string};
+export function AttendanceList({pupils,value,onChange,locked,disabled=false}:{pupils:AttendancePupil[];value:Record<string,AttendanceStatus>;onChange:(next:Record<string,AttendanceStatus>)=>void;locked?:(id:string)=>boolean;disabled?:boolean}){
+ const ordered=[...pupils].sort((a,b)=>a.lastName.localeCompare(b.lastName,'fr')||a.firstName.localeCompare(b.firstName,'fr'));
+ const absent=ordered.filter(p=>value[p.id]==='absent').length,dispensed=ordered.filter(p=>value[p.id]==='dispensed').length;
+ return <div className="attendance-list">
+ <div className="attendance-counts"><span data-status="present">{ordered.length-absent-dispensed} présents</span><span data-status="dispensed">{dispensed} dispensés</span><span data-status="absent">{absent} absents</span></div>
+ <p className="attendance-hint">Touchez un élève : présent → dispensé → absent → présent.</p>
+ <div className="attendance-grid">{ordered.map(p=>{
+  const status=value[p.id]||'present',label=status==='dispensed'?'Dispensé':status==='absent'?'Absent':'Présent',fixed=!!locked?.(p.id);
+  const Icon=fixed?LockKeyhole:status==='dispensed'?Minus:status==='absent'?X:Check;
+  return <button type="button" key={p.id} className="attendance-tile" data-status={status} disabled={disabled||fixed} aria-label={p.firstName+' '+p.lastName+' · '+label+(fixed?' · Activité enregistrée':'')} onClick={()=>{const next={...value};if(status==='present')next[p.id]='dispensed';else if(status==='dispensed')next[p.id]='absent';else delete next[p.id];onChange(next);}}>
+  <span className="attendance-name">{p.firstName} {p.lastName}</span><span className="attendance-status"><Icon size={15} aria-hidden="true"/>{label}</span>{fixed&&<small>Activité enregistrée</small>}
+  </button>;
+ })}</div></div>;
+}
 
 export function LessonAttendance({session,className}:{session:Session;className:string}){
  const s=useStore();
@@ -32,10 +49,8 @@ export function LessonAttendance({session,className}:{session:Session;className:
   }finally{setBusy(false);}
  }
  return <><button type="button" className="lesson-mode-shortcut" onClick={()=>setDraft({...session.attendance})}><Users size={16}/>Appel</button>
- {draft&&<Dialog title={'Appel · '+session.name} onClose={()=>setDraft(null)}>
- {pupils.map(p=><label key={p.id} className="attendance-row"><span>{p.firstName} {p.lastName}{recorded(p.id)&&<small> · Activité enregistrée</small>}</span>
- <select disabled={busy||!!recorded(p.id)} value={draft[p.id]||''} onChange={e=>{const next={...draft};if(e.target.value)next[p.id]=e.target.value as 'absent'|'dispensed';else delete next[p.id];setDraft(next);}}>
- <option value="">Présent</option><option value="absent">Absent</option><option value="dispensed">Dispensé</option></select></label>)}
+ {draft&&<Dialog wide title={'Appel · '+session.name} onClose={()=>{if(!busy)setDraft(null);}}>
+ <AttendanceList pupils={pupils} value={draft} onChange={setDraft} locked={id=>!!recorded(id)} disabled={busy}/>
  {session.deviceMode&&session.deviceMode>1&&<p>Après modification, retransfère la leçon aux tablettes de chronométrage avant les départs.</p>}
  <div className="dialog-actions"><button className="button primary" disabled={busy} onClick={save}>Enregistrer l’appel</button></div></Dialog>}</>;
 }
